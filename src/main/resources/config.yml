@@ -1,7 +1,11 @@
 bot-token:
-server:
-translate:
-  channels:
+server-id:
+broadcaster:
+  use: false
+  channels: []
+translator:
+  use: false
+  channels: []
   languages:
     - en_US
     - ko_KR
