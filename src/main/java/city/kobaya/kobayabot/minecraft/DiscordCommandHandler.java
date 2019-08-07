@@ -3,6 +3,8 @@ package city.kobaya.kobayabot.minecraft;
 import city.kobaya.kobayabot.KobayaBotPlugin;
 import city.kobaya.kobayabot.KobayaPlayer;
 import city.kobaya.kobayabot.Registration;
+import city.kobaya.kobayabot.features.Feature;
+import city.kobaya.kobayabot.features.GroupLinker;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -68,6 +70,13 @@ public class DiscordCommandHandler implements TabExecutor {
                 if(kobayaPlayer != null) {
                     KobayaPlayer.PLAYER_MAP.remove(kobayaPlayer.getDiscordId());
                     sender.sendMessage(ChatColor.GREEN + "You are now unregistered.");
+
+
+                    Feature feature = KobayaBotPlugin.getInstance().getFeature(GroupLinker.class);
+                    if(feature instanceof GroupLinker) {
+                        ((GroupLinker) feature).clearPlayer(player);
+                    }
+
                 } else {
                     sender.sendMessage(ChatColor.YELLOW + "You are already unregistered!");
                 }

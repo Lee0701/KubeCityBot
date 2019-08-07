@@ -37,6 +37,17 @@ public class GroupLinker implements Feature {
 
     }
 
+    public void clearPlayer(Player player) {
+        permsApi.getUserManager().loadUser(player.getUniqueId())
+                .thenAcceptAsync(user -> {
+                    user.getAllNodes().stream()
+                            .filter(Node::isGroupNode)
+                            .filter(node -> discordToMinecraft.containsValue(node.getGroupName()))
+                            .forEach(user::unsetPermission);
+                    permsApi.getUserManager().saveUser(user);
+                });
+    }
+
     public void reloadPlayer(Player player) {
         KobayaPlayer kobayaPlayer = KobayaPlayer.of(player).orElse(null);
         if(kobayaPlayer != null && kobayaPlayer.getUuid() != null) {

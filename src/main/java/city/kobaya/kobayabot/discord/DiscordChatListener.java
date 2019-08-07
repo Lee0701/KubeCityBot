@@ -55,6 +55,11 @@ public class DiscordChatListener extends ListenerAdapter {
             KobayaPlayer.REGISTRATIONS.remove(registration);
             message.delete().queue();
 
+            Feature feature = KobayaBotPlugin.getInstance().getFeature(GroupLinker.class);
+            if(feature instanceof GroupLinker) {
+                ((GroupLinker) feature).reloadMember(member);
+            }
+
             return;
         }
 
