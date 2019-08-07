@@ -1,0 +1,7 @@
+bot-token:
+server:
+translate:
+  channels:
+  languages:
+    - en_US
+    - ko_KR

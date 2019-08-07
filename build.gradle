@@ -1,0 +1,52 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
+}
+
+group 'city.kobaya'
+version '0.1'
+
+sourceCompatibility = 1.8
+
+repositories {
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
+    }
+    maven {
+        name = 'sonatype'
+        url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+    maven {
+        name = 'jitpack'
+        url = 'https://jitpack.io'
+    }
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.12.2-R0.1-SNAPSHOT'
+
+    compile group: 'net.dv8tion', name: 'JDA', version: '3.6.0_376'
+    compile group: 'com.github.RanolP', name: 'RatTranslate', version: 'v1.1.0'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        filteringCharset = 'UTF-8'
+        filter ReplaceTokens, tokens: [version: project.version]
+    }
+}
+
+shadowJar {
+    classifier = ''
+}
+
+artifacts {
+    archives shadowJar
+}

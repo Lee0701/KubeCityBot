@@ -1,0 +1,12 @@
+name: KobayaBot
+version: @version@
+main: city.kobaya.kobayabot.KobayaBotPlugin
+author: Lee0701
+authors: [Lee0701]
+description: Plugin for KobayaCity.
+commands:
+  kobayabot:
+    aliases: [kobaya, kb]
+    description: "KobayaBot main command."
+  discord:
+    description: "Discord link command."
