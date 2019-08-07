@@ -32,29 +32,36 @@ public class GroupLinker implements Feature {
                 .filter(it -> it.length == 2)
                 .collect(Collectors.toMap(it -> it[0], it -> it[1]));
 
+        reloadAll();
+
+    }
+
+    public void reloadMember(Member member) {
+        KobayaPlayer player = KobayaPlayer.of(member.getUser().getId());
+        if(player.getUuid() != null) {
+            List<String> groups = member.getRoles().stream()
+                    .map(Role::getName)
+                    .filter(discordToMinecraft::containsKey)
+                    .map(discordToMinecraft::get)
+                    .collect(Collectors.toList());
+            permsApi.getUserManager().loadUser(UUID.fromString(player.getUuid()))
+                    .thenAcceptAsync(user -> {
+                        user.getAllNodes().stream()
+                                .filter(Node::isGroupNode)
+                                .filter(node -> discordToMinecraft.containsValue(node.getGroupName()))
+                                .forEach(user::unsetPermission);
+                        groups.stream()
+                                .map(permsApi.getNodeFactory()::makeGroupNode)
+                                .map(Node.Builder::build)
+                                .forEach(user::setPermission);
+                        permsApi.getUserManager().saveUser(user);
+                    });
+        }
+    }
+
+    public void reloadAll() {
         List<Member> members = KobayaBotPlugin.getInstance().getBot().getGuild().getMembers();
-        members.forEach(member -> {
-            KobayaPlayer player = KobayaPlayer.of(member.getUser().getId());
-            if(player.getUuid() != null) {
-                List<String> groups = member.getRoles().stream()
-                        .map(Role::getName)
-                        .filter(discordToMinecraft::containsKey)
-                        .map(discordToMinecraft::get)
-                        .collect(Collectors.toList());
-                permsApi.getUserManager().loadUser(UUID.fromString(player.getUuid()))
-                        .thenAcceptAsync(user -> {
-                            user.getAllNodes().stream()
-                                    .filter(Node::isGroupNode)
-                                    .filter(node -> discordToMinecraft.containsKey(node.getGroupName()))
-                                    .forEach(user::unsetPermission);
-                            groups.stream()
-                                    .map(permsApi.getNodeFactory()::makeGroupNode)
-                                    .map(Node.Builder::build)
-                                    .forEach(user::setPermission);
-                            permsApi.getUserManager().saveUser(user);
-                        });
-            }
-        });
+        members.forEach(this::reloadMember);
     }
 
     @Override

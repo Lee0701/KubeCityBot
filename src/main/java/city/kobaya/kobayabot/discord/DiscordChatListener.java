@@ -4,9 +4,12 @@ import city.kobaya.kobayabot.KobayaBotPlugin;
 import city.kobaya.kobayabot.KobayaPlayer;
 import city.kobaya.kobayabot.Registration;
 import city.kobaya.kobayabot.features.Feature;
+import city.kobaya.kobayabot.features.GroupLinker;
 import city.kobaya.kobayabot.features.SimpleForwarder;
 import city.kobaya.kobayabot.features.TranslatorForwarder;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleAddEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.bukkit.entity.Player;
@@ -56,6 +59,30 @@ public class DiscordChatListener extends ListenerAdapter {
         feature = KobayaBotPlugin.getInstance().getFeature(TranslatorForwarder.class);
         if(feature instanceof TranslatorForwarder) {
             ((TranslatorForwarder) feature).forwardFromDiscord(message);
+        }
+
+    }
+
+    @Override
+    public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {
+        Guild guild = event.getGuild();
+        if(!guild.getId().equals(KobayaBotPlugin.getInstance().getServerId())) return;
+
+        Feature feature = KobayaBotPlugin.getInstance().getFeature(GroupLinker.class);
+        if(feature instanceof GroupLinker) {
+            ((GroupLinker) feature).reloadMember(event.getMember());
+        }
+
+    }
+
+    @Override
+    public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {
+        Guild guild = event.getGuild();
+        if(!guild.getId().equals(KobayaBotPlugin.getInstance().getServerId())) return;
+
+        Feature feature = KobayaBotPlugin.getInstance().getFeature(GroupLinker.class);
+        if(feature instanceof GroupLinker) {
+            ((GroupLinker) feature).reloadMember(event.getMember());
         }
 
     }
