@@ -61,7 +61,7 @@ public class SimpleForwarder extends Forwarder {
 
         // Send discord message.
         KobayaBotPlugin.getInstance().getBot().sendDiscordMessage(
-                new ForwarderMessage("Discord", channel, username, text, IconStorage.getIconFor(author), false));
+                new ForwarderMessage("Discord", channel, username, text, IconStorage.getIconFor(author), kobayaPlayer.isLinked()));
 
         // Delete original message.
         message.delete().queue();

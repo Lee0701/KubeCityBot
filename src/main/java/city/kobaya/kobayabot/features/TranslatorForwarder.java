@@ -45,7 +45,7 @@ public class TranslatorForwarder extends Forwarder {
         String name = player.getName();
         KobayaBotPlugin.getInstance().getBot().sendDiscordMessages(
                 channels,
-                channel -> new TranslatedMessage("Minecraft", channel, name, message, RatPlayer.of(player).getLocale(), IconStorage.getIconFor(player.getUniqueId()), false)
+                channel -> new TranslatedMessage("Minecraft", channel, name, message, RatPlayer.of(player).getLocale(), IconStorage.getIconFor(player.getUniqueId()), KobayaPlayer.checkLinked(player))
         );
     }
 
@@ -110,7 +110,7 @@ public class TranslatorForwarder extends Forwarder {
 
             // Send discord message.
             KobayaBotPlugin.getInstance().getBot().sendDiscordMessage(
-                    new TranslatedMessage("Discord", channel, username, text, null, IconStorage.getIconFor(author), false));
+                    new TranslatedMessage("Discord", channel, username, text, null, IconStorage.getIconFor(author), kobayaPlayer.isLinked()));
 
             // Delete original message.
             message.delete().queue();
