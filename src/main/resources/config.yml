@@ -12,3 +12,7 @@ translator-forwarder:
   languages:
     - en_US
     - ko_KR
+group-linker:
+  use: false
+  groups:
+    - discord minecraft

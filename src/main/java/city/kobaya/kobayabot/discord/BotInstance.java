@@ -20,12 +20,12 @@ public class BotInstance {
     public void launch(String token) {
         try {
             if(jda != null) jda.shutdown();
-            jda = new JDABuilder(AccountType.BOT).setToken(token).buildAsync();
+            jda = new JDABuilder(AccountType.BOT).setToken(token).buildBlocking();
             jda.addEventListener(new DiscordChatListener());
 
             discordMessageSender = new DiscordMessageSender();
             discordMessageSender.runTaskTimerAsynchronously(KobayaBotPlugin.getInstance(), 0, 20);
-        } catch(LoginException ex) {
+        } catch(InterruptedException | LoginException ex) {
             Bukkit.getLogger().warning("Error loading discord bot.");
         }
     }

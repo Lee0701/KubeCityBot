@@ -3,6 +3,7 @@ version: @version@
 main: city.kobaya.kobayabot.KobayaBotPlugin
 author: Lee0701
 authors: [Lee0701]
+softdepend: [LuckPerms, RatTranslate]
 description: Plugin for KobayaCity.
 commands:
   kobayabot:

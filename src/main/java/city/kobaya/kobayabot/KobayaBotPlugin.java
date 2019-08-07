@@ -1,10 +1,7 @@
 package city.kobaya.kobayabot;
 
 import city.kobaya.kobayabot.discord.BotInstance;
-import city.kobaya.kobayabot.features.Broadcaster;
-import city.kobaya.kobayabot.features.Feature;
-import city.kobaya.kobayabot.features.SimpleForwarder;
-import city.kobaya.kobayabot.features.TranslatorForwarder;
+import city.kobaya.kobayabot.features.*;
 import city.kobaya.kobayabot.minecraft.DiscordCommandHandler;
 import city.kobaya.kobayabot.minecraft.KobayaBotCommandHandler;
 import city.kobaya.kobayabot.minecraft.EventListener;
@@ -71,6 +68,7 @@ public final class KobayaBotPlugin extends JavaPlugin {
         if(config.getConfigurationSection("broadcaster").getBoolean("use")) features.add(new Broadcaster());
         if(config.getConfigurationSection("simple-forwarder").getBoolean("use")) features.add(new SimpleForwarder());
         if(config.getConfigurationSection("translator-forwarder").getBoolean("use")) features.add(new TranslatorForwarder());
+        if(config.getConfigurationSection("group-linker").getBoolean("use")) features.add(new GroupLinker());
 
         for(Feature feature : features) {
             feature.reload(this);
