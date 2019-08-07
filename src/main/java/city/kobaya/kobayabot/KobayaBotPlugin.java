@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +46,7 @@ public final class KobayaBotPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        save();
     }
 
     public void reload() {
@@ -71,6 +73,17 @@ public final class KobayaBotPlugin extends JavaPlugin {
             feature.reload(this);
         }
 
+    }
+
+    public void save() {
+        for(Feature feature : features) {
+            feature.save();
+        }
+        try {
+            dataConfiguration.save(dataFile);
+        } catch(IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public Feature getFeature(Class<? extends Feature> type) {
