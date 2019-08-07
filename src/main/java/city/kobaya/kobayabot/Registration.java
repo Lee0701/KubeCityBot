@@ -18,7 +18,7 @@ public class Registration {
     }
 
     public boolean isCommandMatches(String command) {
-        return ("http:register/" + key).equals(command) || ("!register " + key).equals(command);
+        return ("http:register/" + key).equals(command) || ("/register " + key).equals(command);
     }
 
     public Player getPlayer() {

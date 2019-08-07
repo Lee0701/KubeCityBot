@@ -35,7 +35,7 @@ public class DiscordCommandHandler implements TabExecutor {
                 Registration registration = new Registration(player);
                 KobayaPlayer.REGISTRATIONS.add(registration);
 
-                String registerCommand = "!register " + registration.getKey();
+                String registerCommand = "/register " + registration.getKey();
                 String url = "http:register/" + registration.getKey();
                 TextComponent register = new TextComponent(registerCommand);
                 register.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
