@@ -2,6 +2,7 @@ package city.kobaya.kobayabot.features;
 
 import city.kobaya.kobayabot.IconStorage;
 import city.kobaya.kobayabot.KobayaBotPlugin;
+import city.kobaya.kobayabot.KobayaPlayer;
 import city.kobaya.kobayabot.discord.message.ForwarderMessage;
 import city.kobaya.kobayabot.discord.message.TranslatedMessage;
 import io.github.ranolp.rattranslate.Locale;
@@ -56,13 +57,22 @@ public class TranslatorForwarder extends Forwarder {
 
         if(!channels.contains(channel.getId())) return;
 
-        String username = author.getName();
+        String username = message.getMember().getEffectiveName();
+        String minecraftName = username;
 
         Bukkit.getLogger()
                 .info(String.format("[%s](%s)<%s>: %s", "Discord", channel.getName(), username, text));
 
         String format = "[Discord] <%s> %s";
-        String originalMessage = String.format(format, username, text);
+
+        KobayaPlayer kobayaPlayer = KobayaPlayer.of(author.getId());
+        if(kobayaPlayer.getUuid() != null) {
+            if(kobayaPlayer.getChatFormat() != null) format = "[Discord] " + kobayaPlayer.getChatFormat();
+            if(kobayaPlayer.getNickname() != null) minecraftName = kobayaPlayer.getNickname();
+        }
+        String finalFormat = format;
+        String finalName = minecraftName;
+        String originalMessage = String.format(format, minecraftName, text);
 
         Set<RatPlayer> recipients = Bukkit.getServer().getOnlinePlayers().stream()
                 .map(RatPlayer::of)
@@ -77,7 +87,7 @@ public class TranslatorForwarder extends Forwarder {
                     .map(RatPlayer::getLocale)
                     .distinct()
                     .collect(Collectors.toMap(locale -> locale,
-                            locale -> String.format(format, username, translator.translateAuto(text, locale))
+                            locale -> String.format(finalFormat, finalName, translator.translateAuto(text, locale))
                     ));
 
             // Send minecraft messages.

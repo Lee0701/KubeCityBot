@@ -1,10 +1,17 @@
 package city.kobaya.kobayabot.minecraft;
 
 import city.kobaya.kobayabot.KobayaBotPlugin;
+import city.kobaya.kobayabot.KobayaPlayer;
+import city.kobaya.kobayabot.Registration;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,8 +30,49 @@ public class DiscordCommandHandler implements TabExecutor {
             return true;
         }
         if(args[0].equals("register")) {
+            if(sender instanceof Player) {
+                Player player = (Player) sender;
+                Registration registration = new Registration(player);
+                KobayaPlayer.REGISTRATIONS.add(registration);
 
+                String registerCommand = "!register " + registration.getKey();
+                String url = "http:register/" + registration.getKey();
+                TextComponent register = new TextComponent(registerCommand);
+                register.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                        new BaseComponent[] {new TextComponent("or click to copy an alternative command")}
+                ));
+                register.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+                register.setColor(ChatColor.AQUA.asBungee());
+                TextComponent root = new TextComponent(
+                        new TextComponent("Type \""), register, new TextComponent("\" in Discord chat to complete."));
+                sender.spigot().sendMessage(root);
+            }
             return true;
+        }
+        if(args[0].equals("unregister")) {
+            if(args.length >= 2) {
+                if(sender.isOp()) {
+                    KobayaPlayer kobayaPlayer = KobayaPlayer.of(KobayaBotPlugin.getInstance().getServer().getPlayer(args[1])).orElse(null);
+                    if(kobayaPlayer != null) {
+                        KobayaPlayer.PLAYER_MAP.remove(kobayaPlayer.getDiscordId());
+                        sender.sendMessage(ChatColor.GREEN + "Unregistered player " + kobayaPlayer.getNickname());
+                    } else {
+                        sender.sendMessage(ChatColor.YELLOW + "Player " + args[1] + " is not registered!");
+                    }
+                    return true;
+                }
+            }
+            if(sender instanceof Player) {
+                Player player = (Player) sender;
+                KobayaPlayer kobayaPlayer = KobayaPlayer.of(player).orElse(null);
+                if(kobayaPlayer != null) {
+                    KobayaPlayer.PLAYER_MAP.remove(kobayaPlayer.getDiscordId());
+                    sender.sendMessage(ChatColor.GREEN + "You are now unregistered.");
+                } else {
+                    sender.sendMessage(ChatColor.YELLOW + "You are already unregistered!");
+                }
+                return true;
+            }
         }
         return false;
     }

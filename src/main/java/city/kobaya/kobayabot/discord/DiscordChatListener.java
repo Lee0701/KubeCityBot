@@ -1,12 +1,15 @@
 package city.kobaya.kobayabot.discord;
 
 import city.kobaya.kobayabot.KobayaBotPlugin;
+import city.kobaya.kobayabot.KobayaPlayer;
+import city.kobaya.kobayabot.Registration;
 import city.kobaya.kobayabot.features.Feature;
 import city.kobaya.kobayabot.features.SimpleForwarder;
 import city.kobaya.kobayabot.features.TranslatorForwarder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import org.bukkit.entity.Player;
 
 public class DiscordChatListener extends ListenerAdapter {
 
@@ -25,6 +28,25 @@ public class DiscordChatListener extends ListenerAdapter {
         Message message = event.getMessage();
 
         if(message.isWebhookMessage()) return;
+
+        Registration registration = KobayaPlayer.REGISTRATIONS.stream()
+                .filter(it -> it.isCommandMatches(message.getContentDisplay()))
+                .findFirst()
+                .orElse(null);
+        if (registration != null) {
+            Player player = registration.getPlayer();
+
+            KobayaPlayer kobayaPlayer = KobayaPlayer.of(event.getAuthor().getId());
+            kobayaPlayer.setNickname(player.getDisplayName());
+            kobayaPlayer.setUuid(player.getUniqueId().toString());
+
+            player.sendMessage("Discord register complete!");
+
+            KobayaPlayer.REGISTRATIONS.remove(registration);
+            message.delete().queue();
+
+            return;
+        }
 
         Feature feature;
         feature = KobayaBotPlugin.getInstance().getFeature(SimpleForwarder.class);

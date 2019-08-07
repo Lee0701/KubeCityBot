@@ -63,10 +63,11 @@ public final class KobayaBotPlugin extends JavaPlugin {
             getLogger().warning("Discord bot token is not set. Disabling Discord bot.");
         }
 
+        KobayaPlayer.PLAYER_MAP.clear();
         dataConfiguration = YamlConfiguration.loadConfiguration(dataFile);
+        if(dataConfiguration.isList("players")) dataConfiguration.getList("players");
 
         features.clear();
-
         if(config.getConfigurationSection("broadcaster").getBoolean("use")) features.add(new Broadcaster());
         if(config.getConfigurationSection("simple-forwarder").getBoolean("use")) features.add(new SimpleForwarder());
         if(config.getConfigurationSection("translator-forwarder").getBoolean("use")) features.add(new TranslatorForwarder());
@@ -81,6 +82,7 @@ public final class KobayaBotPlugin extends JavaPlugin {
         for(Feature feature : features) {
             feature.save();
         }
+        dataConfiguration.set("players", new ArrayList<>(KobayaPlayer.PLAYER_MAP.values()));
         try {
             dataConfiguration.save(dataFile);
         } catch(IOException ex) {

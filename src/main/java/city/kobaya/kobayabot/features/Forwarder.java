@@ -27,42 +27,9 @@ public abstract class Forwarder implements Feature {
 
     }
 
-    public void forwardFromMinecraft(Player player, String message) {
-        String name = player.getName();
-        KobayaBotPlugin.getInstance().getBot().sendDiscordMessages(
-                channels,
-                channel -> new ForwarderMessage("Minecraft", channel, name, message, IconStorage.getIconFor(player.getUniqueId()), false)
-        );
-    }
+    public abstract void forwardFromMinecraft(Player player, String message);
 
-    public void forwardFromDiscord(Message message) {
-        TextChannel channel = message.getTextChannel();
-        User author = message.getAuthor();
-        String text = message.getContentDisplay();
-
-        if(!channels.contains(channel.getId())) return;
-
-        String username = author.getName();
-
-        Bukkit.getLogger()
-                .info(String.format("[%s](%s)<%s>: %s", "Discord", channel.getName(), username, text));
-
-        String format = "[Discord] <%s> %s";
-        String formattedMessage = String.format(format, username, text);
-
-        // Send minecraft messages.
-        List<Player> recipients = new ArrayList<>(Bukkit.getServer().getOnlinePlayers());
-        for(Player recipient : recipients) {
-            recipient.sendMessage(formattedMessage);
-        }
-
-        // Send discord message.
-        KobayaBotPlugin.getInstance().getBot().sendDiscordMessage(
-                new ForwarderMessage("Discord", channel, username, text, IconStorage.getIconFor(author), false));
-
-        // Delete original message.
-        message.delete().queue();
-    }
+    public abstract void forwardFromDiscord(Message message);
 
     public List<String> getChannels() {
         return channels;

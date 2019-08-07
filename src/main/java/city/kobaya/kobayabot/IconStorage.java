@@ -19,13 +19,18 @@ public final class IconStorage {
     }
 
     public static Icon getIconFor(User user) {
-        return discordIcons.computeIfAbsent(user.getAvatarId(), $ -> {
-            try (InputStream stream = new URL(user.getAvatarUrl()).openStream()) {
-                return Icon.from(stream);
-            } catch (IOException e) {
-                return null;
-            }
-        });
+        KobayaPlayer player = KobayaPlayer.of(user.getId());
+        if(player.getUuid() != null) {
+            return getIconFor(UUID.fromString(player.getUuid()));
+        } else {
+            return discordIcons.computeIfAbsent(user.getAvatarId(), $ -> {
+                try (InputStream stream = new URL(user.getAvatarUrl()).openStream()) {
+                    return Icon.from(stream);
+                } catch (IOException e) {
+                    return null;
+                }
+            });
+        }
     }
 
     public static Icon getIconFor(UUID player) {

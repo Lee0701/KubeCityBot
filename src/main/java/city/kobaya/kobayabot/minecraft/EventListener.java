@@ -1,6 +1,7 @@
 package city.kobaya.kobayabot.minecraft;
 
 import city.kobaya.kobayabot.KobayaBotPlugin;
+import city.kobaya.kobayabot.KobayaPlayer;
 import city.kobaya.kobayabot.features.*;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -14,6 +15,10 @@ public class EventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
+        KobayaPlayer.of(event.getPlayer()).ifPresent(kobayaPlayer -> {
+            kobayaPlayer.setChatFormat(event.getFormat());
+            kobayaPlayer.setNickname(event.getPlayer().getDisplayName());
+        });
 
         String message = ChatColor.stripColor(event.getMessage());
 
