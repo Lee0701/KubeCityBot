@@ -4,7 +4,8 @@ import city.kobaya.kobayabot.discord.BotInstance;
 import city.kobaya.kobayabot.features.Broadcaster;
 import city.kobaya.kobayabot.features.Feature;
 import city.kobaya.kobayabot.features.Translator;
-import city.kobaya.kobayabot.minecraft.CommandHandler;
+import city.kobaya.kobayabot.minecraft.DiscordCommandHandler;
+import city.kobaya.kobayabot.minecraft.KobayaBotCommandHandler;
 import city.kobaya.kobayabot.minecraft.EventListener;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -36,7 +37,8 @@ public final class KobayaBotPlugin extends JavaPlugin {
 
         reload();
 
-        getCommand("kobayabot").setExecutor(new CommandHandler());
+        getCommand("kobayabot").setExecutor(new KobayaBotCommandHandler());
+        getCommand("discord").setExecutor(new DiscordCommandHandler());
         Bukkit.getPluginManager().registerEvents(new EventListener(), this);
 
     }
@@ -45,7 +47,7 @@ public final class KobayaBotPlugin extends JavaPlugin {
     public void onDisable() {
     }
 
-    private void reload() {
+    public void reload() {
         reloadConfig();
 
         FileConfiguration config = getConfig();
