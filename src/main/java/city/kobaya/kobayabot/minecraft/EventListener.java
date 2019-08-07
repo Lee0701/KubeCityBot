@@ -36,9 +36,14 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        Feature feature = KobayaBotPlugin.getInstance().getFeature(Broadcaster.class);
+        Feature feature;
+        feature = KobayaBotPlugin.getInstance().getFeature(Broadcaster.class);
         if(feature instanceof Broadcaster) {
             ((Broadcaster) feature).broadcast(event.getPlayer().getName() + " joined.");
+        }
+        feature = KobayaBotPlugin.getInstance().getFeature(GroupLinker.class);
+        if(feature instanceof GroupLinker) {
+            ((GroupLinker) feature).reloadPlayer(event.getPlayer());
         }
     }
 

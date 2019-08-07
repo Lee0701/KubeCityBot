@@ -10,6 +10,7 @@ import me.lucko.luckperms.api.User;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -34,6 +35,30 @@ public class GroupLinker implements Feature {
 
         reloadAll();
 
+    }
+
+    public void reloadPlayer(Player player) {
+        KobayaPlayer kobayaPlayer = KobayaPlayer.of(player).orElse(null);
+        if(kobayaPlayer != null && kobayaPlayer.getUuid() != null) {
+            Member member = KobayaBotPlugin.getInstance().getBot().getGuild().getMemberById(kobayaPlayer.getDiscordId());
+            List<String> groups = member.getRoles().stream()
+                    .map(Role::getName)
+                    .filter(discordToMinecraft::containsKey)
+                    .map(discordToMinecraft::get)
+                    .collect(Collectors.toList());
+            permsApi.getUserManager().loadUser(UUID.fromString(kobayaPlayer.getUuid()))
+                    .thenAcceptAsync(user -> {
+                        user.getAllNodes().stream()
+                                .filter(Node::isGroupNode)
+                                .filter(node -> discordToMinecraft.containsValue(node.getGroupName()))
+                                .forEach(user::unsetPermission);
+                        groups.stream()
+                                .map(permsApi.getNodeFactory()::makeGroupNode)
+                                .map(Node.Builder::build)
+                                .forEach(user::setPermission);
+                        permsApi.getUserManager().saveUser(user);
+                    });
+        }
     }
 
     public void reloadMember(Member member) {
