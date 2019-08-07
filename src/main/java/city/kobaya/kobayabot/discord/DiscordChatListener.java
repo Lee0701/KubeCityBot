@@ -14,6 +14,11 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.stream.Collectors;
+
 public class DiscordChatListener extends ListenerAdapter {
 
     private static final String COMMAND_PREFIX = "/";
@@ -31,6 +36,8 @@ public class DiscordChatListener extends ListenerAdapter {
         Message message = event.getMessage();
 
         if(message.isWebhookMessage()) return;
+
+        if(handleCommand(message)) return;
 
         Registration registration = KobayaPlayer.REGISTRATIONS.stream()
                 .filter(it -> it.isCommandMatches(message.getContentDisplay()))
@@ -86,4 +93,31 @@ public class DiscordChatListener extends ListenerAdapter {
         }
 
     }
+
+    private boolean handleCommand(Message message) {
+        StringTokenizer tokens = new StringTokenizer(message.getContentDisplay());
+
+        String command;
+        if(tokens.hasMoreTokens()) command = tokens.nextToken();
+        else return false;
+
+        String[] args = new String[tokens.countTokens()];
+        for(int i = 0 ; i < args.length ; i++) args[i] = tokens.nextToken();
+
+        command = command.toLowerCase();
+        if(command.startsWith(COMMAND_PREFIX)) command = command.substring(1);
+        else return false;
+
+        switch(command) {
+        case "list":
+            List<Player> players = new ArrayList<>(KobayaBotPlugin.getInstance().getServer().getOnlinePlayers());
+            String reply = "List of online players:\n";
+            reply += players.stream().map(Player::getPlayerListName).map(name -> "- " + name).collect(Collectors.joining("\n"));
+            message.getChannel().sendMessage(reply).queue();
+            return true;
+        default:
+            return false;
+        }
+    }
+
 }
