@@ -42,13 +42,13 @@ public abstract class Forwarder implements Feature {
 
         if(!channels.contains(channel.getId())) return;
 
-        String name = author.getName();
+        String username = author.getName();
 
         Bukkit.getLogger()
-                .info(String.format("[%s](%s)<%s>: %s", "Discord", channel.getName(), name, text));
+                .info(String.format("[%s](%s)<%s>: %s", "Discord", channel.getName(), username, text));
 
         String format = "[Discord] <%s> %s";
-        String formattedMessage = String.format(format, author.getName(), text);
+        String formattedMessage = String.format(format, username, text);
 
         // Send minecraft messages.
         List<Player> recipients = new ArrayList<>(Bukkit.getServer().getOnlinePlayers());
@@ -58,7 +58,7 @@ public abstract class Forwarder implements Feature {
 
         // Send discord message.
         KobayaBotPlugin.getInstance().getBot().sendDiscordMessage(
-                new ForwarderMessage("Discord", channel, name, text, IconStorage.getIconFor(author), false));
+                new ForwarderMessage("Discord", channel, username, text, IconStorage.getIconFor(author), false));
 
         // Delete original message.
         message.delete().queue();

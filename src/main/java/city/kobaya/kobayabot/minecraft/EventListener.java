@@ -24,7 +24,7 @@ public class EventListener implements Listener {
         }
         feature = KobayaBotPlugin.getInstance().getFeature(TranslatorForwarder.class);
         if(feature instanceof TranslatorForwarder) {
-
+            ((TranslatorForwarder) feature).forwardFromMinecraft(event.getPlayer(), message);
         }
 
     }
