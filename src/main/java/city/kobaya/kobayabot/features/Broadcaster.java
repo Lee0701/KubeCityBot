@@ -5,6 +5,7 @@ import city.kobaya.kobayabot.discord.BotInstance;
 import city.kobaya.kobayabot.discord.message.SimpleMessage;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -17,12 +18,17 @@ public class Broadcaster implements Feature {
 
     @Override
     public void reload(JavaPlugin plugin) {
-        channels = plugin.getConfig().getConfigurationSection("broadcaster").getStringList("channels");
+        channels = getConfigurationSection().getStringList("channels");
     }
 
     @Override
     public void save() {
 
+    }
+
+    @Override
+    public ConfigurationSection getConfigurationSection() {
+        return KobayaBotPlugin.getInstance().getConfig().getConfigurationSection("broadcaster");
     }
 
     public void broadcast(String message) {

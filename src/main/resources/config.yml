@@ -3,7 +3,10 @@ server-id:
 broadcaster:
   use: false
   channels: []
-translator:
+simple-forwarder:
+  use: false
+  channels: []
+translator-forwarder:
   use: false
   channels: []
   languages:
