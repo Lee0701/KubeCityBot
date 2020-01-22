@@ -120,7 +120,7 @@ public class TranslatedMessage extends WebhookMessge {
 
         String translatedMessage;
         try {
-            TranslatorForwarder forwarder = (TranslatorForwarder) KobayaBotPlugin.getInstance().getFeature(TranslatorForwarder.class);
+            TranslatorForwarder forwarder = KobayaBotPlugin.getInstance().getFeature(TranslatorForwarder.class);
             Translator translator = RatTranslate.getInstance().getTranslator();
             boolean auto = fromLocale == null;
             translatedMessage = forwarder.getLanguages().stream()

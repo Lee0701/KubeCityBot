@@ -22,37 +22,20 @@ public class EventListener implements Listener {
 
         String message = ChatColor.stripColor(event.getMessage());
 
-        Feature feature;
-        feature = KobayaBotPlugin.getInstance().getFeature(SimpleForwarder.class);
-        if(feature instanceof SimpleForwarder) {
-            ((SimpleForwarder) feature).forwardFromMinecraft(event.getPlayer(), message);
-        }
-        feature = KobayaBotPlugin.getInstance().getFeature(TranslatorForwarder.class);
-        if(feature instanceof TranslatorForwarder) {
-            ((TranslatorForwarder) feature).forwardFromMinecraft(event.getPlayer(), message);
-        }
+        KobayaBotPlugin.getInstance().getFeature(SimpleForwarder.class).forwardFromMinecraft(event.getPlayer(), message);
+        KobayaBotPlugin.getInstance().getFeature(TranslatorForwarder.class).forwardFromMinecraft(event.getPlayer(), message);
 
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        Feature feature;
-        feature = KobayaBotPlugin.getInstance().getFeature(Broadcaster.class);
-        if(feature instanceof Broadcaster) {
-            ((Broadcaster) feature).broadcast(event.getPlayer().getName() + " joined.");
-        }
-        feature = KobayaBotPlugin.getInstance().getFeature(GroupLinker.class);
-        if(feature instanceof GroupLinker) {
-            ((GroupLinker) feature).reloadPlayer(event.getPlayer());
-        }
+        KobayaBotPlugin.getInstance().getFeature(Broadcaster.class).broadcast(event.getPlayer().getName() + " joined.");
+        KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).reloadPlayer(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        Feature feature = KobayaBotPlugin.getInstance().getFeature(Broadcaster.class);
-        if(feature instanceof Broadcaster) {
-            ((Broadcaster) feature).broadcast(event.getPlayer().getName() + " left.");
-        }
+        KobayaBotPlugin.getInstance().getFeature(Broadcaster.class).broadcast(event.getPlayer().getName() + " left.");
     }
 
 }

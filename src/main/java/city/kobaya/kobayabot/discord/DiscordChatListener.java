@@ -23,8 +23,6 @@ public class DiscordChatListener extends ListenerAdapter {
 
     private static final String COMMAND_PREFIX = "/";
 
-    private final BotInstance bot = KobayaBotPlugin.getInstance().getBot();
-
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         Guild guild = event.getGuild();
@@ -55,23 +53,13 @@ public class DiscordChatListener extends ListenerAdapter {
             KobayaPlayer.REGISTRATIONS.remove(registration);
             message.delete().queue();
 
-            Feature feature = KobayaBotPlugin.getInstance().getFeature(GroupLinker.class);
-            if(feature instanceof GroupLinker) {
-                ((GroupLinker) feature).reloadMember(member);
-            }
+            KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).reloadMember(member);
 
             return;
         }
 
-        Feature feature;
-        feature = KobayaBotPlugin.getInstance().getFeature(SimpleForwarder.class);
-        if(feature instanceof SimpleForwarder) {
-            ((SimpleForwarder) feature).forwardFromDiscord(message);
-        }
-        feature = KobayaBotPlugin.getInstance().getFeature(TranslatorForwarder.class);
-        if(feature instanceof TranslatorForwarder) {
-            ((TranslatorForwarder) feature).forwardFromDiscord(message);
-        }
+        KobayaBotPlugin.getInstance().getFeature(SimpleForwarder.class).forwardFromDiscord(message);
+        KobayaBotPlugin.getInstance().getFeature(TranslatorForwarder.class).forwardFromDiscord(message);
 
     }
 
@@ -80,10 +68,7 @@ public class DiscordChatListener extends ListenerAdapter {
         Guild guild = event.getGuild();
         if(!guild.getId().equals(KobayaBotPlugin.getInstance().getServerId())) return;
 
-        Feature feature = KobayaBotPlugin.getInstance().getFeature(GroupLinker.class);
-        if(feature instanceof GroupLinker) {
-            ((GroupLinker) feature).reloadMember(event.getMember());
-        }
+        KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).reloadMember(event.getMember());
 
     }
 
@@ -92,10 +77,7 @@ public class DiscordChatListener extends ListenerAdapter {
         Guild guild = event.getGuild();
         if(!guild.getId().equals(KobayaBotPlugin.getInstance().getServerId())) return;
 
-        Feature feature = KobayaBotPlugin.getInstance().getFeature(GroupLinker.class);
-        if(feature instanceof GroupLinker) {
-            ((GroupLinker) feature).reloadMember(event.getMember());
-        }
+        KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).reloadMember(event.getMember());
 
     }
 

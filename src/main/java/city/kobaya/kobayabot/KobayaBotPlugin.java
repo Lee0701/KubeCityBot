@@ -44,7 +44,7 @@ public final class KobayaBotPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        save();
+        saveConfig();
     }
 
     public void reload() {
@@ -76,7 +76,10 @@ public final class KobayaBotPlugin extends JavaPlugin {
 
     }
 
-    public void save() {
+    @Override
+    public void saveConfig() {
+        super.saveConfig();
+
         for(Feature feature : features) {
             feature.save();
         }
@@ -88,8 +91,8 @@ public final class KobayaBotPlugin extends JavaPlugin {
         }
     }
 
-    public Feature getFeature(Class<? extends Feature> type) {
-        return features.stream().filter(feature -> feature.getClass().equals(type)).findAny().orElse(null);
+    public <T extends Feature> T getFeature(Class<T> type) {
+        return (T) features.stream().filter(feature -> feature.getClass().equals(type)).findAny().orElse(null);
     }
 
     public BotInstance getBot() {

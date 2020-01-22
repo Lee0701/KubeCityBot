@@ -71,11 +71,7 @@ public class DiscordCommandHandler implements TabExecutor {
                     KobayaPlayer.PLAYER_MAP.remove(kobayaPlayer.getDiscordId());
                     sender.sendMessage(ChatColor.GREEN + "You are now unregistered.");
 
-
-                    Feature feature = KobayaBotPlugin.getInstance().getFeature(GroupLinker.class);
-                    if(feature instanceof GroupLinker) {
-                        ((GroupLinker) feature).clearPlayer(player);
-                    }
+                    KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).clearPlayer(player);
 
                 } else {
                     sender.sendMessage(ChatColor.YELLOW + "You are already unregistered!");

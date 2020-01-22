@@ -23,7 +23,7 @@ public class KobayaBotCommandHandler implements TabExecutor {
         }
         if(args[0].equals("reload")) {
             if(sender.isOp()) {
-                sender.sendMessage(ChatColor.GRAY + "Reloading config...");
+                sender.sendMessage(ChatColor.GRAY + "Reloading KobayaBot...");
                 KobayaBotPlugin.getInstance().reload();
                 sender.sendMessage(ChatColor.GREEN + "Reload complete!");
             }
@@ -31,7 +31,7 @@ public class KobayaBotCommandHandler implements TabExecutor {
         } else if(args[0].equals("save")) {
             if(sender.isOp()) {
                 sender.sendMessage(ChatColor.GRAY + "Saving data...");
-                KobayaBotPlugin.getInstance().save();
+                KobayaBotPlugin.getInstance().saveConfig();
                 sender.sendMessage(ChatColor.GREEN + "Save complete!");
             }
         }
