@@ -120,7 +120,7 @@ public class TranslatedMessage extends WebhookMessge {
 
         String translatedMessage;
         try {
-            TranslatorForwarder forwarder = KobayaBotPlugin.getInstance().getFeature(TranslatorForwarder.class);
+            TranslatorForwarder forwarder = KobayaBotPlugin.getInstance().getFeature(TranslatorForwarder.class).orElseThrow(NullPointerException::new);
             Translator translator = RatTranslate.getInstance().getTranslator();
             boolean auto = fromLocale == null;
             translatedMessage = forwarder.getLanguages().stream()
@@ -139,6 +139,8 @@ public class TranslatedMessage extends WebhookMessge {
             KobayaBotPlugin.getInstance().getLogger().warning("Translator forwarder requires RatTranslate.");
             error.printStackTrace();
             translatedMessage = message;
+        } catch(NullPointerException ignore) {
+            return;
         }
         setAvatar(icon);
         setMessage(

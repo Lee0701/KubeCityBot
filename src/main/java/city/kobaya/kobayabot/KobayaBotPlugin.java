@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public final class KobayaBotPlugin extends JavaPlugin {
 
@@ -91,8 +92,8 @@ public final class KobayaBotPlugin extends JavaPlugin {
         }
     }
 
-    public <T extends Feature> T getFeature(Class<T> type) {
-        return (T) features.stream().filter(feature -> feature.getClass().equals(type)).findAny().orElse(null);
+    public <T extends Feature> Optional<T> getFeature(Class<T> type) {
+        return (Optional<T>) features.stream().filter(feature -> feature.getClass().equals(type)).findAny();
     }
 
     public BotInstance getBot() {

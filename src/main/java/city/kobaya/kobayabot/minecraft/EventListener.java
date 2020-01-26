@@ -22,20 +22,20 @@ public class EventListener implements Listener {
 
         String message = ChatColor.stripColor(event.getMessage());
 
-        KobayaBotPlugin.getInstance().getFeature(SimpleForwarder.class).forwardFromMinecraft(event.getPlayer(), message);
-        KobayaBotPlugin.getInstance().getFeature(TranslatorForwarder.class).forwardFromMinecraft(event.getPlayer(), message);
+        KobayaBotPlugin.getInstance().getFeature(SimpleForwarder.class).ifPresent(forwarder -> forwarder.forwardFromMinecraft(event.getPlayer(), message));
+        KobayaBotPlugin.getInstance().getFeature(TranslatorForwarder.class).ifPresent(forwarder -> forwarder.forwardFromMinecraft(event.getPlayer(), message));
 
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        KobayaBotPlugin.getInstance().getFeature(Broadcaster.class).broadcast(event.getPlayer().getName() + " joined.");
-        KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).reloadPlayer(event.getPlayer());
+        KobayaBotPlugin.getInstance().getFeature(Broadcaster.class).ifPresent(broadcaster -> broadcaster.broadcast(event.getPlayer().getName() + " joined."));
+        KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadPlayer(event.getPlayer()));
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        KobayaBotPlugin.getInstance().getFeature(Broadcaster.class).broadcast(event.getPlayer().getName() + " left.");
+        KobayaBotPlugin.getInstance().getFeature(Broadcaster.class).ifPresent(broadcaster -> broadcaster.broadcast(event.getPlayer().getName() + " left."));
     }
 
 }

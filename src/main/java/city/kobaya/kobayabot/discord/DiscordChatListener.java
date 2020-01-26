@@ -53,13 +53,13 @@ public class DiscordChatListener extends ListenerAdapter {
             KobayaPlayer.REGISTRATIONS.remove(registration);
             message.delete().queue();
 
-            KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).reloadMember(member);
+            KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadMember(member));
 
             return;
         }
 
-        KobayaBotPlugin.getInstance().getFeature(SimpleForwarder.class).forwardFromDiscord(message);
-        KobayaBotPlugin.getInstance().getFeature(TranslatorForwarder.class).forwardFromDiscord(message);
+        KobayaBotPlugin.getInstance().getFeature(SimpleForwarder.class).ifPresent(forwarder -> forwarder.forwardFromDiscord(message));
+        KobayaBotPlugin.getInstance().getFeature(TranslatorForwarder.class).ifPresent(forwarder -> forwarder.forwardFromDiscord(message));
 
     }
 
@@ -68,7 +68,7 @@ public class DiscordChatListener extends ListenerAdapter {
         Guild guild = event.getGuild();
         if(!guild.getId().equals(KobayaBotPlugin.getInstance().getServerId())) return;
 
-        KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).reloadMember(event.getMember());
+        KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadMember(event.getMember()));
 
     }
 
@@ -77,7 +77,7 @@ public class DiscordChatListener extends ListenerAdapter {
         Guild guild = event.getGuild();
         if(!guild.getId().equals(KobayaBotPlugin.getInstance().getServerId())) return;
 
-        KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).reloadMember(event.getMember());
+        KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadMember(event.getMember()));
 
     }
 
