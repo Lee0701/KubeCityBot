@@ -8,6 +8,7 @@ import city.kobaya.kobayabot.minecraft.EventListener;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -18,8 +19,9 @@ import java.util.Optional;
 
 public final class KobayaBotPlugin extends JavaPlugin {
 
+    private static KobayaBotPlugin INSTANCE;
     public static KobayaBotPlugin getInstance() {
-        return getPlugin(KobayaBotPlugin.class);
+        return INSTANCE;
     }
 
     private BotInstance bot = new BotInstance();
@@ -32,8 +34,11 @@ public final class KobayaBotPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        INSTANCE = this;
         getDataFolder().mkdirs();
         saveDefaultConfig();
+
+        ConfigurationSerialization.registerClass(KobayaPlayer.class);
 
         reload();
 
@@ -46,9 +51,11 @@ public final class KobayaBotPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         saveConfig();
+        INSTANCE = null;
     }
 
     public void reload() {
+        INSTANCE = this;
         reloadConfig();
 
         FileConfiguration config = getConfig();
@@ -84,6 +91,7 @@ public final class KobayaBotPlugin extends JavaPlugin {
         for(Feature feature : features) {
             feature.save();
         }
+
         dataConfiguration.set("players", new ArrayList<>(KobayaPlayer.PLAYER_MAP.values()));
         try {
             dataConfiguration.save(dataFile);
