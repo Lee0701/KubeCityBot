@@ -21,10 +21,15 @@ public class Broadcaster implements Feature, Listener {
 
     private List<String> channels = new ArrayList<>();
 
+    private String joinMessage = "%1$s joined.";
+    private String quitMessage = "%1$s left.";
+
     @Override
     public void reload(JavaPlugin plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
         channels = getConfigurationSection().getStringList("channels");
+        this.joinMessage = KubeCityBotPlugin.getInstance().getMessage("broadcaster.player-join");
+        this.quitMessage = KubeCityBotPlugin.getInstance().getMessage("broadcaster.player-quit");
     }
 
     @Override
@@ -44,12 +49,12 @@ public class Broadcaster implements Feature, Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        broadcast(event.getPlayer().getName() + " joined.");
+        broadcast(String.format(joinMessage, event.getPlayer().getName()));
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        broadcast(event.getPlayer().getName() + " left.");
+        broadcast(String.format(quitMessage, event.getPlayer().getName()));
     }
 
     public List<String> getChannels() {

@@ -1,0 +1,3 @@
+broadcaster:
+  player-join: '%1$s joined.'
+  player-quit: '%1$s left.'

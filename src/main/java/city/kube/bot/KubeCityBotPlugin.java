@@ -32,6 +32,9 @@ public final class KubeCityBotPlugin extends JavaPlugin {
     private final File dataFile = new File(getDataFolder(), "data.yml");
     private YamlConfiguration dataConfiguration;
 
+    private final File messagesFile = new File(getDataFolder(), "messages.yml");
+    private YamlConfiguration messagesConfiguration;
+
     private final List<Feature> features = new ArrayList<>();
 
     @Override
@@ -39,6 +42,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         INSTANCE = this;
         getDataFolder().mkdirs();
         saveDefaultConfig();
+        if(!messagesFile.exists()) saveResource(messagesFile.getName(), false);
 
         ConfigurationSerialization.registerClass(KubeCityPlayer.class);
 
@@ -77,6 +81,8 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         dataConfiguration = YamlConfiguration.loadConfiguration(dataFile);
         if(dataConfiguration.isList("players")) dataConfiguration.getList("players");
 
+        messagesConfiguration = YamlConfiguration.loadConfiguration(messagesFile);
+
         features.clear();
         if(config.getConfigurationSection("broadcaster").getBoolean("use")) features.add(new Broadcaster());
         if(config.getConfigurationSection("simple-forwarder").getBoolean("use")) features.add(new SimpleForwarder());
@@ -107,6 +113,10 @@ public final class KubeCityBotPlugin extends JavaPlugin {
 
     public <T extends Feature> Optional<T> getFeature(Class<T> type) {
         return (Optional<T>) features.stream().filter(feature -> feature.getClass().equals(type)).findAny();
+    }
+
+    public String getMessage(String key) {
+        return messagesConfiguration.getString(key);
     }
 
     public BotInstance getBot() {
