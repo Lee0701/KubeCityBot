@@ -5,7 +5,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.4'
 }
 
-group 'city.kobaya'
+group 'city.kube'
 version '0.1'
 
 sourceCompatibility = 1.8

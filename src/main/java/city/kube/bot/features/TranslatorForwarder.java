@@ -1,10 +1,9 @@
-package city.kobaya.kobayabot.features;
+package city.kube.bot.features;
 
-import city.kobaya.kobayabot.IconStorage;
-import city.kobaya.kobayabot.KobayaBotPlugin;
-import city.kobaya.kobayabot.KobayaPlayer;
-import city.kobaya.kobayabot.discord.message.ForwarderMessage;
-import city.kobaya.kobayabot.discord.message.TranslatedMessage;
+import city.kube.bot.IconStorage;
+import city.kube.bot.KubeCityBotPlugin;
+import city.kube.bot.KubeCityPlayer;
+import city.kube.bot.discord.message.TranslatedMessage;
 import io.github.ranolp.rattranslate.Locale;
 import io.github.ranolp.rattranslate.RatPlayer;
 import io.github.ranolp.rattranslate.RatTranslate;
@@ -43,9 +42,9 @@ public class TranslatorForwarder extends Forwarder {
     @Override
     public void forwardFromMinecraft(Player player, String message) {
         String name = player.getName();
-        KobayaBotPlugin.getInstance().getBot().sendDiscordMessages(
+        KubeCityBotPlugin.getInstance().getBot().sendDiscordMessages(
                 channels,
-                channel -> new TranslatedMessage("Minecraft", channel, name, message, RatPlayer.of(player).getLocale(), IconStorage.getIconFor(player.getUniqueId()), KobayaPlayer.checkLinked(player))
+                channel -> new TranslatedMessage("Minecraft", channel, name, message, RatPlayer.of(player).getLocale(), IconStorage.getIconFor(player.getUniqueId()), KubeCityPlayer.checkLinked(player))
         );
     }
 
@@ -65,10 +64,10 @@ public class TranslatorForwarder extends Forwarder {
 
         String format = "[Discord] <%s> %s";
 
-        KobayaPlayer kobayaPlayer = KobayaPlayer.of(author.getId());
-        if(kobayaPlayer.getUuid() != null) {
-            if(kobayaPlayer.getChatFormat() != null) format = "[Discord] " + kobayaPlayer.getChatFormat();
-            if(kobayaPlayer.getNickname() != null) minecraftName = kobayaPlayer.getNickname();
+        KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(author.getId());
+        if(kubeCityPlayer.getUuid() != null) {
+            if(kubeCityPlayer.getChatFormat() != null) format = "[Discord] " + kubeCityPlayer.getChatFormat();
+            if(kubeCityPlayer.getNickname() != null) minecraftName = kubeCityPlayer.getNickname();
         }
         String finalFormat = format;
         String finalName = minecraftName;
@@ -109,14 +108,14 @@ public class TranslatorForwarder extends Forwarder {
             }
 
             // Send discord message.
-            KobayaBotPlugin.getInstance().getBot().sendDiscordMessage(
-                    new TranslatedMessage("Discord", channel, username, text, null, IconStorage.getIconFor(author), kobayaPlayer.isLinked()));
+            KubeCityBotPlugin.getInstance().getBot().sendDiscordMessage(
+                    new TranslatedMessage("Discord", channel, username, text, null, IconStorage.getIconFor(author), kubeCityPlayer.isLinked()));
 
             // Delete original message.
             message.delete().queue();
 
         } catch(NoClassDefFoundError error) {
-            KobayaBotPlugin.getInstance().getLogger().warning("Translator forwarder requires RatTranslate.");
+            KubeCityBotPlugin.getInstance().getLogger().warning("Translator forwarder requires RatTranslate.");
             error.printStackTrace();
             return;
         }
@@ -124,7 +123,7 @@ public class TranslatorForwarder extends Forwarder {
 
     @Override
     public ConfigurationSection getConfigurationSection() {
-        return KobayaBotPlugin.getInstance().getConfig().getConfigurationSection("translator-forwarder");
+        return KubeCityBotPlugin.getInstance().getConfig().getConfigurationSection("translator-forwarder");
     }
 
     public List<String> getLanguages() {

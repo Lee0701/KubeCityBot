@@ -1,13 +1,13 @@
-name: KobayaBot
+name: KubeCityBot
 version: @version@
-main: city.kobaya.kobayabot.KobayaBotPlugin
+main: city.kube.bot.KubeCityBotPlugin
 author: Lee0701
 authors: [Lee0701]
 softdepend: [LuckPerms, RatTranslate]
-description: Plugin for KobayaCity.
+description: Plugin for KubeCity.
 commands:
-  kobayabot:
-    aliases: [kobaya, kb]
-    description: "KobayaBot main command."
+  kubecitybot:
+    aliases: [kubebot, kcb, kb]
+    description: "KubeCityBot main command."
   discord:
     description: "Discord link command."

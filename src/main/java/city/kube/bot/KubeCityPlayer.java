@@ -1,12 +1,12 @@
-package city.kobaya.kobayabot;
+package city.kube.bot;
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class KobayaPlayer implements ConfigurationSerializable {
-    public static final Map<String, KobayaPlayer> PLAYER_MAP = new HashMap<>();
+public class KubeCityPlayer implements ConfigurationSerializable {
+    public static final Map<String, KubeCityPlayer> PLAYER_MAP = new HashMap<>();
     public static final Set<Registration> REGISTRATIONS = new HashSet<>();
 
     private String nickname;
@@ -14,30 +14,30 @@ public class KobayaPlayer implements ConfigurationSerializable {
     private String uuid;
     private String chatFormat;
 
-    public KobayaPlayer(String discordId) {
+    public KubeCityPlayer(String discordId) {
         this.discordId = discordId;
     }
 
-    public static Optional<KobayaPlayer> of(Player player) {
+    public static Optional<KubeCityPlayer> of(Player player) {
         Objects.requireNonNull(player, "player");
         return PLAYER_MAP.values().stream().filter(e -> player.getUniqueId().toString().equals(e.uuid)).findFirst();
     }
 
-    public static KobayaPlayer of(String discordId) {
+    public static KubeCityPlayer of(String discordId) {
         Objects.requireNonNull(discordId, "discordId");
-        return PLAYER_MAP.computeIfAbsent(discordId, KobayaPlayer::new);
+        return PLAYER_MAP.computeIfAbsent(discordId, KubeCityPlayer::new);
     }
 
     public static boolean checkLinked(Player player) {
-        return of(player).map(KobayaPlayer::isLinked).orElse(false);
+        return of(player).map(KubeCityPlayer::isLinked).orElse(false);
     }
 
     public static boolean checkLinked(String discordId) {
         return of(discordId).isLinked();
     }
 
-    public static KobayaPlayer deserialize(Map<String, Object> args) {
-        KobayaPlayer result = KobayaPlayer.of((String) args.get("discordId"));
+    public static KubeCityPlayer deserialize(Map<String, Object> args) {
+        KubeCityPlayer result = KubeCityPlayer.of((String) args.get("discordId"));
         Object chatFormat = args.get("chat-format");
         if (chatFormat instanceof String) {
             result.chatFormat = (String) chatFormat;

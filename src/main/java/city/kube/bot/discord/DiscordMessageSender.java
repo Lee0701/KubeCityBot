@@ -1,13 +1,13 @@
-package city.kobaya.kobayabot.discord;
+package city.kube.bot.discord;
 
-import city.kobaya.kobayabot.discord.message.DiscordMessage;
+import city.kube.bot.discord.message.DiscordMessage;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class DiscordMessageSender extends BukkitRunnable {
-    private Queue<DiscordMessage> messageQueue = new LinkedBlockingQueue<>();
+    private final Queue<DiscordMessage> messageQueue = new LinkedBlockingQueue<>();
 
     @Override
     public void run() {

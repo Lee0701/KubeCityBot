@@ -1,12 +1,10 @@
-package city.kobaya.kobayabot.features;
+package city.kube.bot.features;
 
-import city.kobaya.kobayabot.KobayaBotPlugin;
-import city.kobaya.kobayabot.KobayaPlayer;
+import city.kube.bot.KubeCityBotPlugin;
+import city.kube.bot.KubeCityPlayer;
 import me.lucko.luckperms.LuckPerms;
-import me.lucko.luckperms.api.Group;
 import me.lucko.luckperms.api.LuckPermsApi;
 import me.lucko.luckperms.api.Node;
-import me.lucko.luckperms.api.User;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import org.bukkit.configuration.ConfigurationSection;
@@ -49,15 +47,15 @@ public class GroupLinker implements Feature {
     }
 
     public void reloadPlayer(Player player) {
-        KobayaPlayer kobayaPlayer = KobayaPlayer.of(player).orElse(null);
-        if(kobayaPlayer != null && kobayaPlayer.getUuid() != null) {
-            Member member = KobayaBotPlugin.getInstance().getBot().getGuild().getMemberById(kobayaPlayer.getDiscordId());
+        KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(player).orElse(null);
+        if(kubeCityPlayer != null && kubeCityPlayer.getUuid() != null) {
+            Member member = KubeCityBotPlugin.getInstance().getBot().getGuild().getMemberById(kubeCityPlayer.getDiscordId());
             List<String> groups = member.getRoles().stream()
                     .map(Role::getName)
                     .filter(discordToMinecraft::containsKey)
                     .map(discordToMinecraft::get)
                     .collect(Collectors.toList());
-            permsApi.getUserManager().loadUser(UUID.fromString(kobayaPlayer.getUuid()))
+            permsApi.getUserManager().loadUser(UUID.fromString(kubeCityPlayer.getUuid()))
                     .thenAcceptAsync(user -> {
                         user.getAllNodes().stream()
                                 .filter(Node::isGroupNode)
@@ -73,7 +71,7 @@ public class GroupLinker implements Feature {
     }
 
     public void reloadMember(Member member) {
-        KobayaPlayer player = KobayaPlayer.of(member.getUser().getId());
+        KubeCityPlayer player = KubeCityPlayer.of(member.getUser().getId());
         if(player.getUuid() != null) {
             List<String> groups = member.getRoles().stream()
                     .map(Role::getName)
@@ -96,7 +94,7 @@ public class GroupLinker implements Feature {
     }
 
     public void reloadAll() {
-        List<Member> members = KobayaBotPlugin.getInstance().getBot().getGuild().getMembers();
+        List<Member> members = KubeCityBotPlugin.getInstance().getBot().getGuild().getMembers();
         members.forEach(this::reloadMember);
     }
 
@@ -107,6 +105,6 @@ public class GroupLinker implements Feature {
 
     @Override
     public ConfigurationSection getConfigurationSection() {
-        return KobayaBotPlugin.getInstance().getConfig().getConfigurationSection("group-linker");
+        return KubeCityBotPlugin.getInstance().getConfig().getConfigurationSection("group-linker");
     }
 }

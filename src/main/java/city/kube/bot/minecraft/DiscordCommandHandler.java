@@ -1,10 +1,9 @@
-package city.kobaya.kobayabot.minecraft;
+package city.kube.bot.minecraft;
 
-import city.kobaya.kobayabot.KobayaBotPlugin;
-import city.kobaya.kobayabot.KobayaPlayer;
-import city.kobaya.kobayabot.Registration;
-import city.kobaya.kobayabot.features.Feature;
-import city.kobaya.kobayabot.features.GroupLinker;
+import city.kube.bot.KubeCityBotPlugin;
+import city.kube.bot.KubeCityPlayer;
+import city.kube.bot.Registration;
+import city.kube.bot.features.GroupLinker;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -35,7 +34,7 @@ public class DiscordCommandHandler implements TabExecutor {
             if(sender instanceof Player) {
                 Player player = (Player) sender;
                 Registration registration = new Registration(player);
-                KobayaPlayer.REGISTRATIONS.add(registration);
+                KubeCityPlayer.REGISTRATIONS.add(registration);
 
                 String registerCommand = "/register " + registration.getKey();
                 String url = "http:register/" + registration.getKey();
@@ -54,10 +53,10 @@ public class DiscordCommandHandler implements TabExecutor {
         if(args[0].equals("unregister")) {
             if(args.length >= 2) {
                 if(sender.isOp()) {
-                    KobayaPlayer kobayaPlayer = KobayaPlayer.of(KobayaBotPlugin.getInstance().getServer().getPlayer(args[1])).orElse(null);
-                    if(kobayaPlayer != null) {
-                        KobayaPlayer.PLAYER_MAP.remove(kobayaPlayer.getDiscordId());
-                        sender.sendMessage(ChatColor.GREEN + "Unregistered player " + kobayaPlayer.getNickname());
+                    KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(KubeCityBotPlugin.getInstance().getServer().getPlayer(args[1])).orElse(null);
+                    if(kubeCityPlayer != null) {
+                        KubeCityPlayer.PLAYER_MAP.remove(kubeCityPlayer.getDiscordId());
+                        sender.sendMessage(ChatColor.GREEN + "Unregistered player " + kubeCityPlayer.getNickname());
                     } else {
                         sender.sendMessage(ChatColor.YELLOW + "Player " + args[1] + " is not registered!");
                     }
@@ -66,12 +65,12 @@ public class DiscordCommandHandler implements TabExecutor {
             }
             if(sender instanceof Player) {
                 Player player = (Player) sender;
-                KobayaPlayer kobayaPlayer = KobayaPlayer.of(player).orElse(null);
-                if(kobayaPlayer != null) {
-                    KobayaPlayer.PLAYER_MAP.remove(kobayaPlayer.getDiscordId());
+                KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(player).orElse(null);
+                if(kubeCityPlayer != null) {
+                    KubeCityPlayer.PLAYER_MAP.remove(kubeCityPlayer.getDiscordId());
                     sender.sendMessage(ChatColor.GREEN + "You are now unregistered.");
 
-                    KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.clearPlayer(player));
+                    KubeCityBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.clearPlayer(player));
 
                 } else {
                     sender.sendMessage(ChatColor.YELLOW + "You are already unregistered!");

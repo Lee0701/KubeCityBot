@@ -1,7 +1,7 @@
-package city.kobaya.kobayabot.discord.message;
+package city.kube.bot.discord.message;
 
-import city.kobaya.kobayabot.KobayaBotPlugin;
-import city.kobaya.kobayabot.features.TranslatorForwarder;
+import city.kube.bot.KubeCityBotPlugin;
+import city.kube.bot.features.TranslatorForwarder;
 import io.github.ranolp.rattranslate.Locale;
 import io.github.ranolp.rattranslate.RatTranslate;
 import io.github.ranolp.rattranslate.translator.Translator;
@@ -120,7 +120,7 @@ public class TranslatedMessage extends WebhookMessge {
 
         String translatedMessage;
         try {
-            TranslatorForwarder forwarder = KobayaBotPlugin.getInstance().getFeature(TranslatorForwarder.class).orElseThrow(NullPointerException::new);
+            TranslatorForwarder forwarder = KubeCityBotPlugin.getInstance().getFeature(TranslatorForwarder.class).orElseThrow(NullPointerException::new);
             Translator translator = RatTranslate.getInstance().getTranslator();
             boolean auto = fromLocale == null;
             translatedMessage = forwarder.getLanguages().stream()
@@ -136,7 +136,7 @@ public class TranslatedMessage extends WebhookMessge {
                     })
                     .collect(Collectors.joining("\n"));
         } catch(NoClassDefFoundError error) {
-            KobayaBotPlugin.getInstance().getLogger().warning("Translator forwarder requires RatTranslate.");
+            KubeCityBotPlugin.getInstance().getLogger().warning("Translator forwarder requires RatTranslate.");
             error.printStackTrace();
             translatedMessage = message;
         } catch(NullPointerException ignore) {

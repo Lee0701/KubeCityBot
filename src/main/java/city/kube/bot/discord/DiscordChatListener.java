@@ -1,12 +1,11 @@
-package city.kobaya.kobayabot.discord;
+package city.kube.bot.discord;
 
-import city.kobaya.kobayabot.KobayaBotPlugin;
-import city.kobaya.kobayabot.KobayaPlayer;
-import city.kobaya.kobayabot.Registration;
-import city.kobaya.kobayabot.features.Feature;
-import city.kobaya.kobayabot.features.GroupLinker;
-import city.kobaya.kobayabot.features.SimpleForwarder;
-import city.kobaya.kobayabot.features.TranslatorForwarder;
+import city.kube.bot.KubeCityBotPlugin;
+import city.kube.bot.KubeCityPlayer;
+import city.kube.bot.Registration;
+import city.kube.bot.features.GroupLinker;
+import city.kube.bot.features.SimpleForwarder;
+import city.kube.bot.features.TranslatorForwarder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleRemoveEvent;
@@ -26,7 +25,7 @@ public class DiscordChatListener extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         Guild guild = event.getGuild();
-        if(!guild.getId().equals(KobayaBotPlugin.getInstance().getServerId())) return;
+        if(!guild.getId().equals(KubeCityBotPlugin.getInstance().getServerId())) return;
 
         Member member = event.getMember();
         if(guild.getSelfMember().equals(member)) return;
@@ -37,47 +36,47 @@ public class DiscordChatListener extends ListenerAdapter {
 
         if(handleCommand(message)) return;
 
-        Registration registration = KobayaPlayer.REGISTRATIONS.stream()
+        Registration registration = KubeCityPlayer.REGISTRATIONS.stream()
                 .filter(it -> it.isCommandMatches(message.getContentDisplay()))
                 .findFirst()
                 .orElse(null);
         if (registration != null) {
             Player player = registration.getPlayer();
 
-            KobayaPlayer kobayaPlayer = KobayaPlayer.of(event.getAuthor().getId());
-            kobayaPlayer.setNickname(player.getDisplayName());
-            kobayaPlayer.setUuid(player.getUniqueId().toString());
+            KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(event.getAuthor().getId());
+            kubeCityPlayer.setNickname(player.getDisplayName());
+            kubeCityPlayer.setUuid(player.getUniqueId().toString());
 
             player.sendMessage("Discord register complete!");
 
-            KobayaPlayer.REGISTRATIONS.remove(registration);
+            KubeCityPlayer.REGISTRATIONS.remove(registration);
             message.delete().queue();
 
-            KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadMember(member));
+            KubeCityBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadMember(member));
 
             return;
         }
 
-        KobayaBotPlugin.getInstance().getFeature(SimpleForwarder.class).ifPresent(forwarder -> forwarder.forwardFromDiscord(message));
-        KobayaBotPlugin.getInstance().getFeature(TranslatorForwarder.class).ifPresent(forwarder -> forwarder.forwardFromDiscord(message));
+        KubeCityBotPlugin.getInstance().getFeature(SimpleForwarder.class).ifPresent(forwarder -> forwarder.forwardFromDiscord(message));
+        KubeCityBotPlugin.getInstance().getFeature(TranslatorForwarder.class).ifPresent(forwarder -> forwarder.forwardFromDiscord(message));
 
     }
 
     @Override
     public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {
         Guild guild = event.getGuild();
-        if(!guild.getId().equals(KobayaBotPlugin.getInstance().getServerId())) return;
+        if(!guild.getId().equals(KubeCityBotPlugin.getInstance().getServerId())) return;
 
-        KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadMember(event.getMember()));
+        KubeCityBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadMember(event.getMember()));
 
     }
 
     @Override
     public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {
         Guild guild = event.getGuild();
-        if(!guild.getId().equals(KobayaBotPlugin.getInstance().getServerId())) return;
+        if(!guild.getId().equals(KubeCityBotPlugin.getInstance().getServerId())) return;
 
-        KobayaBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadMember(event.getMember()));
+        KubeCityBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadMember(event.getMember()));
 
     }
 
@@ -97,7 +96,7 @@ public class DiscordChatListener extends ListenerAdapter {
 
         switch(command) {
         case "list":
-            List<Player> players = new ArrayList<>(KobayaBotPlugin.getInstance().getServer().getOnlinePlayers());
+            List<Player> players = new ArrayList<>(KubeCityBotPlugin.getInstance().getServer().getOnlinePlayers());
             String reply = "List of online players:\n";
             reply += players.stream().map(Player::getPlayerListName).map(name -> "- " + name).collect(Collectors.joining("\n"));
             message.getChannel().sendMessage(reply).queue();

@@ -1,10 +1,10 @@
-package city.kobaya.kobayabot;
+package city.kube.bot;
 
-import city.kobaya.kobayabot.discord.BotInstance;
-import city.kobaya.kobayabot.features.*;
-import city.kobaya.kobayabot.minecraft.DiscordCommandHandler;
-import city.kobaya.kobayabot.minecraft.KobayaBotCommandHandler;
-import city.kobaya.kobayabot.minecraft.EventListener;
+import city.kube.bot.discord.BotInstance;
+import city.kube.bot.features.*;
+import city.kube.bot.minecraft.DiscordCommandHandler;
+import city.kube.bot.minecraft.KubeCityBotCommandHandler;
+import city.kube.bot.minecraft.EventListener;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public final class KobayaBotPlugin extends JavaPlugin {
+public final class KubeCityBotPlugin extends JavaPlugin {
 
-    private static KobayaBotPlugin INSTANCE;
-    public static KobayaBotPlugin getInstance() {
+    private static KubeCityBotPlugin INSTANCE;
+    public static KubeCityBotPlugin getInstance() {
         return INSTANCE;
     }
 
@@ -38,11 +38,11 @@ public final class KobayaBotPlugin extends JavaPlugin {
         getDataFolder().mkdirs();
         saveDefaultConfig();
 
-        ConfigurationSerialization.registerClass(KobayaPlayer.class);
+        ConfigurationSerialization.registerClass(KubeCityPlayer.class);
 
         reload();
 
-        getCommand("kobayabot").setExecutor(new KobayaBotCommandHandler());
+        getCommand("kubecitybot").setExecutor(new KubeCityBotCommandHandler());
         getCommand("discord").setExecutor(new DiscordCommandHandler());
         Bukkit.getPluginManager().registerEvents(new EventListener(), this);
 
@@ -68,7 +68,7 @@ public final class KobayaBotPlugin extends JavaPlugin {
             getLogger().warning("Discord bot token is not set. Disabling Discord bot.");
         }
 
-        KobayaPlayer.PLAYER_MAP.clear();
+        KubeCityPlayer.PLAYER_MAP.clear();
         dataConfiguration = YamlConfiguration.loadConfiguration(dataFile);
         if(dataConfiguration.isList("players")) dataConfiguration.getList("players");
 
@@ -92,7 +92,7 @@ public final class KobayaBotPlugin extends JavaPlugin {
             feature.save();
         }
 
-        dataConfiguration.set("players", new ArrayList<>(KobayaPlayer.PLAYER_MAP.values()));
+        dataConfiguration.set("players", new ArrayList<>(KubeCityPlayer.PLAYER_MAP.values()));
         try {
             dataConfiguration.save(dataFile);
         } catch(IOException ex) {

@@ -1,12 +1,6 @@
-package city.kobaya.kobayabot.features;
+package city.kube.bot.features;
 
-import city.kobaya.kobayabot.IconStorage;
-import city.kobaya.kobayabot.KobayaBotPlugin;
-import city.kobaya.kobayabot.discord.message.ForwarderMessage;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 

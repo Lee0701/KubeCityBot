@@ -1,7 +1,7 @@
-package city.kobaya.kobayabot.discord;
+package city.kube.bot.discord;
 
-import city.kobaya.kobayabot.KobayaBotPlugin;
-import city.kobaya.kobayabot.discord.message.DiscordMessage;
+import city.kube.bot.KubeCityBotPlugin;
+import city.kube.bot.discord.message.DiscordMessage;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -24,7 +24,7 @@ public class BotInstance {
             jda.addEventListener(new DiscordChatListener());
 
             discordMessageSender = new DiscordMessageSender();
-            discordMessageSender.runTaskTimerAsynchronously(KobayaBotPlugin.getInstance(), 0, 20);
+            discordMessageSender.runTaskTimerAsynchronously(KubeCityBotPlugin.getInstance(), 0, 20);
         } catch(InterruptedException | LoginException ex) {
             Bukkit.getLogger().warning("Error loading discord bot.");
         }
@@ -43,7 +43,7 @@ public class BotInstance {
     }
 
     public Guild getGuild() {
-        return jda.getGuildById(KobayaBotPlugin.getInstance().getServerId());
+        return jda.getGuildById(KubeCityBotPlugin.getInstance().getServerId());
     }
 
     public JDA getJda() {

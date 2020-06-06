@@ -1,4 +1,4 @@
-package city.kobaya.kobayabot.features;
+package city.kube.bot.features;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;

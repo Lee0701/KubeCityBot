@@ -1,6 +1,6 @@
-package city.kobaya.kobayabot.minecraft;
+package city.kube.bot.minecraft;
 
-import city.kobaya.kobayabot.KobayaBotPlugin;
+import city.kube.bot.KubeCityBotPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -8,7 +8,7 @@ import org.bukkit.command.TabExecutor;
 
 import java.util.*;
 
-public class KobayaBotCommandHandler implements TabExecutor {
+public class KubeCityBotCommandHandler implements TabExecutor {
 
     private final List<String> completes = new ArrayList<>(Arrays.asList("reload"));
 
@@ -24,14 +24,14 @@ public class KobayaBotCommandHandler implements TabExecutor {
         if(args[0].equals("reload")) {
             if(sender.isOp()) {
                 sender.sendMessage(ChatColor.GRAY + "Reloading KobayaBot...");
-                KobayaBotPlugin.getInstance().reload();
+                KubeCityBotPlugin.getInstance().reload();
                 sender.sendMessage(ChatColor.GREEN + "Reload complete!");
             }
             return true;
         } else if(args[0].equals("save")) {
             if(sender.isOp()) {
                 sender.sendMessage(ChatColor.GRAY + "Saving data...");
-                KobayaBotPlugin.getInstance().saveConfig();
+                KubeCityBotPlugin.getInstance().saveConfig();
                 sender.sendMessage(ChatColor.GREEN + "Save complete!");
             }
         }

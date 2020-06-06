@@ -1,4 +1,4 @@
-package city.kobaya.kobayabot.discord.message;
+package city.kube.bot.discord.message;
 
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.Message;

@@ -1,4 +1,4 @@
-package city.kobaya.kobayabot;
+package city.kube.bot;
 
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.User;
@@ -19,7 +19,7 @@ public final class IconStorage {
     }
 
     public static Icon getIconFor(User user) {
-        KobayaPlayer player = KobayaPlayer.of(user.getId());
+        KubeCityPlayer player = KubeCityPlayer.of(user.getId());
         if(player.getUuid() != null) {
             return getIconFor(UUID.fromString(player.getUuid()));
         } else {

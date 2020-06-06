@@ -1,4 +1,4 @@
-package city.kobaya.kobayabot;
+package city.kube.bot;
 
 import org.bukkit.entity.Player;
 
