@@ -55,23 +55,29 @@ public class GroupLinker implements Feature, Listener {
         KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(player).orElse(null);
         if(kubeCityPlayer != null && kubeCityPlayer.getUuid() != null) {
             Member member = KubeCityBotPlugin.getInstance().getBot().getGuild().getMemberById(kubeCityPlayer.getDiscordId());
-            List<String> groups = member.getRoles().stream()
-                    .map(Role::getName)
-                    .filter(discordToMinecraft::containsKey)
-                    .map(discordToMinecraft::get)
-                    .collect(Collectors.toList());
-            permsApi.getUserManager().loadUser(UUID.fromString(kubeCityPlayer.getUuid()))
-                    .thenAcceptAsync(user -> {
-                        user.getAllNodes().stream()
-                                .filter(Node::isGroupNode)
-                                .filter(node -> discordToMinecraft.containsValue(node.getGroupName()))
-                                .forEach(user::unsetPermission);
-                        groups.stream()
-                                .map(permsApi.getNodeFactory()::makeGroupNode)
-                                .map(Node.Builder::build)
-                                .forEach(user::setPermission);
-                        permsApi.getUserManager().saveUser(user);
-                    });
+            if(member == null) {
+                clearPlayer(player);
+            } else {
+                List<String> groups = member.getRoles().stream()
+                        .map(Role::getName)
+                        .filter(discordToMinecraft::containsKey)
+                        .map(discordToMinecraft::get)
+                        .collect(Collectors.toList());
+                permsApi.getUserManager().loadUser(UUID.fromString(kubeCityPlayer.getUuid()))
+                        .thenAcceptAsync(user -> {
+                            user.getAllNodes().stream()
+                                    .filter(Node::isGroupNode)
+                                    .filter(node -> discordToMinecraft.containsValue(node.getGroupName()))
+                                    .forEach(user::unsetPermission);
+                            groups.stream()
+                                    .map(permsApi.getNodeFactory()::makeGroupNode)
+                                    .map(Node.Builder::build)
+                                    .forEach(user::setPermission);
+                            permsApi.getUserManager().saveUser(user);
+                        });
+            }
+        } else {
+            clearPlayer(player);
         }
     }
 
