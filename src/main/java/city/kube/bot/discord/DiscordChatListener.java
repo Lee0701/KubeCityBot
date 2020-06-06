@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -103,7 +104,7 @@ public class DiscordChatListener extends ListenerAdapter {
         switch(command) {
         case "list":
             List<Player> players = new ArrayList<>(KubeCityBotPlugin.getInstance().getServer().getOnlinePlayers());
-            String reply = KubeCityBotPlugin.getInstance().getMessage("discord-command.player-list", "List of online players:") + "\n";
+            String reply = String.format(KubeCityBotPlugin.getInstance().getMessage("discord-command.player-list", "List of online players (%1$d/%2$d):") + "\n", Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
             reply += players.stream().map(Player::getPlayerListName).map(name -> "- " + name).collect(Collectors.joining("\n"));
             message.getChannel().sendMessage(reply).queue();
             return true;

@@ -7,7 +7,7 @@ registration:
   unregister-complete: '§aYou are now unregistered.'
   already-unregistered: '§eYou are already unregistered!'
 discord-command:
-  player-list: 'List of online players:'
+  player-list: 'List of online players (%1$d/%2$d):'
 broadcaster:
   player-join: '%1$s joined.'
   player-quit: '%1$s left.'
