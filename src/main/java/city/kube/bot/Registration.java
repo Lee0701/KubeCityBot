@@ -18,7 +18,7 @@ public class Registration {
     }
 
     public boolean isCommandMatches(String command) {
-        return ("http:register/" + key).equals(command) || ("/register " + key).equals(command);
+        return key.equals(command) || ("http:register/" + key).equals(command) || ("/register " + key).equals(command);
     }
 
     public Player getPlayer() {
@@ -30,7 +30,6 @@ public class Registration {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < length; i++) {
             int num = random.nextInt(26) + 0x41;
-            if (random.nextBoolean()) { num += 0x20; }
             result.append((char) num);
         }
         return result.toString();
