@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -45,7 +46,6 @@ public final class KubeCityBotPlugin extends JavaPlugin {
 
         getCommand("kubecitybot").setExecutor(new KubeCityBotCommandHandler());
         getCommand("discord").setExecutor(new DiscordCommandHandler());
-        Bukkit.getPluginManager().registerEvents(new EventListener(), this);
 
     }
 
@@ -57,6 +57,9 @@ public final class KubeCityBotPlugin extends JavaPlugin {
 
     public void reload() {
         INSTANCE = this;
+        HandlerList.unregisterAll(this);
+        Bukkit.getPluginManager().registerEvents(new EventListener(), this);
+
         reloadConfig();
 
         FileConfiguration config = getConfig();

@@ -5,19 +5,25 @@ import city.kube.bot.discord.BotInstance;
 import city.kube.bot.discord.message.SimpleMessage;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Broadcaster implements Feature {
+public class Broadcaster implements Feature, Listener {
     private final BotInstance bot = KubeCityBotPlugin.getInstance().getBot();
 
     private List<String> channels = new ArrayList<>();
 
     @Override
     public void reload(JavaPlugin plugin) {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
         channels = getConfigurationSection().getStringList("channels");
     }
 
@@ -34,6 +40,16 @@ public class Broadcaster implements Feature {
     public void broadcast(String message) {
         Message discordMessage = new MessageBuilder().setContent(message).build();
         bot.sendDiscordMessages(channels, channel -> new SimpleMessage(channel, discordMessage));
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        broadcast(event.getPlayer().getName() + " joined.");
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        broadcast(event.getPlayer().getName() + " left.");
     }
 
     public List<String> getChannels() {

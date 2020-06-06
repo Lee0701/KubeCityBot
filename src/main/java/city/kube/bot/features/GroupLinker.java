@@ -7,8 +7,12 @@ import me.lucko.luckperms.api.LuckPermsApi;
 import me.lucko.luckperms.api.Node;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -17,14 +21,15 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class GroupLinker implements Feature {
+public class GroupLinker implements Feature, Listener {
 
     private Map<String, String> discordToMinecraft = new HashMap<>();
 
-    private LuckPermsApi permsApi = LuckPerms.getApi();
+    private final LuckPermsApi permsApi = LuckPerms.getApi();
 
     @Override
     public void reload(JavaPlugin plugin) {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
 
         discordToMinecraft = getConfigurationSection().getStringList("groups").stream()
                 .map(it -> it.split(" "))
@@ -107,4 +112,10 @@ public class GroupLinker implements Feature {
     public ConfigurationSection getConfigurationSection() {
         return KubeCityBotPlugin.getInstance().getConfig().getConfigurationSection("group-linker");
     }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        reloadPlayer(event.getPlayer());
+    }
+
 }
