@@ -115,8 +115,8 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         return (Optional<T>) features.stream().filter(feature -> feature.getClass().equals(type)).findAny();
     }
 
-    public String getMessage(String key) {
-        return messagesConfiguration.getString(key);
+    public String getMessage(String key, String def) {
+        return messagesConfiguration.getString(key, def);
     }
 
     public BotInstance getBot() {

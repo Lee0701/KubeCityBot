@@ -1,3 +1,13 @@
+registration:
+  type-in-discord: 'Type "%1$s" in Discord chat to complete.'
+  alt-command-info: 'or click to copy an alternative command'
+  unregistered-player: '§aUnregistered player %1$s!'
+  player-is-not-registered: '§ePlayer %1$s is not registered!'
+  register-complete: '§aYou are now registered.'
+  unregister-complete: '§aYou are now unregistered.'
+  already-unregistered: '§eYou are already unregistered!'
+discord-command:
+  player-list: 'List of online players:'
 broadcaster:
   player-join: '%1$s joined.'
   player-quit: '%1$s left.'

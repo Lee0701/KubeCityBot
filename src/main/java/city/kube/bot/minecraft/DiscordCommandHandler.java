@@ -21,13 +21,13 @@ import java.util.List;
 
 public class DiscordCommandHandler implements TabExecutor {
 
-    private final List<String> completes = new ArrayList<>(Arrays.asList("register"));
+    private final List<String> completes = new ArrayList<>(Arrays.asList("register", "unregister"));
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(args.length < 1) {
             sender.sendMessage("Usage:");
-            sender.sendMessage("/" + label + " register");
+            sender.sendMessage("/" + label + " [register|unregister]");
             return true;
         }
         if(args[0].equals("register")) {
@@ -40,12 +40,16 @@ public class DiscordCommandHandler implements TabExecutor {
                 String url = "http:register/" + registration.getKey();
                 TextComponent register = new TextComponent(registerCommand);
                 register.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        new BaseComponent[] {new TextComponent("or click to copy an alternative command")}
+                        new BaseComponent[] {new TextComponent(KubeCityBotPlugin.getInstance().getMessage(
+                                "registration.alt-command-info", "or click to copy an alternative command"))}
                 ));
                 register.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
                 register.setColor(ChatColor.AQUA.asBungee());
+                String[] msg = String.format(KubeCityBotPlugin.getInstance().getMessage(
+                        "registration.type-in-discord",
+                        "Type \"%1$s\" in Discord chat to complete."), "<COMMAND>").split("<COMMAND>");
                 TextComponent root = new TextComponent(
-                        new TextComponent("Type \""), register, new TextComponent("\" in Discord chat to complete."));
+                        new TextComponent(msg[0]), register, new TextComponent(msg.length > 1 ?msg[1] : ""));
                 sender.spigot().sendMessage(root);
             }
             return true;
@@ -56,9 +60,13 @@ public class DiscordCommandHandler implements TabExecutor {
                     KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(KubeCityBotPlugin.getInstance().getServer().getPlayer(args[1])).orElse(null);
                     if(kubeCityPlayer != null) {
                         KubeCityPlayer.PLAYER_MAP.remove(kubeCityPlayer.getDiscordId());
-                        sender.sendMessage(ChatColor.GREEN + "Unregistered player " + kubeCityPlayer.getNickname());
+                        sender.sendMessage(String.format(KubeCityBotPlugin.getInstance().getMessage(
+                                "registration.unregistered-player", ChatColor.GREEN + "Unregistered player %1$s!"
+                        ), kubeCityPlayer.getNickname()));
                     } else {
-                        sender.sendMessage(ChatColor.YELLOW + "Player " + args[1] + " is not registered!");
+                        sender.sendMessage(String.format(KubeCityBotPlugin.getInstance().getMessage(
+                                "registration.player-is-not-registered", ChatColor.YELLOW + "Player %1$s is not registered!"
+                        ), args[1]));
                     }
                     return true;
                 }
@@ -68,12 +76,14 @@ public class DiscordCommandHandler implements TabExecutor {
                 KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(player).orElse(null);
                 if(kubeCityPlayer != null) {
                     KubeCityPlayer.PLAYER_MAP.remove(kubeCityPlayer.getDiscordId());
-                    sender.sendMessage(ChatColor.GREEN + "You are now unregistered.");
+                    sender.sendMessage(KubeCityBotPlugin.getInstance().getMessage(
+                            "registration.unregister-complete", ChatColor.GREEN + "You are now unregistered."));
 
                     KubeCityBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.clearPlayer(player));
 
                 } else {
-                    sender.sendMessage(ChatColor.YELLOW + "You are already unregistered!");
+                    sender.sendMessage(KubeCityBotPlugin.getInstance().getMessage(
+                            "registration.already-unregistered", ChatColor.YELLOW + "You are already unregistered!"));
                 }
                 return true;
             }
