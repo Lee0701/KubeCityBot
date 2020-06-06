@@ -34,6 +34,7 @@ public final class IconStorage {
     }
 
     public static Icon getIconFor(UUID player) {
+        if(!KubeCityBotPlugin.getInstance().isIconStorageEnabled()) return null;
         return minecraftIcons.computeIfAbsent(player, uuid -> {
             try (InputStream stream = new URL("https://crafatar.com/avatars/" + uuid + "?overlay=true").openStream()) {
                 return Icon.from(stream);

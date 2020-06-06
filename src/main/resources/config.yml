@@ -1,5 +1,7 @@
 bot-token:
 server-id:
+icon-storage:
+  use: true
 broadcaster:
   use: false
   channels: []
