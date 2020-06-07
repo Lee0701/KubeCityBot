@@ -33,24 +33,32 @@ public class DiscordCommandHandler implements TabExecutor {
         if(args[0].equals("register")) {
             if(sender instanceof Player) {
                 Player player = (Player) sender;
-                Registration registration = new Registration(player);
-                KubeCityPlayer.REGISTRATIONS.add(registration);
+                KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(player).orElse(null);
+                if(kubeCityPlayer == null || !kubeCityPlayer.isLinked()) {
+                    Registration registration = new Registration(player);
+                    KubeCityPlayer.REGISTRATIONS.add(registration);
 
-                String registerCommand = "/register " + registration.getKey();
-                String url = "http:register/" + registration.getKey();
-                TextComponent register = new TextComponent(registerCommand);
-                register.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                        new BaseComponent[] {new TextComponent(KubeCityBotPlugin.getInstance().getMessage(
-                                "registration.alt-command-info", "or click to copy an alternative command"))}
-                ));
-                register.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
-                register.setColor(ChatColor.AQUA.asBungee());
-                String[] msg = String.format(KubeCityBotPlugin.getInstance().getMessage(
-                        "registration.type-in-discord",
-                        "Type \"%1$s\" in Discord chat to complete."), "<COMMAND>").split("<COMMAND>");
-                TextComponent root = new TextComponent(
-                        new TextComponent(msg[0]), register, new TextComponent(msg.length > 1 ?msg[1] : ""));
-                sender.spigot().sendMessage(root);
+                    String registerCommand = "/register " + registration.getKey();
+                    String url = "http:register/" + registration.getKey();
+                    TextComponent register = new TextComponent(registerCommand);
+                    register.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                            new BaseComponent[] {new TextComponent(KubeCityBotPlugin.getInstance().getMessage(
+                                    "registration.alt-command-info", "or click to copy an alternative command"))}
+                    ));
+                    register.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+                    register.setColor(ChatColor.AQUA.asBungee());
+                    String[] msg = String.format(KubeCityBotPlugin.getInstance().getMessage(
+                            "registration.type-in-discord",
+                            "Type \"%1$s\" in Discord chat to complete."), "<COMMAND>").split("<COMMAND>");
+                    TextComponent root = new TextComponent(
+                            new TextComponent(msg[0]), register, new TextComponent(msg.length > 1 ?msg[1] : ""));
+                    sender.spigot().sendMessage(root);
+                } else {
+                    sender.sendMessage(KubeCityBotPlugin.getInstance().getMessage(
+                            "registration.already-registered",
+                            ChatColor.YELLOW + "You are already registered! use /discord unregister to unregister first."
+                    ));
+                }
             }
             return true;
         }

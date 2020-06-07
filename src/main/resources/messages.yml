@@ -5,6 +5,7 @@ registration:
   player-is-not-registered: '§ePlayer %1$s is not registered!'
   register-complete: '§aYou are now registered.'
   unregister-complete: '§aYou are now unregistered.'
+  already-registered: '§eYou are already registered! use /discord unregister to unregister first.'
   already-unregistered: '§eYou are already unregistered!'
 discord-command:
   player-list: 'List of online players (%1$d/%2$d):'
