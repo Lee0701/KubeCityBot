@@ -12,7 +12,13 @@ registration:
      - UUID: %1$s
      - Minecraft Name: %2$s
      - Discord Name: %3$s
+  player-info-discord: >
+    Player info:
+     - UUID: %1$s
+     - Minecraft Name: %2$s
+     - Discord Name: %3$s
   player-not-found: '§ePlayer not found.'
+  player-not-found-discord: 'Player not found.'
 discord-command:
   player-list: 'List of online players (%1$d/%2$d):'
 broadcaster:

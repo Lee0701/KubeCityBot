@@ -108,6 +108,33 @@ public class DiscordChatListener extends ListenerAdapter {
             reply += players.stream().map(Player::getPlayerListName).map(name -> "- " + name).collect(Collectors.joining("\n"));
             message.getChannel().sendMessage(reply).queue();
             return true;
+        case "whois":
+            KubeCityPlayer kubeCityPlayer = null;
+            if(args.length >= 1) {
+                List<Member> members = message.getGuild().getMembersByEffectiveName(args[0], true);
+                if(!members.isEmpty()) {
+                    kubeCityPlayer = KubeCityPlayer.of(members.get(0).getUser().getId());
+                }
+            }
+            if(kubeCityPlayer != null) {
+                String uuid = kubeCityPlayer.getUuid();
+                String minecraftName = kubeCityPlayer.getNickname();
+                String discordName = KubeCityBotPlugin.getInstance().getBot().getJda()
+                        .getGuildById(KubeCityBotPlugin.getInstance().getServerId())
+                        .getMemberById(kubeCityPlayer.getDiscordId()).getEffectiveName();
+                message.getChannel().sendMessage(String.format(KubeCityBotPlugin.getInstance().getMessage(
+                        "registration.player-info-discord",
+                        "Player info:\n" +
+                                " - UUID: %1$s\n" +
+                                " - Minecraft Name: %2$s\n" +
+                                " - Discord Name: %3$s"
+                ), uuid, minecraftName, discordName)).queue();
+            } else {
+                message.getChannel().sendMessage(KubeCityBotPlugin.getInstance().getMessage(
+                        "registration.player-not-found-discord",
+                        "Player not found.")).queue();
+            }
+            return true;
         default:
             return false;
         }
