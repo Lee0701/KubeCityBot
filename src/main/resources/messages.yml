@@ -7,6 +7,12 @@ registration:
   unregister-complete: '§aYou are now unregistered.'
   already-registered: '§eYou are already registered! use /discord unregister to unregister first.'
   already-unregistered: '§eYou are already unregistered!'
+  player-info: >
+    §aPlayer info:§f
+     - UUID: %1$s
+     - Minecraft Name: %2$s
+     - Discord Name: %3$s
+  player-not-found: '§ePlayer not found.'
 discord-command:
   player-list: 'List of online players (%1$d/%2$d):'
 broadcaster:

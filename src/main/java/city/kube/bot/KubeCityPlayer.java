@@ -18,6 +18,11 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         this.discordId = discordId;
     }
 
+    public static Optional<KubeCityPlayer> of(UUID uuid) {
+        Objects.requireNonNull(uuid, "uuid");
+        return PLAYER_MAP.values().stream().filter(e -> uuid.toString().equals(e.uuid)).findFirst();
+    }
+
     public static Optional<KubeCityPlayer> of(Player player) {
         Objects.requireNonNull(player, "player");
         return PLAYER_MAP.values().stream().filter(e -> player.getUniqueId().toString().equals(e.uuid)).findFirst();

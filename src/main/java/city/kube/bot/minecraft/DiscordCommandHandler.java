@@ -8,26 +8,61 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class DiscordCommandHandler implements TabExecutor {
 
-    private final List<String> completes = new ArrayList<>(Arrays.asList("register", "unregister"));
+    private final List<String> completes = new ArrayList<>(Arrays.asList("register", "unregister", "whois"));
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(args.length < 1) {
             sender.sendMessage("Usage:");
-            sender.sendMessage("/" + label + " [register|unregister]");
+            sender.sendMessage("/" + label + " [register|unregister|whois]");
+            return true;
+        }
+        if(args[0].equals("whois")) {
+            KubeCityPlayer kubeCityPlayer = null;
+
+            if(args.length >= 2) {
+                OfflinePlayer offlinePlayer;
+                try {
+                    UUID uuid = UUID.fromString(args[1]);
+                    offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+                } catch(IllegalArgumentException ex) {
+                    offlinePlayer = Arrays.stream(Bukkit.getOfflinePlayers()).filter(p -> p.getName().equals(args[1])).findAny().orElse(null);
+                }
+                if(offlinePlayer != null) kubeCityPlayer = KubeCityPlayer.of(offlinePlayer.getUniqueId()).orElse(null);
+            } else if(sender instanceof Player) {
+                kubeCityPlayer = KubeCityPlayer.of((Player) sender).orElse(null);
+            }
+
+            if(kubeCityPlayer != null) {
+                String uuid = kubeCityPlayer.getUuid();
+                String minecraftName = kubeCityPlayer.getNickname();
+                String discordName = KubeCityBotPlugin.getInstance().getBot().getJda()
+                        .getGuildById(KubeCityBotPlugin.getInstance().getServerId())
+                        .getMemberById(kubeCityPlayer.getDiscordId()).getEffectiveName();
+                sender.sendMessage(String.format(KubeCityBotPlugin.getInstance().getMessage(
+                        "registration.player-info",
+                        ChatColor.GREEN + "Player info:\n" + ChatColor.WHITE +
+                                " - UUID: %1$s\n" +
+                                " - Minecraft Name: %2$s\n" +
+                                " - Discord Name: %3$s"
+                ), uuid, minecraftName, discordName));
+            } else {
+                sender.sendMessage(KubeCityBotPlugin.getInstance().getMessage(
+                        "registration.player-not-found",
+                        ChatColor.YELLOW + "Player not found."));
+            }
             return true;
         }
         if(args[0].equals("register")) {
