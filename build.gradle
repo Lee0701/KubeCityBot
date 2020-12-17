@@ -30,7 +30,8 @@ repositories {
 dependencies {
     compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.12.2-R0.1-SNAPSHOT'
 
-    compile group: 'net.dv8tion', name: 'JDA', version: '3.6.0_376'
+    compile group: 'net.dv8tion', name: 'JDA', version: '4.2.0_222'
+    compile group: 'club.minnced', name: 'discord-webhooks', version: '0.5.3'
     compile group: 'com.github.RanolP', name: 'RatTranslate', version: 'v1.1.0'
     compile 'me.lucko.luckperms:luckperms-api:4.4'
 

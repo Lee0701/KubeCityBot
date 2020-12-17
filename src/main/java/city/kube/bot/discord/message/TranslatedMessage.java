@@ -2,17 +2,17 @@ package city.kube.bot.discord.message;
 
 import city.kube.bot.KubeCityBotPlugin;
 import city.kube.bot.features.TranslatorForwarder;
+import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import io.github.ranolp.rattranslate.Locale;
 import io.github.ranolp.rattranslate.RatTranslate;
 import io.github.ranolp.rattranslate.translator.Translator;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.Icon;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Icon;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.EnumMap;
 import java.util.stream.Collectors;
 
-public class TranslatedMessage extends WebhookMessge {
+public class TranslatedMessage extends WebhookMessage {
     private static final EnumMap<Locale, String> DISCORD_PREFIXES = new EnumMap<>(Locale.class);
 
     static {
@@ -144,7 +144,7 @@ public class TranslatedMessage extends WebhookMessge {
         }
         setAvatar(icon);
         setMessage(
-                new MessageBuilder().setContent(String.format("[%s]%s\n%s", side, linked ? " :link:" : "", translatedMessage))
+                new WebhookMessageBuilder().setContent(String.format("[%s]%s\n%s", side, linked ? " :link:" : "", translatedMessage))
                         .build());
     }
 }

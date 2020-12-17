@@ -1,7 +1,7 @@
 package city.kube.bot.discord.message;
 
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 public class SimpleMessage extends DiscordMessage {
     private final Message message;

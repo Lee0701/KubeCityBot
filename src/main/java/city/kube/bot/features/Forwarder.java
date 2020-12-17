@@ -2,7 +2,7 @@ package city.kube.bot.features;
 
 import city.kube.bot.KubeCityBotPlugin;
 import city.kube.bot.KubeCityPlayer;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.entities.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

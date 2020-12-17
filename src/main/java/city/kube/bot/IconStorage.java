@@ -1,7 +1,7 @@
 package city.kube.bot;
 
-import net.dv8tion.jda.core.entities.Icon;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.Icon;
+import net.dv8tion.jda.api.entities.User;
 
 import java.io.IOException;
 import java.io.InputStream;

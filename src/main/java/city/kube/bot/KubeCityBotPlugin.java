@@ -89,10 +89,6 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         if(config.getConfigurationSection("translator-forwarder").getBoolean("use")) features.add(new TranslatorForwarder());
         if(config.getConfigurationSection("group-linker").getBoolean("use")) features.add(new GroupLinker());
 
-        for(Feature feature : features) {
-            feature.reload(this);
-        }
-
     }
 
     @Override
@@ -108,6 +104,12 @@ public final class KubeCityBotPlugin extends JavaPlugin {
             dataConfiguration.save(dataFile);
         } catch(IOException ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public void reloadFeatures() {
+        for(Feature feature : features) {
+            feature.reload(this);
         }
     }
 
@@ -131,7 +133,4 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         return iconStorageEnabled;
     }
 
-    public void setIconStorageEnabled(boolean iconStorageEnabled) {
-        this.iconStorageEnabled = iconStorageEnabled;
-    }
 }

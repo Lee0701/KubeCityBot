@@ -2,11 +2,11 @@ package city.kube.bot.discord;
 
 import city.kube.bot.KubeCityBotPlugin;
 import city.kube.bot.discord.message.DiscordMessage;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
 import org.bukkit.Bukkit;
 
 import javax.security.auth.login.LoginException;
@@ -20,12 +20,13 @@ public class BotInstance {
     public void launch(String token) {
         try {
             if(jda != null) jda.shutdown();
-            jda = new JDABuilder(AccountType.BOT).setToken(token).buildBlocking();
+            jda = JDABuilder.createDefault(token).build();
+            jda.addEventListener(new ReadyListener());
             jda.addEventListener(new DiscordChatListener());
 
             discordMessageSender = new DiscordMessageSender();
             discordMessageSender.runTaskTimerAsynchronously(KubeCityBotPlugin.getInstance(), 0, 20);
-        } catch(InterruptedException | LoginException ex) {
+        } catch(LoginException ex) {
             Bukkit.getLogger().warning("Error loading discord bot.");
         }
     }
