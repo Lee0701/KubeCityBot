@@ -98,7 +98,7 @@ public class DiscordChatListener extends ListenerAdapter {
         for(int i = 0 ; i < args.length ; i++) args[i] = tokens.nextToken();
 
         command = command.toLowerCase();
-        if(command.startsWith(COMMAND_PREFIX)) command = command.substring(1);
+        if(command.startsWith(COMMAND_PREFIX)) command = command.substring(COMMAND_PREFIX.length());
         else return false;
 
         switch(command) {
@@ -110,8 +110,9 @@ public class DiscordChatListener extends ListenerAdapter {
             return true;
         case "whois":
             KubeCityPlayer kubeCityPlayer = null;
-            if(args.length >= 1) {
-                List<Member> members = message.getGuild().getMembersByEffectiveName(args[0], true);
+            String longArgs = message.getContentDisplay().substring(command.length() + COMMAND_PREFIX.length()).trim();
+            if(longArgs.length() > 0) {
+                List<Member> members = message.getGuild().getMembersByEffectiveName(longArgs, true);
                 if(!members.isEmpty()) {
                     kubeCityPlayer = KubeCityPlayer.of(members.get(0).getUser().getId());
                 }

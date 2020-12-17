@@ -2,12 +2,12 @@ package city.kube.bot.discord;
 
 import city.kube.bot.KubeCityBotPlugin;
 import city.kube.bot.discord.message.DiscordMessage;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.bukkit.Bukkit;
 
@@ -22,8 +22,11 @@ public class BotInstance {
     public void launch(String token) {
         try {
             if(jda != null) jda.shutdown();
-            jda = JDABuilder.createDefault(token).enableIntents(GatewayIntent.GUILD_MEMBERS)
-                    .setMemberCachePolicy(MemberCachePolicy.ALL).build();
+            jda = JDABuilder.createDefault(token)
+                    .enableIntents(GatewayIntent.GUILD_MEMBERS)
+                    .setMemberCachePolicy(MemberCachePolicy.ALL)
+                    .setChunkingFilter(ChunkingFilter.ALL)
+                    .build();
             jda.addEventListener(new ReadyListener());
             jda.addEventListener(new DiscordChatListener());
 
