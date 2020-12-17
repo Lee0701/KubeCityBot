@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import org.bukkit.Bukkit;
 
 import javax.security.auth.login.LoginException;
@@ -20,7 +22,8 @@ public class BotInstance {
     public void launch(String token) {
         try {
             if(jda != null) jda.shutdown();
-            jda = JDABuilder.createDefault(token).build();
+            jda = JDABuilder.createDefault(token).enableIntents(GatewayIntent.GUILD_MEMBERS)
+                    .setMemberCachePolicy(MemberCachePolicy.ALL).build();
             jda.addEventListener(new ReadyListener());
             jda.addEventListener(new DiscordChatListener());
 
