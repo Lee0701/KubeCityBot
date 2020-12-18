@@ -44,7 +44,7 @@ public class TranslatorForwarder extends Forwarder {
         String name = player.getName();
         KubeCityBotPlugin.getInstance().getBot().sendDiscordMessages(
                 channels,
-                channel -> new TranslatedMessage("Minecraft", channel, name, message, RatPlayer.of(player).getLocale(), IconStorage.getIconFor(player.getUniqueId()), KubeCityPlayer.checkLinked(player))
+                channel -> new TranslatedMessage("Minecraft", channel, name, message, RatPlayer.of(player).getLocale(), IconStorage.getIconFor(player.getUniqueId()).getIcon(), KubeCityPlayer.checkLinked(player))
         );
     }
 
@@ -109,7 +109,7 @@ public class TranslatorForwarder extends Forwarder {
 
             // Send discord message.
             KubeCityBotPlugin.getInstance().getBot().sendDiscordMessage(
-                    new TranslatedMessage("Discord", channel, username, text, null, IconStorage.getIconFor(author), kubeCityPlayer.isLinked()));
+                    new TranslatedMessage("Discord", channel, username, text, null, IconStorage.getIconFor(author).getIcon(), kubeCityPlayer.isLinked()));
 
             // Delete original message.
             message.delete().queue();

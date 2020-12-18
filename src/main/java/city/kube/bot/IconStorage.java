@@ -11,33 +11,35 @@ import java.util.Map;
 import java.util.UUID;
 
 public final class IconStorage {
-    private static final Map<UUID, Icon> minecraftIcons = new HashMap<>();
-    private static final Map<String, Icon> discordIcons = new HashMap<>();
+    private static final Map<UUID, PlayerIcon> minecraftIcons = new HashMap<>();
+    private static final Map<String, PlayerIcon> discordIcons = new HashMap<>();
 
     private IconStorage() {
         throw new UnsupportedOperationException("You cannot instantiate IconStorage");
     }
 
-    public static Icon getIconFor(User user) {
+    public static PlayerIcon getIconFor(User user) {
         KubeCityPlayer player = KubeCityPlayer.of(user.getId());
         if(player.getUuid() != null) {
             return getIconFor(UUID.fromString(player.getUuid()));
         } else {
             return discordIcons.computeIfAbsent(user.getAvatarId(), $ -> {
-                try (InputStream stream = new URL(user.getAvatarUrl()).openStream()) {
-                    return Icon.from(stream);
+                String url = user.getAvatarUrl();
+                try (InputStream stream = new URL(url).openStream()) {
+                    return new PlayerIcon(url, Icon.from(stream));
                 } catch (IOException e) {
-                    return null;
+                    return new PlayerIcon(url, null);
                 }
             });
         }
     }
 
-    public static Icon getIconFor(UUID player) {
+    public static PlayerIcon getIconFor(UUID player) {
         if(!KubeCityBotPlugin.getInstance().isIconStorageEnabled()) return null;
         return minecraftIcons.computeIfAbsent(player, uuid -> {
-            try (InputStream stream = new URL("https://crafatar.com/avatars/" + uuid + "?overlay=true").openStream()) {
-                return Icon.from(stream);
+            String url = "https://crafatar.com/avatars/" + uuid + "?overlay=true";
+            try (InputStream stream = new URL(url).openStream()) {
+                return new PlayerIcon(url, Icon.from(stream));
             } catch (IOException e) {
                 return null;
             }

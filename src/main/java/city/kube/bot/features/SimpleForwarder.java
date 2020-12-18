@@ -3,6 +3,8 @@ package city.kube.bot.features;
 import city.kube.bot.IconStorage;
 import city.kube.bot.KubeCityBotPlugin;
 import city.kube.bot.KubeCityPlayer;
+import city.kube.bot.discord.message.DiscordMessage;
+import city.kube.bot.discord.message.EmbedForwarderMessage;
 import city.kube.bot.discord.message.ForwarderMessage;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -25,9 +27,8 @@ public class SimpleForwarder extends Forwarder {
         String name = player.getName();
         KubeCityBotPlugin.getInstance().getBot().sendDiscordMessages(
                 channels,
-                channel -> new ForwarderMessage("Minecraft", channel, name, message,
-                        IconStorage.getIconFor(player.getUniqueId()),
-                        KubeCityPlayer.checkLinked(player)
+                channel -> wrapForwarderMessage(channel, new ForwarderMessage(
+                        name, IconStorage.getIconFor(player.getUniqueId()), "Minecraft", KubeCityPlayer.checkLinked(player), message)
                 ));
     }
 
@@ -60,10 +61,14 @@ public class SimpleForwarder extends Forwarder {
         }
 
         // Send discord message.
-        KubeCityBotPlugin.getInstance().getBot().sendDiscordMessage(
-                new ForwarderMessage("Discord", channel, username, text, IconStorage.getIconFor(author), kubeCityPlayer.isLinked()));
+        KubeCityBotPlugin.getInstance().getBot().sendDiscordMessage(wrapForwarderMessage(channel, new ForwarderMessage(
+                username, IconStorage.getIconFor(author), "Discord", kubeCityPlayer.isLinked(), text)));
 
         // Delete original message.
         message.delete().queue();
+    }
+
+    private DiscordMessage wrapForwarderMessage(TextChannel channel, ForwarderMessage message) {
+        return new EmbedForwarderMessage(channel, message);
     }
 }
