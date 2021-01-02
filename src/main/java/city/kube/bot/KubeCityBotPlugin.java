@@ -55,7 +55,8 @@ public final class KubeCityBotPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        saveConfig();
+        saveData();
+        bot.shutdown();
         INSTANCE = null;
     }
 
@@ -91,10 +92,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
 
     }
 
-    @Override
-    public void saveConfig() {
-        super.saveConfig();
-
+    public void saveData() {
         for(Feature feature : features) {
             feature.save();
         }

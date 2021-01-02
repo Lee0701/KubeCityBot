@@ -37,6 +37,11 @@ public class BotInstance {
         }
     }
 
+    public void shutdown() {
+        jda.shutdown();
+        jda = null;
+    }
+
     public void sendDiscordMessage(DiscordMessage message) {
         discordMessageSender.offerMessage(message);
     }
