@@ -20,7 +20,7 @@ registration:
   player-not-found: '§ePlayer not found.'
   player-not-found-discord: 'Player not found.'
 discord-command:
-  player-list: 'List of online players (%1$d/%2$d):'
+  player-list: 'List of online players (%1$d/%2$d)'
 broadcaster:
   player-join: '%1$s joined.'
   player-quit: '%1$s left.'
