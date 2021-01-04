@@ -4,8 +4,6 @@ import city.kube.bot.discord.BotInstance;
 import city.kube.bot.features.*;
 import city.kube.bot.minecraft.DiscordCommandHandler;
 import city.kube.bot.minecraft.KubeCityBotCommandHandler;
-import city.kube.bot.minecraft.EventListener;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -63,7 +61,6 @@ public final class KubeCityBotPlugin extends JavaPlugin {
     public void reload() {
         INSTANCE = this;
         HandlerList.unregisterAll(this);
-        Bukkit.getPluginManager().registerEvents(new EventListener(), this);
 
         reloadConfig();
 
@@ -86,6 +83,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
 
         features.clear();
         if(config.getConfigurationSection("broadcaster").getBoolean("use")) features.add(new Broadcaster());
+        if(config.getConfigurationSection("status-updater").getBoolean("use")) features.add(new StatusUpdater());
         if(config.getConfigurationSection("simple-forwarder").getBoolean("use")) features.add(new SimpleForwarder());
         if(config.getConfigurationSection("translator-forwarder").getBoolean("use")) features.add(new TranslatorForwarder());
         if(config.getConfigurationSection("group-linker").getBoolean("use")) features.add(new GroupLinker());
@@ -106,6 +104,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
     }
 
     public void reloadFeatures() {
+        // This is done later when discord bot is logged in.
         for(Feature feature : features) {
             feature.reload(this);
         }

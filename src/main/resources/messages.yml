@@ -24,3 +24,5 @@ discord-command:
 broadcaster:
   player-join: '%1$s joined.'
   player-quit: '%1$s left.'
+status-updater:
+  online-players: 'Online players: (%1$d/%2$d)'

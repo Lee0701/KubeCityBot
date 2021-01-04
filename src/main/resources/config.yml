@@ -2,6 +2,8 @@ bot-token:
 server-id:
 icon-storage:
   use: true
+status-updater:
+  use: false
 broadcaster:
   use: false
   channels: []
