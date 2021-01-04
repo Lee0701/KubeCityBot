@@ -5,15 +5,13 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 public class EmbedMessage extends DiscordMessage {
-    private final String nickname;
-    private final PlayerIcon avatar;
+    private String nickname;
+    private PlayerIcon avatar;
     private final String title;
     private final String content;
 
-    public EmbedMessage(TextChannel channel, String nickname, PlayerIcon avatar, String title, String content) {
+    public EmbedMessage(TextChannel channel, String title, String content) {
         super(channel);
-        this.nickname = nickname;
-        this.avatar = avatar;
         this.title = title;
         this.content = content;
     }
@@ -22,12 +20,35 @@ public class EmbedMessage extends DiscordMessage {
     public void send() {
         EmbedBuilder builder = new EmbedBuilder();
         if(nickname != null) {
-            String avatarUrl = null;
-            if(avatar != null) avatarUrl = avatar.getUrl();
-            builder.setAuthor(nickname, null, avatarUrl);
+            if(avatar != null) builder.setAuthor(nickname, null, avatar.getUrl());
+            builder.setAuthor(nickname);
         }
         builder.setTitle(title);
         builder.setDescription(content);
         getChannel().sendMessage(builder.build()).complete();
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public PlayerIcon getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(PlayerIcon avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getContent() {
+        return content;
     }
 }

@@ -3,6 +3,7 @@ package city.kube.bot.discord;
 import city.kube.bot.KubeCityBotPlugin;
 import city.kube.bot.KubeCityPlayer;
 import city.kube.bot.Registration;
+import city.kube.bot.discord.message.EmbedMessage;
 import city.kube.bot.features.GroupLinker;
 import city.kube.bot.features.SimpleForwarder;
 import city.kube.bot.features.TranslatorForwarder;
@@ -26,8 +27,9 @@ public class DiscordChatListener extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+        KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
         Guild guild = event.getGuild();
-        if(!guild.getId().equals(KubeCityBotPlugin.getInstance().getServerId())) return;
+        if(!guild.getId().equals(plugin.getServerId())) return;
 
         Member member = event.getMember();
         if(guild.getSelfMember().equals(member)) return;
@@ -49,12 +51,12 @@ public class DiscordChatListener extends ListenerAdapter {
             kubeCityPlayer.setNickname(player.getDisplayName());
             kubeCityPlayer.setUuid(player.getUniqueId().toString());
 
-            player.sendMessage(KubeCityBotPlugin.getInstance().getMessage("registration.register-complete", ChatColor.GREEN + "You are now registered."));
+            player.sendMessage(plugin.getMessage("registration.register-complete", ChatColor.GREEN + "You are now registered."));
 
             KubeCityPlayer.REGISTRATIONS.remove(registration);
             message.delete().queue();
 
-            KubeCityBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadMember(member));
+            plugin.getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadMember(member));
 
             return;
         }
@@ -64,30 +66,34 @@ public class DiscordChatListener extends ListenerAdapter {
             return;
         }
 
-        KubeCityBotPlugin.getInstance().getFeature(SimpleForwarder.class).ifPresent(forwarder -> forwarder.forwardFromDiscord(message));
-        KubeCityBotPlugin.getInstance().getFeature(TranslatorForwarder.class).ifPresent(forwarder -> forwarder.forwardFromDiscord(message));
+        plugin.getFeature(SimpleForwarder.class).ifPresent(forwarder -> forwarder.forwardFromDiscord(message));
+        plugin.getFeature(TranslatorForwarder.class).ifPresent(forwarder -> forwarder.forwardFromDiscord(message));
 
     }
 
     @Override
     public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {
+        KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
         Guild guild = event.getGuild();
-        if(!guild.getId().equals(KubeCityBotPlugin.getInstance().getServerId())) return;
+        if(!guild.getId().equals(plugin.getServerId())) return;
 
-        KubeCityBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadMember(event.getMember()));
+        plugin.getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadMember(event.getMember()));
 
     }
 
     @Override
     public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {
+        KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
         Guild guild = event.getGuild();
-        if(!guild.getId().equals(KubeCityBotPlugin.getInstance().getServerId())) return;
+        if(!guild.getId().equals(plugin.getServerId())) return;
 
-        KubeCityBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadMember(event.getMember()));
+        plugin.getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadMember(event.getMember()));
 
     }
 
     private boolean handleCommand(Message message) {
+        KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
+        BotInstance bot = plugin.getBot();
         StringTokenizer tokens = new StringTokenizer(message.getContentDisplay());
 
         String command;
@@ -103,10 +109,10 @@ public class DiscordChatListener extends ListenerAdapter {
 
         switch(command) {
         case "list":
-            List<Player> players = new ArrayList<>(KubeCityBotPlugin.getInstance().getServer().getOnlinePlayers());
-            String reply = String.format(KubeCityBotPlugin.getInstance().getMessage("discord-command.player-list", "List of online players (%1$d/%2$d):") + "\n", Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-            reply += players.stream().map(Player::getPlayerListName).map(name -> "- " + name).collect(Collectors.joining("\n"));
-            message.getChannel().sendMessage(reply).queue();
+            List<Player> players = new ArrayList<>(plugin.getServer().getOnlinePlayers());
+            String title = String.format(plugin.getMessage("discord-command.player-list", "List of online players (%1$d/%2$d)") + "\n", Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
+            String content = players.stream().map(Player::getPlayerListName).map(name -> "- " + name).collect(Collectors.joining("\n"));
+            bot.sendDiscordMessage(new EmbedMessage(message.getTextChannel(), title, content));
             return true;
         case "whois":
             KubeCityPlayer kubeCityPlayer = null;
@@ -120,21 +126,22 @@ public class DiscordChatListener extends ListenerAdapter {
             if(kubeCityPlayer != null) {
                 String uuid = kubeCityPlayer.getUuid();
                 String minecraftName = kubeCityPlayer.getNickname();
-                String discordName = KubeCityBotPlugin.getInstance().getBot().getJda()
-                        .getGuildById(KubeCityBotPlugin.getInstance().getServerId())
-                        .getMemberById(kubeCityPlayer.getDiscordId()).getEffectiveName();
-                message.getChannel().sendMessage(String.format(KubeCityBotPlugin.getInstance().getMessage(
-                        "registration.player-info-discord",
-                        "Player info:\n" +
-                                " - UUID: %1$s\n" +
-                                " - Minecraft Name: %2$s\n" +
-                                " - Discord Name: %3$s"
-                ), uuid, minecraftName, discordName)).queue();
-            } else {
-                message.getChannel().sendMessage(KubeCityBotPlugin.getInstance().getMessage(
-                        "registration.player-not-found-discord",
-                        "Player not found.")).queue();
+                Member member = bot.getGuild().getMemberById(kubeCityPlayer.getDiscordId());
+                if(member != null) {
+                    String discordName = member.getEffectiveName();
+                    message.getChannel().sendMessage(String.format(plugin.getMessage(
+                            "registration.player-info-discord",
+                            "Player info:\n" +
+                                    " - UUID: %1$s\n" +
+                                    " - Minecraft Name: %2$s\n" +
+                                    " - Discord Name: %3$s"
+                    ), uuid, minecraftName, discordName)).queue();
+                    return true;
+                }
             }
+            message.getChannel().sendMessage(plugin.getMessage(
+                    "registration.player-not-found-discord",
+                    "Player not found.")).queue();
             return true;
         default:
             return false;
