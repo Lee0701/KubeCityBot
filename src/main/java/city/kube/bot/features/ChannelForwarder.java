@@ -129,7 +129,7 @@ public class ChannelForwarder implements Feature, Listener {
                     }
                     event.setCancelled(true);
                 } else {
-                    // "#{channel} : Set listening channel"
+                    // "#{channel}" : Set listening channel"
                     String shortName = command;
                     Channel channel = this.channels.get(shortName);
                     if(channel == null) {
@@ -159,7 +159,7 @@ public class ChannelForwarder implements Feature, Listener {
                         event.setCancelled(true);
                     }
                 } else {
-                    // "#{channel} Message : Send to specific channel"
+                    // "#{channel} {Message}" : Send to specific channel"
                     String shortName = command;
                     Channel channel = this.channels.get(shortName);
                     if(channel == null) {
@@ -168,6 +168,7 @@ public class ChannelForwarder implements Feature, Listener {
                     } else {
                         event.getRecipients().clear();
                         event.getRecipients().addAll(channel.getRecipients());
+                        event.getRecipients().add(player);
                         String newMessage = message.substring(prefix.length() + command.length() + 1);
                         event.setFormat(String.format(format, prefix + shortName));
                         event.setMessage(newMessage);
