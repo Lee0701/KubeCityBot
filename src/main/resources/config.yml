@@ -19,6 +19,7 @@ translator-forwarder:
 channel-forwarder:
   use: false
   prefix: '#'
+  format: '§r%1$s <%%1$s> %%2$s'
   channels:
     - discordChannelId shortName
   default-listening-channels:

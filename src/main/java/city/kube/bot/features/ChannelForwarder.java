@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 public class ChannelForwarder implements Feature, Listener {
 
     private String prefix = "#";
+    private String format = "§r%1$s <%%1$s> %%2$s";
     private final List<Channel> defaultListeningChannels = new ArrayList<>();
     private final List<Channel> defaultSpeakingChannels = new ArrayList<>();
     private final Map<String, Channel> channels = new HashMap<>();
@@ -120,7 +121,6 @@ public class ChannelForwarder implements Feature, Listener {
                         if(channel == null) {
                             sendChannelNotFound(player);
                         } else {
-                            removeFromAllChannel(player);
                             listeningChannels.remove(channel);
                             speakingChannels.remove(channel);
                             channel.addRecipient(player);
@@ -148,7 +148,9 @@ public class ChannelForwarder implements Feature, Listener {
                     // "#@ Message" : Send to all channels
                     if(player.isOp()) {
                         String newMessage = message.substring(prefix.length() + command.length() + 1);
+                        event.setFormat(String.format(format, "@"));
                         event.setMessage(newMessage);
+                        // Send discord messages
                         plugin.getBot().sendDiscordMessages(this.channels.values().stream().map(c -> c.getDiscordChannel().getId()).collect(Collectors.toList()),
                                 c -> new EmbedForwarderMessage(c, new ForwarderMessage(
                                         player.getName(), IconStorage.getIconFor(player.getUniqueId()), "Minecraft", KubeCityPlayer.checkLinked(player), newMessage))
@@ -167,7 +169,9 @@ public class ChannelForwarder implements Feature, Listener {
                         event.getRecipients().clear();
                         event.getRecipients().addAll(channel.getRecipients());
                         String newMessage = message.substring(prefix.length() + command.length() + 1);
+                        event.setFormat(String.format(format, prefix + shortName));
                         event.setMessage(newMessage);
+                        // Send discord message
                         plugin.getBot().sendDiscordMessage(new EmbedForwarderMessage(channel.getDiscordChannel(), new ForwarderMessage(
                                 player.getName(), IconStorage.getIconFor(player.getUniqueId()), "Minecraft", KubeCityPlayer.checkLinked(player), newMessage)));
                     }
@@ -179,6 +183,12 @@ public class ChannelForwarder implements Feature, Listener {
         List<Player> recipients = speakingChannels.stream().flatMap(c -> c.getRecipients().stream()).distinct().collect(Collectors.toList());
         event.getRecipients().clear();
         event.getRecipients().addAll(recipients);
+
+        String shortNames = speakingChannels.stream().sorted(Comparator.comparing(Channel::getShortName))
+                .map(channel -> prefix + channel.getShortName()).collect(Collectors.joining(","));
+        event.setFormat(String.format(format, shortNames));
+
+        // Send discord messages
         plugin.getBot().sendDiscordMessages(speakingChannels.stream().map(c -> c.getDiscordChannel().getId()).collect(Collectors.toList()),
                 c -> new EmbedForwarderMessage(c, new ForwarderMessage(
                         player.getName(), IconStorage.getIconFor(player.getUniqueId()), "Minecraft", KubeCityPlayer.checkLinked(player), message))
@@ -186,7 +196,6 @@ public class ChannelForwarder implements Feature, Listener {
     }
 
     public void forwardFromDiscord(Message message) {
-        prefix = getConfigurationSection().getString("prefix");
 
         Channel channel = channels.values().stream()
                 .filter(c -> c.getDiscordChannel().getId().equals(message.getTextChannel().getId()))
@@ -201,11 +210,12 @@ public class ChannelForwarder implements Feature, Listener {
         Bukkit.getLogger()
                 .info(String.format("[%s](%s)<%s>: %s", "Discord", channel.getDiscordChannel().getName(), username, text));
 
-        String format = "[Discord] <%s> %s";
+        String shortName = prefix + channel.getShortName();
+        String format = "[Discord] " + shortName + " <%s> %s";
 
         KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(member.getId());
         if(kubeCityPlayer.getUuid() != null) {
-            if(kubeCityPlayer.getChatFormat() != null) format = "[Discord] " + kubeCityPlayer.getChatFormat();
+            if(kubeCityPlayer.getChatFormat() != null) format = "[Discord] " + shortName + " " + kubeCityPlayer.getChatFormat();
             if(kubeCityPlayer.getNickname() != null) minecraftName = kubeCityPlayer.getNickname();
         }
 
@@ -221,7 +231,9 @@ public class ChannelForwarder implements Feature, Listener {
         Set<Channel> listening = listeningChannels.get(player);
         if(listening == null || speaking == null) return;
         player.sendMessage(KubeCityBotPlugin.getInstance().getMessage("channel-forwarder.channel-list", "§fRegistered channels: ")
-                + listening.stream().map(c -> String.format("%1$s" + prefix + c.getShortName() + "%1$s", speaking.contains(c) ? "§a" : "§f")).collect(Collectors.joining(", ")));
+                + listening.stream().sorted(Comparator.comparing(Channel::getShortName))
+                .map(c -> String.format("%1$s" + prefix + c.getShortName() + "%1$s", speaking.contains(c) ? "§a" : "§f"))
+                .collect(Collectors.joining(", ")));
     }
 
     private void sendChannelNotFound(Player player) {
@@ -295,6 +307,9 @@ public class ChannelForwarder implements Feature, Listener {
 
     @Override
     public void reload(JavaPlugin plugin) {
+        prefix = getConfigurationSection().getString("prefix");
+        format = getConfigurationSection().getString("format");
+
         Bukkit.getPluginManager().registerEvents(this, KubeCityBotPlugin.getInstance());
         channels.clear();
         listeningChannels.clear();
