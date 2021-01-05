@@ -21,7 +21,9 @@ channel-forwarder:
   prefix: '#'
   channels:
     - discordChannelId shortName
-  default-channels:
+  default-listening-channels:
+    - shortName
+  default-speaking-channels:
     - shortName
 group-linker:
   use: false

@@ -25,17 +25,25 @@ import java.util.stream.Collectors;
 public class ChannelForwarder implements Feature, Listener {
 
     private String prefix = "#";
-    private final List<Channel> defaultChannels = new ArrayList<>();
-    private final List<Channel> channels = new LinkedList<>();
+    private final List<Channel> defaultListeningChannels = new ArrayList<>();
+    private final List<Channel> defaultSpeakingChannels = new ArrayList<>();
+    private final Map<String, Channel> channels = new HashMap<>();
 
-    private final Map<Player, Set<Channel>> playerChannels = new HashMap<>();
+    private final Map<Player, Set<Channel>> listeningChannels = new HashMap<>();
+    private final Map<Player, Set<Channel>> speakingChannels = new HashMap<>();
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
+        KubeCityPlayer.of(event.getPlayer()).ifPresent(kubeCityPlayer -> {
+            kubeCityPlayer.setChatFormat(event.getFormat());
+            kubeCityPlayer.setNickname(event.getPlayer().getDisplayName());
+        });
+
         KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
 
-        Set<Channel> channels = playerChannels.get(event.getPlayer());
-        if(channels == null) return;
+        Set<Channel> speakingChannels = this.speakingChannels.get(event.getPlayer());
+        Set<Channel> listeningChannels = this.listeningChannels.get(event.getPlayer());
+        if(speakingChannels == null) return;
 
         Player player = event.getPlayer();
         String message = event.getMessage();
@@ -52,68 +60,112 @@ public class ChannelForwarder implements Feature, Listener {
             event.setCancelled(true);
             return;
         } else if(message.startsWith(prefix)) {
+            if(KubeCityPlayer.of(player).orElse(null) == null) return;
+
             String command = message.split(" ")[0].substring(prefix.length());
             int index = prefix.length() + command.length() + 1;
             String messageWithoutCommand = message.length() >= index ? message.substring(index) : "";
 
             if(messageWithoutCommand.length() == 0) {
                 if(command.startsWith("@")) {
-                    removeFromAllChannel(player);
-                    channels.addAll(this.channels);
-                    this.channels.forEach(channel -> channel.addPlayer(player));
+                    // "#@{channel}" Add all to listening
+                    this.channels.values().forEach(channel -> channel.addRecipient(player));
+                    listeningChannels.addAll(this.channels.values());
                     sendChannelList(player);
                     event.setCancelled(true);
                 } else if(command.startsWith("+")) {
+                    // "#+{channel}" : Add listening
                     String shortName = command.substring(1);
-                    Channel channel = this.channels.stream().filter(c -> c.getShortName().equals(shortName)).findAny().orElse(null);
+                    Channel channel = this.channels.get(shortName);
                     if(channel == null) {
-                        player.sendMessage(String.format(plugin.getMessage("channel-forwarder.channel-not-found", "§eChannel %1$s not found."), shortName));
+                        sendChannelNotFound(player);
                     } else {
-                        channels.add(channel);
-                        channel.addPlayer(player);
+                        listeningChannels.add(channel);
+                        channel.addRecipient(player);
                         sendChannelList(player);
                     }
                     event.setCancelled(true);
                 } else if(command.startsWith("-")) {
+                    // "#-{channel}" : Remove listening
                     String shortName = command.substring(1);
-                    Channel channel = this.channels.stream().filter(c -> c.getShortName().equals(shortName)).findAny().orElse(null);
+                    Channel channel = this.channels.get(shortName);
                     if(channel == null) {
-                        player.sendMessage(String.format(plugin.getMessage("channel-forwarder.channel-not-found", "§eChannel %1$s not found."), shortName));
+                        sendChannelNotFound(player);
                     } else {
-                        channels.remove(channel);
-                        channel.removePlayer(player);
+                        listeningChannels.remove(channel);
+                        channel.removeRecipient(player);
                         sendChannelList(player);
                     }
                     event.setCancelled(true);
+                } else if(command.startsWith("#")) {
+                    // "##{channel}" : Add listening/speaking
+                    if(player.isOp()) {
+                        String shortName = command.substring(1);
+                        Channel channel = this.channels.get(shortName);
+                        if(channel == null) {
+                            sendChannelNotFound(player);
+                        } else {
+                            listeningChannels.add(channel);
+                            speakingChannels.add(channel);
+                            channel.addRecipient(player);
+                            sendChannelList(player);
+                        }
+                    }
+                    event.setCancelled(true);
+                } else if(command.startsWith("=")) {
+                    // "#={channel}" : Remove listening/speaking
+                    if(player.isOp()) {
+                        String shortName = command.substring(1);
+                        Channel channel = this.channels.get(shortName);
+                        if(channel == null) {
+                            sendChannelNotFound(player);
+                        } else {
+                            removeFromAllChannel(player);
+                            listeningChannels.remove(channel);
+                            speakingChannels.remove(channel);
+                            channel.addRecipient(player);
+                            sendChannelList(player);
+                        }
+                    }
+                    event.setCancelled(true);
                 } else {
+                    // "#{channel} : Set listening channel"
                     String shortName = command;
-                    Channel channel = this.channels.stream().filter(c -> c.getShortName().equals(shortName)).findAny().orElse(null);
+                    Channel channel = this.channels.get(shortName);
                     if(channel == null) {
-                        player.sendMessage(String.format(plugin.getMessage("channel-forwarder.channel-not-found", "§eChannel %1$s not found."), shortName));
+                        sendChannelNotFound(player);
                     } else {
                         removeFromAllChannel(player);
-                        channels.add(channel);
-                        channel.addPlayer(player);
+                        listeningChannels.add(channel);
+                        speakingChannels.add(channel);
+                        channel.addRecipient(player);
                         sendChannelList(player);
                     }
                     event.setCancelled(true);
                 }
             } else {
                 if(command.startsWith("@")) {
-                    String newMessage = message.substring(prefix.length() + command.length() + 1);
-                    event.setMessage(newMessage);
-                    plugin.getBot().sendDiscordMessages(this.channels.stream().map(c -> c.getDiscordChannel().getId()).collect(Collectors.toList()),
-                            c -> new EmbedForwarderMessage(c, new ForwarderMessage(
-                                    player.getName(), IconStorage.getIconFor(player.getUniqueId()), "Minecraft", KubeCityPlayer.checkLinked(player), newMessage))
-                    );
+                    // "#@ Message" : Send to all channels
+                    if(player.isOp()) {
+                        String newMessage = message.substring(prefix.length() + command.length() + 1);
+                        event.setMessage(newMessage);
+                        plugin.getBot().sendDiscordMessages(this.channels.values().stream().map(c -> c.getDiscordChannel().getId()).collect(Collectors.toList()),
+                                c -> new EmbedForwarderMessage(c, new ForwarderMessage(
+                                        player.getName(), IconStorage.getIconFor(player.getUniqueId()), "Minecraft", KubeCityPlayer.checkLinked(player), newMessage))
+                        );
+                    } else {
+                        event.setCancelled(true);
+                    }
                 } else {
+                    // "#{channel} Message : Send to specific channel"
                     String shortName = command;
-                    Channel channel = channels.stream().filter(c -> c.getShortName().equals(shortName)).findAny().orElse(null);
+                    Channel channel = this.channels.get(shortName);
                     if(channel == null) {
-                        player.sendMessage(String.format(plugin.getMessage("channel-forwarder.channel-not-found", "§eChannel %1$s not found."), shortName));
+                        sendChannelNotFound(player);
+                        event.setCancelled(true);
                     } else {
                         event.getRecipients().clear();
-                        event.getRecipients().addAll(channel.getPlayers());
+                        event.getRecipients().addAll(channel.getRecipients());
                         String newMessage = message.substring(prefix.length() + command.length() + 1);
                         event.setMessage(newMessage);
                         plugin.getBot().sendDiscordMessage(new EmbedForwarderMessage(channel.getDiscordChannel(), new ForwarderMessage(
@@ -123,10 +175,11 @@ public class ChannelForwarder implements Feature, Listener {
             }
             return;
         }
-        List<Player> recipients = channels.stream().flatMap(c -> c.getPlayers().stream()).distinct().collect(Collectors.toList());
+        // Default : Send to speaking channels
+        List<Player> recipients = speakingChannels.stream().flatMap(c -> c.getRecipients().stream()).distinct().collect(Collectors.toList());
         event.getRecipients().clear();
         event.getRecipients().addAll(recipients);
-        plugin.getBot().sendDiscordMessages(channels.stream().map(c -> c.getDiscordChannel().getId()).collect(Collectors.toList()),
+        plugin.getBot().sendDiscordMessages(speakingChannels.stream().map(c -> c.getDiscordChannel().getId()).collect(Collectors.toList()),
                 c -> new EmbedForwarderMessage(c, new ForwarderMessage(
                         player.getName(), IconStorage.getIconFor(player.getUniqueId()), "Minecraft", KubeCityPlayer.checkLinked(player), message))
         );
@@ -135,7 +188,7 @@ public class ChannelForwarder implements Feature, Listener {
     public void forwardFromDiscord(Message message) {
         prefix = getConfigurationSection().getString("prefix");
 
-        Channel channel = channels.stream()
+        Channel channel = channels.values().stream()
                 .filter(c -> c.getDiscordChannel().getId().equals(message.getTextChannel().getId()))
                 .findFirst().orElse(null);
         Member member = message.getMember();
@@ -157,49 +210,94 @@ public class ChannelForwarder implements Feature, Listener {
         }
 
         // Send minecraft messages.
-        for(Player recipient : channel.getPlayers()) {
+        for(Player recipient : channel.getRecipients()) {
             recipient.sendMessage(String.format(format, minecraftName, text));
         }
 
     }
 
-    public void sendChannelList(Player player) {
-        Set<Channel> channels = playerChannels.get(player);
-        if(channels == null) return;
+    private void sendChannelList(Player player) {
+        Set<Channel> speaking = speakingChannels.get(player);
+        Set<Channel> listening = listeningChannels.get(player);
+        if(listening == null || speaking == null) return;
         player.sendMessage(KubeCityBotPlugin.getInstance().getMessage("channel-forwarder.channel-list", "§fRegistered channels: ")
-                + channels.stream().map(c -> prefix + c.getShortName()).collect(Collectors.joining(", ")));
+                + listening.stream().map(c -> String.format("%1$s" + prefix + c.getShortName() + "%1$s", speaking.contains(c) ? "§a" : "§f")).collect(Collectors.joining(", ")));
+    }
+
+    private void sendChannelNotFound(Player player) {
+        player.sendMessage(KubeCityBotPlugin.getInstance().getMessage("channel-forwarder.channel-not-found", "§eChannel not found."));
+    }
+
+    public void newChannelLists(Player player) {
+        listeningChannels.put(player, new HashSet<>());
+        speakingChannels.put(player, new HashSet<>());
     }
 
     public void addDefaultChannels(Player player) {
-        defaultChannels.forEach(channel -> {
-            channel.addPlayer(player);
-            playerChannels.get(player).add(channel);
+        defaultListeningChannels.forEach(channel -> {
+            channel.addRecipient(player);
+            listeningChannels.get(player).add(channel);
+        });
+        defaultSpeakingChannels.forEach(channel -> {
+            channel.addRecipient(player);
+            speakingChannels.get(player).add(channel);
         });
     }
 
     public void removeFromAllChannel(Player player) {
-        playerChannels.get(player).clear();
-        channels.forEach(channel -> channel.removePlayer(player));
+        listeningChannels.get(player).clear();
+        speakingChannels.get(player).clear();
+        channels.values().forEach(channel -> channel.removeRecipient(player));
+    }
+
+    public void loadPlayer(Player player) {
+        KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(player).orElse(null);
+        if(kubeCityPlayer != null) {
+            List<String> listening = kubeCityPlayer.getListeningChannels();
+            List<String> speaking = kubeCityPlayer.getSpeakingChannels();
+            if(listening != null && speaking != null) {
+                listening.stream().map(this.channels::get).forEach(channel -> channel.addRecipient(player));
+                listeningChannels.put(player, listening.stream().map(this.channels::get).collect(Collectors.toSet()));
+                speakingChannels.put(player, speaking.stream().map(this.channels::get).collect(Collectors.toSet()));
+            } else {
+                newChannelLists(player);
+                removeFromAllChannel(player);
+                addDefaultChannels(player);
+            }
+        } else {
+            newChannelLists(player);
+            removeFromAllChannel(player);
+            addDefaultChannels(player);
+        }
+    }
+
+    public void savePlayer(Player player) {
+        KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(player).orElse(null);
+        if(!listeningChannels.containsKey(player) || !speakingChannels.containsKey(player)) return;
+        if(kubeCityPlayer != null) {
+            kubeCityPlayer.setListeningChannels(listeningChannels.get(player).stream().map(Channel::getShortName).collect(Collectors.toList()));
+            kubeCityPlayer.setSpeakingChannels(speakingChannels.get(player).stream().map(Channel::getShortName).collect(Collectors.toList()));
+        }
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        playerChannels.put(event.getPlayer(), new HashSet<>());
-        removeFromAllChannel(event.getPlayer());
-        addDefaultChannels(event.getPlayer());
+        loadPlayer(event.getPlayer());
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+        savePlayer(event.getPlayer());
         removeFromAllChannel(event.getPlayer());
-        playerChannels.remove(event.getPlayer());
+        listeningChannels.remove(event.getPlayer());
+        speakingChannels.remove(event.getPlayer());
     }
 
     @Override
     public void reload(JavaPlugin plugin) {
         Bukkit.getPluginManager().registerEvents(this, KubeCityBotPlugin.getInstance());
         channels.clear();
-        playerChannels.clear();
+        listeningChannels.clear();
         getConfigurationSection().getStringList("channels").forEach(line -> {
             String[] config = line.split(" ");
             if(config.length >= 2) {
@@ -207,25 +305,24 @@ public class ChannelForwarder implements Feature, Listener {
                 if(channel.getDiscordChannel() == null) {
                     Bukkit.getLogger().warning(String.format("ChannelForwarder channels config \"%s\" has been ignored due to invalid id.", line));
                 } else {
-                    channels.add(channel);
+                    channels.put(config[1], channel);
                 }
             } else {
                 Bukkit.getLogger().warning(String.format("ChannelForwarder channels config \"%s\" has been ignored due to invalid format.", line));
             }
         });
-        getConfigurationSection().getStringList("default-channels").forEach(shortName -> {
-            channels.stream().filter(c -> c.getShortName().equals(shortName)).findFirst().ifPresent(defaultChannels::add);
+        getConfigurationSection().getStringList("default-listening-channels").forEach(shortName -> {
+            defaultListeningChannels.add(channels.get(shortName));
         });
-        plugin.getServer().getOnlinePlayers().forEach(player -> {
-            playerChannels.put(player, new HashSet<>());
-            removeFromAllChannel(player);
-            addDefaultChannels(player);
+        getConfigurationSection().getStringList("default-speaking-channels").forEach(shortName -> {
+            defaultSpeakingChannels.add(channels.get(shortName));
         });
+        plugin.getServer().getOnlinePlayers().forEach(this::loadPlayer);
     }
 
     @Override
     public void save() {
-
+        Bukkit.getOnlinePlayers().forEach(this::savePlayer);
     }
 
     @Override
@@ -236,7 +333,7 @@ public class ChannelForwarder implements Feature, Listener {
     static class Channel {
         private final String shortName;
         private final TextChannel discordChannel;
-        private final Set<Player> players = new HashSet<>();
+        private final Set<Player> recipients = new HashSet<>();
 
         public Channel(String shortName, String discordChannelId) {
             this.shortName = shortName;
@@ -244,12 +341,12 @@ public class ChannelForwarder implements Feature, Listener {
                     .getBot().getGuild().getTextChannelById(discordChannelId);
         }
 
-        public void addPlayer(Player player) {
-            this.players.add(player);
+        public void addRecipient(Player player) {
+            this.recipients.add(player);
         }
 
-        public void removePlayer(Player player) {
-            this.players.remove(player);
+        public void removeRecipient(Player player) {
+            this.recipients.remove(player);
         }
 
         public String getShortName() {
@@ -260,8 +357,8 @@ public class ChannelForwarder implements Feature, Listener {
             return discordChannel;
         }
 
-        public Set<Player> getPlayers() {
-            return players;
+        public Set<Player> getRecipients() {
+            return recipients;
         }
     }
 

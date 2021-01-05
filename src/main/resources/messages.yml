@@ -27,5 +27,5 @@ broadcaster:
 status-updater:
   online-players: 'Online players: (%1$d/%2$d)'
 channel-forwarder:
-  channel-not-found: '§eChannel %1$s not found.'
+  channel-not-found: '§eChannel not found.'
   channel-list: '§fRegistered channels: '

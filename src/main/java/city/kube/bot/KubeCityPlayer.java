@@ -13,6 +13,8 @@ public class KubeCityPlayer implements ConfigurationSerializable {
     private String discordId;
     private String uuid;
     private String chatFormat;
+    private List<String> listeningChannels;
+    private List<String> speakingChannels;
 
     public KubeCityPlayer(String discordId) {
         this.discordId = discordId;
@@ -55,6 +57,14 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         if (nickname instanceof String) {
             result.nickname = (String) nickname;
         }
+        Object listeningChannels = args.get("listening-channels");
+        if(listeningChannels instanceof List) {
+            result.listeningChannels = (List<String>) listeningChannels;
+        }
+        Object speakingChannels = args.get("speaking-channels");
+        if(speakingChannels instanceof List) {
+            result.speakingChannels = (List<String>) speakingChannels;
+        }
         return result;
     }
 
@@ -70,6 +80,12 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         }
         if (chatFormat != null) {
             result.put("chat-format", chatFormat);
+        }
+        if(listeningChannels != null) {
+            result.put("listening-channels", listeningChannels);
+        }
+        if(speakingChannels != null) {
+            result.put("speaking-channels", speakingChannels);
         }
         return result;
     }
@@ -108,5 +124,21 @@ public class KubeCityPlayer implements ConfigurationSerializable {
 
     public void setChatFormat(String chatFormat) {
         this.chatFormat = chatFormat;
+    }
+
+    public List<String> getListeningChannels() {
+        return listeningChannels;
+    }
+
+    public void setListeningChannels(List<String> listeningChannels) {
+        this.listeningChannels = listeningChannels;
+    }
+
+    public List<String> getSpeakingChannels() {
+        return speakingChannels;
+    }
+
+    public void setSpeakingChannels(List<String> speakingChannels) {
+        this.speakingChannels = speakingChannels;
     }
 }
