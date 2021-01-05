@@ -16,6 +16,13 @@ translator-forwarder:
   languages:
     - en_US
     - ko_KR
+channel-forwarder:
+  use: false
+  prefix: '#'
+  channels:
+    - discordChannelId shortName
+  default-channels:
+    - shortName
 group-linker:
   use: false
   groups:

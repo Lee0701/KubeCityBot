@@ -86,6 +86,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         if(config.getConfigurationSection("status-updater").getBoolean("use")) features.add(new StatusUpdater());
         if(config.getConfigurationSection("simple-forwarder").getBoolean("use")) features.add(new SimpleForwarder());
         if(config.getConfigurationSection("translator-forwarder").getBoolean("use")) features.add(new TranslatorForwarder());
+        if(config.getConfigurationSection("channel-forwarder").getBoolean("use")) features.add(new ChannelForwarder());
         if(config.getConfigurationSection("group-linker").getBoolean("use")) features.add(new GroupLinker());
 
     }

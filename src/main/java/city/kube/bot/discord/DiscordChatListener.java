@@ -4,6 +4,7 @@ import city.kube.bot.KubeCityBotPlugin;
 import city.kube.bot.KubeCityPlayer;
 import city.kube.bot.Registration;
 import city.kube.bot.discord.message.EmbedMessage;
+import city.kube.bot.features.ChannelForwarder;
 import city.kube.bot.features.GroupLinker;
 import city.kube.bot.features.SimpleForwarder;
 import city.kube.bot.features.TranslatorForwarder;
@@ -68,6 +69,7 @@ public class DiscordChatListener extends ListenerAdapter {
 
         plugin.getFeature(SimpleForwarder.class).ifPresent(forwarder -> forwarder.forwardFromDiscord(message));
         plugin.getFeature(TranslatorForwarder.class).ifPresent(forwarder -> forwarder.forwardFromDiscord(message));
+        plugin.getFeature(ChannelForwarder.class).ifPresent(forwarder -> forwarder.forwardFromDiscord(message));
 
     }
 
