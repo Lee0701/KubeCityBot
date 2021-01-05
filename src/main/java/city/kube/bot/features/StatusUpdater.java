@@ -19,15 +19,24 @@ public class StatusUpdater implements Feature, Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        updateStatus();
+        KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
+        int onlinePlayers = plugin.getServer().getOnlinePlayers().size() - 1;
+        int maxPlayers = plugin.getServer().getMaxPlayers();
+        plugin.getBot().getJda().getPresence().setPresence(
+                Activity.playing(String.format(plugin.getMessage("status-updater.online-players", "Online players: (%1$d/%2$d)"), onlinePlayers, maxPlayers)), false);
+    }
+
+    public void updateStatus(int onlinePlayers, int maxPlayers) {
+        KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
+        plugin.getBot().getJda().getPresence().setPresence(
+                Activity.playing(String.format(plugin.getMessage("status-updater.online-players", "Online players: (%1$d/%2$d)"), onlinePlayers, maxPlayers)), false);
     }
 
     public void updateStatus() {
         KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
-        int online = plugin.getServer().getOnlinePlayers().size();
-        int maximum = plugin.getServer().getMaxPlayers();
-        plugin.getBot().getJda().getPresence().setPresence(
-                Activity.playing(String.format(plugin.getMessage("status-updater.online-players", "Online players: (%1$d/%2$d)"), online, maximum)), false);
+        int onlinePlayers = plugin.getServer().getOnlinePlayers().size();
+        int maxPlayers = plugin.getServer().getMaxPlayers();
+        updateStatus(onlinePlayers, maxPlayers);
     }
 
     @Override
