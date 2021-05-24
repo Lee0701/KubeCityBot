@@ -36,5 +36,10 @@
       <option name="name" value="sonatype" />
       <option name="url" value="https://oss.sonatype.org/content/groups/public/" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="m2-dv8tion" />
+      <option name="name" value="m2-dv8tion" />
+      <option name="url" value="https://m2.dv8tion.net/releases" />
+    </remote-repository>
   </component>
 </project>

@@ -23,15 +23,18 @@ repositories {
         name = 'jitpack'
         url = 'https://jitpack.io'
     }
+    maven {
+        name 'm2-dv8tion'
+        url 'https://m2.dv8tion.net/releases'
+    }
     mavenCentral()
-    jcenter()
 }
 
 dependencies {
     compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.12.2-R0.1-SNAPSHOT'
 
-    compile group: 'net.dv8tion', name: 'JDA', version: '4.2.0_222'
-    compile group: 'club.minnced', name: 'discord-webhooks', version: '0.5.3'
+    compile group: 'net.dv8tion', name: 'JDA', version: '4.2.1_253'
+    compile group: 'club.minnced', name: 'discord-webhooks', version: '0.5.7'
     compileOnly group: 'com.github.RanolP', name: 'RatTranslate', version: 'v1.1.0'
     compile 'me.lucko.luckperms:luckperms-api:4.4'
 
