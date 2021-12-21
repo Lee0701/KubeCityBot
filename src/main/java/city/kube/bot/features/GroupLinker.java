@@ -2,17 +2,18 @@ package city.kube.bot.features;
 
 import city.kube.bot.KubeCityBotPlugin;
 import city.kube.bot.KubeCityPlayer;
-import me.lucko.luckperms.LuckPerms;
-import me.lucko.luckperms.api.LuckPermsApi;
-import me.lucko.luckperms.api.Node;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.node.NodeType;
+import net.luckperms.api.node.types.InheritanceNode;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -25,7 +26,8 @@ public class GroupLinker implements Feature, Listener {
 
     private Map<String, String> discordToMinecraft = new HashMap<>();
 
-    private final LuckPermsApi permsApi = LuckPerms.getApi();
+    private RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+    private final LuckPerms permsApi = provider.getProvider();
 
     @Override
     public void reload(JavaPlugin plugin) {
@@ -43,10 +45,9 @@ public class GroupLinker implements Feature, Listener {
     public void clearPlayer(Player player) {
         permsApi.getUserManager().loadUser(player.getUniqueId())
                 .thenAcceptAsync(user -> {
-                    user.getAllNodes().stream()
-                            .filter(Node::isGroupNode)
+                    user.getNodes(NodeType.INHERITANCE).stream()
                             .filter(node -> discordToMinecraft.containsValue(node.getGroupName()))
-                            .forEach(user::unsetPermission);
+                            .forEach(user.data()::remove);
                     permsApi.getUserManager().saveUser(user);
                 });
     }
@@ -65,14 +66,13 @@ public class GroupLinker implements Feature, Listener {
                         .collect(Collectors.toList());
                 permsApi.getUserManager().loadUser(UUID.fromString(kubeCityPlayer.getUuid()))
                         .thenAcceptAsync(user -> {
-                            user.getAllNodes().stream()
-                                    .filter(Node::isGroupNode)
+                            user.getNodes(NodeType.INHERITANCE).stream()
                                     .filter(node -> discordToMinecraft.containsValue(node.getGroupName()))
-                                    .forEach(user::unsetPermission);
+                                    .forEach(user.data()::remove);
                             groups.stream()
-                                    .map(permsApi.getNodeFactory()::makeGroupNode)
-                                    .map(Node.Builder::build)
-                                    .forEach(user::setPermission);
+                                    .map(InheritanceNode::builder)
+                                    .map(InheritanceNode.Builder::build)
+                                    .forEach(user.data()::add);
                             permsApi.getUserManager().saveUser(user);
                         });
             }
@@ -91,14 +91,13 @@ public class GroupLinker implements Feature, Listener {
                     .collect(Collectors.toList());
             permsApi.getUserManager().loadUser(UUID.fromString(player.getUuid()))
                     .thenAcceptAsync(user -> {
-                        user.getAllNodes().stream()
-                                .filter(Node::isGroupNode)
+                        user.getNodes(NodeType.INHERITANCE).stream()
                                 .filter(node -> discordToMinecraft.containsValue(node.getGroupName()))
-                                .forEach(user::unsetPermission);
+                                .forEach(user.data()::remove);
                         groups.stream()
-                                .map(permsApi.getNodeFactory()::makeGroupNode)
-                                .map(Node.Builder::build)
-                                .forEach(user::setPermission);
+                                .map(InheritanceNode::builder)
+                                .map(InheritanceNode.Builder::build)
+                                .forEach(user.data()::add);
                         permsApi.getUserManager().saveUser(user);
                     });
         }

@@ -60,12 +60,6 @@ public class SimpleForwarder extends Forwarder {
             recipient.sendMessage(String.format(format, minecraftName, text));
         }
 
-        // Send discord message.
-        KubeCityBotPlugin.getInstance().getBot().sendDiscordMessage(wrapForwarderMessage(channel, new ForwarderMessage(
-                username, IconStorage.getIconFor(author), "Discord", kubeCityPlayer.isLinked(), text)));
-
-        // Delete original message.
-        message.delete().queue();
     }
 
     private DiscordMessage wrapForwarderMessage(TextChannel channel, ForwarderMessage message) {
