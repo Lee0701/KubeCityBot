@@ -1,6 +1,6 @@
 name: KubeCityBot
 version: @version@
-main: city.kube.bot.KubeCityBotPlugin
+main: kr.kubecity.bot.KubeCityBotPlugin
 author: Lee0701
 authors: [Lee0701]
 softdepend: [LuckPerms, RatTranslate]

@@ -40,6 +40,7 @@ dependencies {
 }
 
 processResources {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     from(sourceSets.main.resources.srcDirs) {
         filteringCharset = 'UTF-8'
         filter ReplaceTokens, tokens: [version: project.version]
@@ -48,10 +49,6 @@ processResources {
 
 artifacts {
     archives shadowJar
-}
-
-processResources {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 java {
