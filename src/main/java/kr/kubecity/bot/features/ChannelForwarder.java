@@ -1,10 +1,10 @@
 package kr.kubecity.bot.features;
 
-import kr.kubecity.bot.IconStorage;
 import kr.kubecity.bot.KubeCityBotPlugin;
 import kr.kubecity.bot.KubeCityPlayer;
 import kr.kubecity.bot.discord.message.EmbedForwarderMessage;
 import kr.kubecity.bot.discord.message.ForwarderMessage;
+import kr.kubecity.bot.discord.message.WebhookForwarderMessage;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -152,7 +152,7 @@ public class ChannelForwarder implements Feature, Listener {
                         event.setMessage(newMessage);
                         // Send discord messages
                         plugin.getBot().sendDiscordMessages(this.channels.values().stream().map(c -> c.getDiscordChannel().getId()).collect(Collectors.toList()),
-                                c -> new EmbedForwarderMessage(c, new ForwarderMessage(
+                                c -> new WebhookForwarderMessage(c, new ForwarderMessage(
                                         player.getName(), IconStorage.getIconFor(player.getUniqueId()), "Minecraft", KubeCityPlayer.checkLinked(player), newMessage))
                         );
                     } else {
@@ -173,7 +173,7 @@ public class ChannelForwarder implements Feature, Listener {
                         event.setFormat(String.format(format, prefix + shortName));
                         event.setMessage(newMessage);
                         // Send discord message
-                        plugin.getBot().sendDiscordMessage(new EmbedForwarderMessage(channel.getDiscordChannel(), new ForwarderMessage(
+                        plugin.getBot().sendDiscordMessage(new WebhookForwarderMessage(channel.getDiscordChannel(), new ForwarderMessage(
                                 player.getName(), IconStorage.getIconFor(player.getUniqueId()), "Minecraft", KubeCityPlayer.checkLinked(player), newMessage)));
                     }
                 }
@@ -191,7 +191,7 @@ public class ChannelForwarder implements Feature, Listener {
 
         // Send discord messages
         plugin.getBot().sendDiscordMessages(speakingChannels.stream().map(c -> c.getDiscordChannel().getId()).collect(Collectors.toList()),
-                c -> new EmbedForwarderMessage(c, new ForwarderMessage(
+                c -> new WebhookForwarderMessage(c, new ForwarderMessage(
                         player.getName(), IconStorage.getIconFor(player.getUniqueId()), "Minecraft", KubeCityPlayer.checkLinked(player), message))
         );
     }

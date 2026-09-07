@@ -2,6 +2,7 @@ bot-token:
 server-id:
 icon-storage:
   use: true
+  url: https://api.mineatar.io/face/%s
 status-updater:
   use: false
 broadcaster:

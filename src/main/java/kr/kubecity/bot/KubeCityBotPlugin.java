@@ -25,7 +25,6 @@ public final class KubeCityBotPlugin extends JavaPlugin {
 
     private BotInstance bot = new BotInstance();
     private String serverId;
-    private boolean iconStorageEnabled;
 
     private final File dataFile = new File(getDataFolder(), "data.yml");
     private YamlConfiguration dataConfiguration;
@@ -67,7 +66,6 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         FileConfiguration config = getConfig();
         String botToken = config.getString("bot-token");
         serverId = config.getString("server-id");
-        iconStorageEnabled = config.getConfigurationSection("icon-storage").getBoolean("use");
 
         if(botToken != null) {
             bot.launch(botToken);
@@ -82,6 +80,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         messagesConfiguration = YamlConfiguration.loadConfiguration(messagesFile);
 
         features.clear();
+        if(config.getConfigurationSection("icon-storage").getBoolean("use")) features.add(new IconStorage());
         if(config.getConfigurationSection("broadcaster").getBoolean("use")) features.add(new Broadcaster());
         if(config.getConfigurationSection("status-updater").getBoolean("use")) features.add(new StatusUpdater());
         if(config.getConfigurationSection("simple-forwarder").getBoolean("use")) features.add(new SimpleForwarder());
@@ -125,10 +124,6 @@ public final class KubeCityBotPlugin extends JavaPlugin {
 
     public String getServerId() {
         return serverId;
-    }
-
-    public boolean isIconStorageEnabled() {
-        return iconStorageEnabled;
     }
 
 }

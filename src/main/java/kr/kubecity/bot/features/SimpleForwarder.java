@@ -1,6 +1,5 @@
 package kr.kubecity.bot.features;
 
-import kr.kubecity.bot.IconStorage;
 import kr.kubecity.bot.KubeCityBotPlugin;
 import kr.kubecity.bot.KubeCityPlayer;
 import kr.kubecity.bot.discord.message.DiscordMessage;
