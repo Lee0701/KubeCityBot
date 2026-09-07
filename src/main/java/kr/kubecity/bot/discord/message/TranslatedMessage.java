@@ -1,18 +1,18 @@
 package kr.kubecity.bot.discord.message;
 
 import kr.kubecity.bot.KubeCityBotPlugin;
+import kr.kubecity.bot.PlayerIcon;
 import kr.kubecity.bot.features.TranslatorForwarder;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import io.github.ranolp.rattranslate.Locale;
 import io.github.ranolp.rattranslate.RatTranslate;
 import io.github.ranolp.rattranslate.translator.Translator;
 import net.dv8tion.jda.api.entities.Icon;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.util.EnumMap;
 import java.util.stream.Collectors;
 
-public class TranslatedMessage extends WebhookMessage {
+public class TranslatedMessage extends ForwarderMessage {
     private static final EnumMap<Locale, String> DISCORD_PREFIXES = new EnumMap<>(Locale.class);
 
     static {
@@ -115,15 +115,16 @@ public class TranslatedMessage extends WebhookMessage {
         DISCORD_PREFIXES.put(Locale.TRADITIONAL_CHINESE, ":flag_tw:");
     }
 
-    public TranslatedMessage(String side, TextChannel channel, String nickname, String message, Locale fromLocale, Icon icon, boolean linked) {
-        super(channel, nickname);
+    public TranslatedMessage(String nickname, PlayerIcon icon, String side, boolean linked, Locale fromLocale, String message) {
+        super(nickname, icon, side, linked, translateMessage(message, fromLocale));
+    }
 
-        String translatedMessage;
+    static String translateMessage(String message, Locale fromLocale) {
         try {
             TranslatorForwarder forwarder = KubeCityBotPlugin.getInstance().getFeature(TranslatorForwarder.class).orElseThrow(NullPointerException::new);
             Translator translator = RatTranslate.getInstance().getTranslator();
             boolean auto = fromLocale == null;
-            translatedMessage = forwarder.getLanguages().stream()
+            return forwarder.getLanguages().stream()
                     .map(Locale::getByCode)
                     .map(toLocale -> {
                         String translated = auto
@@ -138,13 +139,9 @@ public class TranslatedMessage extends WebhookMessage {
         } catch(NoClassDefFoundError error) {
             KubeCityBotPlugin.getInstance().getLogger().warning("Translator forwarder requires RatTranslate.");
             error.printStackTrace();
-            translatedMessage = message;
+            return message;
         } catch(NullPointerException ignore) {
-            return;
+            return message;
         }
-        setAvatar(icon);
-        setMessage(
-                new WebhookMessageBuilder().setContent(String.format("[%s]%s\n%s", side, linked ? " :link:" : "", translatedMessage))
-                        .build());
     }
 }

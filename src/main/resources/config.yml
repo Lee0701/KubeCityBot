@@ -10,15 +10,18 @@ broadcaster:
   channels: []
 simple-forwarder:
   use: false
+  message-type: webhook
   channels: []
 translator-forwarder:
   use: false
+  message-type: webhook
   channels: []
   languages:
     - en_US
     - ko_KR
 channel-forwarder:
   use: false
+  message-type: webhook
   prefix: '#'
   format: '§r%1$s <%%1$s> %%2$s'
   channels:

@@ -2,7 +2,7 @@ package kr.kubecity.bot.discord.message;
 
 import kr.kubecity.bot.PlayerIcon;
 
-public final class ForwarderMessage {
+public class ForwarderMessage {
     private final String nickname;
     private final PlayerIcon icon;
     private final String side;

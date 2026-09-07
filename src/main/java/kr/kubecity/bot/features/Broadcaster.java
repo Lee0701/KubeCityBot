@@ -38,9 +38,7 @@ public class Broadcaster implements Feature, Listener {
     }
 
     public void broadcast(String message) {
-        try (MessageCreateData discordMessage = new MessageCreateBuilder().setContent(message).build()) {
-            bot.sendDiscordMessages(channels, channel -> new SimpleMessage(channel, discordMessage));
-        }
+        bot.sendDiscordMessages(channels, channel -> new SimpleMessage(channel, message));
     }
 
     @EventHandler

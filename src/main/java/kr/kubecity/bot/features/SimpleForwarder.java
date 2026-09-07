@@ -2,8 +2,6 @@ package kr.kubecity.bot.features;
 
 import kr.kubecity.bot.KubeCityBotPlugin;
 import kr.kubecity.bot.KubeCityPlayer;
-import kr.kubecity.bot.discord.message.DiscordMessage;
-import kr.kubecity.bot.discord.message.EmbedForwarderMessage;
 import kr.kubecity.bot.discord.message.ForwarderMessage;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -23,12 +21,13 @@ public class SimpleForwarder extends Forwarder {
 
     @Override
     public void forwardFromMinecraft(Player player, String message) {
-        String name = player.getName();
+        var name = player.getName();
+        var icon = IconStorage.getIconFor(player.getUniqueId());
+        var linked = KubeCityPlayer.checkLinked(player);
         KubeCityBotPlugin.getInstance().getBot().sendDiscordMessages(
                 channels,
-                channel -> wrapForwarderMessage(channel, new ForwarderMessage(
-                        name, IconStorage.getIconFor(player.getUniqueId()), "Minecraft", KubeCityPlayer.checkLinked(player), message)
-                ));
+                c -> wrapForwarderMessage(c, new ForwarderMessage(name, icon, "Minecraft", linked, message))
+        );
     }
 
     @Override
@@ -59,9 +58,5 @@ public class SimpleForwarder extends Forwarder {
             recipient.sendMessage(String.format(format, minecraftName, text));
         }
 
-    }
-
-    private DiscordMessage wrapForwarderMessage(TextChannel channel, ForwarderMessage message) {
-        return new EmbedForwarderMessage(channel, message);
     }
 }

@@ -40,10 +40,12 @@ public class TranslatorForwarder extends Forwarder {
 
     @Override
     public void forwardFromMinecraft(Player player, String message) {
-        String name = player.getName();
+        var name = player.getName();
+        var icon = IconStorage.getIconFor(player.getUniqueId());
+        var linked = KubeCityPlayer.checkLinked(player);
         KubeCityBotPlugin.getInstance().getBot().sendDiscordMessages(
                 channels,
-                channel -> new TranslatedMessage("Minecraft", channel, name, message, RatPlayer.of(player).getLocale(), IconStorage.getIconFor(player.getUniqueId()).getIcon(), KubeCityPlayer.checkLinked(player))
+                c -> wrapForwarderMessage(c, new TranslatedMessage(name, icon, "Minecraft", linked, RatPlayer.of(player).getLocale(), message))
         );
     }
 
@@ -106,9 +108,12 @@ public class TranslatorForwarder extends Forwarder {
                 }
             }
 
+            var icon = IconStorage.getIconFor(author);
+            var linked = kubeCityPlayer.isLinked();
             // Send discord message.
             KubeCityBotPlugin.getInstance().getBot().sendDiscordMessage(
-                    new TranslatedMessage("Discord", channel, username, text, null, IconStorage.getIconFor(author).getIcon(), kubeCityPlayer.isLinked()));
+                    wrapForwarderMessage(channel, new TranslatedMessage(username, icon, "Discord", linked, null, text))
+            );
 
             // Delete original message.
             message.delete().queue();
@@ -116,7 +121,6 @@ public class TranslatorForwarder extends Forwarder {
         } catch(NoClassDefFoundError error) {
             KubeCityBotPlugin.getInstance().getLogger().warning("Translator forwarder requires RatTranslate.");
             error.printStackTrace();
-            return;
         }
     }
 
