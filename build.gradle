@@ -8,8 +8,6 @@ plugins {
 group 'city.kube'
 version '4.0.1'
 
-sourceCompatibility = 1.8
-
 repositories {
     maven {
         name = 'spigotmc-repo'
@@ -31,14 +29,14 @@ repositories {
 }
 
 dependencies {
-    compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.12.2-R0.1-SNAPSHOT'
+    compileOnly "org.spigotmc:spigot-api:26.2-R0.1-SNAPSHOT"
 
-    compile group: 'net.dv8tion', name: 'JDA', version: '4.2.1_253'
-    compile group: 'club.minnced', name: 'discord-webhooks', version: '0.5.7'
-    compileOnly group: 'com.github.RanolP', name: 'RatTranslate', version: 'v1.1.0'
+    implementation "net.dv8tion:JDA:6.5.0"
+    implementation "club.minnced:discord-webhooks:0.8.4"
+    compileOnly "com.github.RanolP:RatTranslate:v1.1.0"
     compileOnly 'net.luckperms:api:5.3'
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation 'junit:junit:4.13.1'
 }
 
 processResources {
@@ -48,10 +46,12 @@ processResources {
     }
 }
 
-shadowJar {
-    classifier = ''
-}
-
 artifacts {
     archives shadowJar
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
 }
