@@ -28,5 +28,4 @@ channel-forwarder:
     - shortName
 group-linker:
   use: false
-  groups:
-    - discord minecraft
+  context-key: discord:role

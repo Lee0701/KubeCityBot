@@ -122,7 +122,7 @@ public class DiscordCommandHandler implements TabExecutor {
                     sender.sendMessage(KubeCityBotPlugin.getInstance().getMessage(
                             "registration.unregister-complete", ChatColor.GREEN + "You are now unregistered."));
 
-                    KubeCityBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.clearPlayer(player));
+                    KubeCityBotPlugin.getInstance().getFeature(GroupLinker.class).ifPresent(linker -> linker.reloadPlayer(player));
 
                 } else {
                     sender.sendMessage(KubeCityBotPlugin.getInstance().getMessage(
