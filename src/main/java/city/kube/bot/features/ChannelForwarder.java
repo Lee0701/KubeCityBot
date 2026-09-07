@@ -7,7 +7,7 @@ import city.kube.bot.discord.message.EmbedForwarderMessage;
 import city.kube.bot.discord.message.ForwarderMessage;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -199,7 +199,7 @@ public class ChannelForwarder implements Feature, Listener {
     public void forwardFromDiscord(Message message) {
 
         Channel channel = channels.values().stream()
-                .filter(c -> c.getDiscordChannel().getId().equals(message.getTextChannel().getId()))
+                .filter(c -> c.getDiscordChannel().getId().equals(message.getChannel().getId()))
                 .findFirst().orElse(null);
         Member member = message.getMember();
         if(channel == null || member == null) return;

@@ -7,8 +7,8 @@ import city.kube.bot.discord.message.DiscordMessage;
 import city.kube.bot.discord.message.EmbedForwarderMessage;
 import city.kube.bot.discord.message.ForwarderMessage;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -34,7 +34,7 @@ public class SimpleForwarder extends Forwarder {
 
     @Override
     public void forwardFromDiscord(Message message) {
-        TextChannel channel = message.getTextChannel();
+        TextChannel channel = message.getChannel().asTextChannel();
         User author = message.getAuthor();
         String text = message.getContentDisplay();
 

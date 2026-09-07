@@ -1,7 +1,7 @@
 package city.kube.bot.discord.message;
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 public class WebhookForwarderMessage extends WebhookMessage {
     public WebhookForwarderMessage(TextChannel channel, ForwarderMessage message) {

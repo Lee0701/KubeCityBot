@@ -11,7 +11,7 @@ import city.kube.bot.features.TranslatorForwarder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,7 +26,9 @@ public class DiscordChatListener extends ListenerAdapter {
     private static final String COMMAND_PREFIX = "/";
 
     @Override
-    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+    public void onMessageReceived(MessageReceivedEvent event) {
+        if(!event.isFromGuild()) return;
+
         KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
         Guild guild = event.getGuild();
         if(!guild.getId().equals(plugin.getServerId())) return;
@@ -112,7 +114,7 @@ public class DiscordChatListener extends ListenerAdapter {
             List<Player> players = new ArrayList<>(plugin.getServer().getOnlinePlayers());
             String title = String.format(plugin.getMessage("discord-command.player-list", "List of online players (%1$d/%2$d)") + "\n", Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
             String content = players.stream().map(Player::getPlayerListName).map(name -> "- " + name).collect(Collectors.joining("\n"));
-            bot.sendDiscordMessage(new EmbedMessage(message.getTextChannel(), title, content));
+            bot.sendDiscordMessage(new EmbedMessage(message.getChannel().asTextChannel(), title, content));
             return true;
 
         } else if(command.equals("discord")) {

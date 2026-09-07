@@ -2,10 +2,10 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '2.0.4'
+    id 'com.gradleup.shadow' version '9.6.1'
 }
 
-group 'city.kube'
+group 'kr.kubecity'
 version '4.0.1'
 
 repositories {
@@ -34,7 +34,7 @@ dependencies {
     implementation "net.dv8tion:JDA:6.5.0"
     implementation "club.minnced:discord-webhooks:0.8.4"
     compileOnly "com.github.RanolP:RatTranslate:v1.1.0"
-    compileOnly 'net.luckperms:api:5.3'
+    compileOnly 'net.luckperms:api:5.5'
 
     testImplementation 'junit:junit:4.13.1'
 }
@@ -48,6 +48,10 @@ processResources {
 
 artifacts {
     archives shadowJar
+}
+
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 java {

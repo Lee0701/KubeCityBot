@@ -3,9 +3,8 @@ package city.kube.bot.discord.message;
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.external.JDAWebhookClient;
 import net.dv8tion.jda.api.entities.Icon;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 public class WebhookMessage extends DiscordMessage {
     private final String nickname;
@@ -29,7 +28,7 @@ public class WebhookMessage extends DiscordMessage {
     public void send() {
         if(message == null) return;
         Webhook webhook = getChannel().createWebhook(nickname).setAvatar(avatar).complete();
-        try(WebhookClient client = JDAWebhookClient.fromJDA(webhook)) {
+        try(WebhookClient client = JDAWebhookClient.from(webhook)) {
             client.send(message).join();
         } finally {
             webhook.delete().complete();

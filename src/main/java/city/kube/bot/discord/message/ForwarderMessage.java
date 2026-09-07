@@ -1,9 +1,6 @@
 package city.kube.bot.discord.message;
 
 import city.kube.bot.PlayerIcon;
-import club.minnced.discord.webhook.send.WebhookMessageBuilder;
-import net.dv8tion.jda.api.entities.Icon;
-import net.dv8tion.jda.api.entities.TextChannel;
 
 public final class ForwarderMessage {
     private final String nickname;

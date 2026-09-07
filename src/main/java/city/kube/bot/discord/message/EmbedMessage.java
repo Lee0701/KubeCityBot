@@ -2,7 +2,7 @@ package city.kube.bot.discord.message;
 
 import city.kube.bot.PlayerIcon;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 public class EmbedMessage extends DiscordMessage {
     private String nickname;
@@ -25,7 +25,7 @@ public class EmbedMessage extends DiscordMessage {
         }
         builder.setTitle(title);
         builder.setDescription(content);
-        getChannel().sendMessage(builder.build()).complete();
+        getChannel().sendMessageEmbeds(builder.build()).complete();
     }
 
     public String getNickname() {

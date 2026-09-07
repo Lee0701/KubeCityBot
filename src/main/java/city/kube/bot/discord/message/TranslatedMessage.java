@@ -7,7 +7,7 @@ import io.github.ranolp.rattranslate.Locale;
 import io.github.ranolp.rattranslate.RatTranslate;
 import io.github.ranolp.rattranslate.translator.Translator;
 import net.dv8tion.jda.api.entities.Icon;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.util.EnumMap;
 import java.util.stream.Collectors;

@@ -1,6 +1,6 @@
 package city.kube.bot.discord.message;
 
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 public abstract class DiscordMessage {
     private final TextChannel channel;

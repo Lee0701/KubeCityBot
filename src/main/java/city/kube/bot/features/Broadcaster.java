@@ -3,8 +3,9 @@ package city.kube.bot.features;
 import city.kube.bot.KubeCityBotPlugin;
 import city.kube.bot.discord.BotInstance;
 import city.kube.bot.discord.message.SimpleMessage;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
@@ -38,8 +39,9 @@ public class Broadcaster implements Feature, Listener {
     }
 
     public void broadcast(String message) {
-        Message discordMessage = new MessageBuilder().setContent(message).build();
-        bot.sendDiscordMessages(channels, channel -> new SimpleMessage(channel, discordMessage));
+        try (MessageCreateData discordMessage = new MessageCreateBuilder().setContent(message).build()) {
+            bot.sendDiscordMessages(channels, channel -> new SimpleMessage(channel, discordMessage));
+        }
     }
 
     @EventHandler
