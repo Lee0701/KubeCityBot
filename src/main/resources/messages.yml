@@ -29,3 +29,5 @@ status-updater:
 channel-forwarder:
   channel-not-found: '§eChannel not found.'
   channel-list: '§fRegistered channels: '
+building-storage:
+  hologram-builder: 'Builder: %1$s'

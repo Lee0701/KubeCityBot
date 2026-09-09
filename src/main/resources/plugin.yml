@@ -3,7 +3,7 @@ version: @version@
 main: kr.kubecity.bot.KubeCityBotPlugin
 author: Lee0701
 authors: [Lee0701]
-softdepend: [LuckPerms, RatTranslate]
+softdepend: [LuckPerms, RatTranslate, FancyHolograms]
 description: Plugin for KubeCity.
 commands:
   kubecitybot:
