@@ -40,7 +40,7 @@ public class Building implements ConfigurationSerializable {
         TextHologramData hologramData = new TextHologramData("KubeCity_Building_" + wikiPageId, location);
         hologramData.setText(new ArrayList<>());
 
-        hologramData.addLine(this.name);
+        hologramData.addLine(String.format(plugin.getMessage("building-storage.hologram-name", "%1$s"), this.name));
 
         KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(UUID.fromString(builderUuid)).orElse(null);
         OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(builderUuid));

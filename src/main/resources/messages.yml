@@ -31,6 +31,7 @@ channel-forwarder:
   channel-not-found: '§eChannel not found.'
   channel-list: '§fRegistered channels: '
 building-storage:
+  hologram-name: '<§l%1$s§r>'
   hologram-builder: 'Builder: §a%1$s§f'
   hologram-votes-total: 'Total votes: §a%1$d§f'
 building-votes:
@@ -38,3 +39,4 @@ building-votes:
   not-enabled: "§eBuilding votes feature ins not enabled in config."
   building-list-header: '§aClick on a building name to vote:§f'
   building-list-empty: '§eThere are no buildings nearby.'
+  building-list-item: '- §n%1$s§r'

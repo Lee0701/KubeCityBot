@@ -74,14 +74,17 @@ public class BuildingCommandHandler implements TabExecutor {
             } else {
                 var buildings = Building.BUILDINGS.values().stream().filter(building -> building.getHologram().isViewer(player));
                 var lines = new ArrayList<>(buildings.map(building -> {
-                    TextComponent message = new TextComponent(String.format("- %s\n", building.getName()));
+                    TextComponent message = new TextComponent(
+                            String.format(plugin.getMessage("building-votes.building-list-item", "- %1$s\n"), building.getName()));
                     message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/building vote %d", building.getWikiPageId())));
                     return message;
                 }).toList());
                 if(lines.isEmpty()) {
-                    lines.add(new TextComponent(plugin.getMessage("building-votes.building-list-empty", "There are no buildings nearby.") + "\n"));
+                    lines.add(new TextComponent(
+                            plugin.getMessage("building-votes.building-list-empty", "There are no buildings nearby.") + "\n"));
                 }
-                lines.addFirst(new TextComponent(plugin.getMessage("building-votes.building-list-header", "Buildings nearby:") + "\n"));
+                lines.addFirst(new TextComponent(
+                        plugin.getMessage("building-votes.building-list-header", "Buildings nearby:") + "\n"));
                 player.spigot().sendMessage(lines.toArray(new TextComponent[0]));
 
             }
