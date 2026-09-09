@@ -40,9 +40,11 @@ public class GroupLinker implements Feature, ContextCalculator<Player> {
 
     @Override
     public void calculate(Player target, ContextConsumer consumer) {
+        var guild = KubeCityBotPlugin.getInstance().getBot().getGuild();
+        if(guild == null) return;
         var member = KubeCityPlayer.of(target)
                 .map(KubeCityPlayer::getDiscordId)
-                .map(KubeCityBotPlugin.getInstance().getBot().getGuild()::getMemberById)
+                .map(guild::getMemberById)
                 .orElse(null);
         if(member == null) return;
         member.getRoles().stream()

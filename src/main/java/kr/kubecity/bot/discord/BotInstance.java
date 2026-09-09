@@ -50,6 +50,7 @@ public class BotInstance {
     }
 
     public Guild getGuild() {
+        if(jda == null) return null;
         return jda.getGuildById(KubeCityBotPlugin.getInstance().getServerId());
     }
 
