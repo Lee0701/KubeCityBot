@@ -97,7 +97,7 @@ public class ChannelForwarder extends Forwarder {
                     event.setCancelled(true);
                 } else if(command.startsWith("#")) {
                     // "##{channel}" : Add listening/speaking
-                    if(player.isOp()) {
+                    if(player.hasPermission("kubecitybot.admin")) {
                         String shortName = command.substring(1);
                         Channel channel = this.channels.get(shortName);
                         if(channel == null) {
@@ -112,7 +112,7 @@ public class ChannelForwarder extends Forwarder {
                     event.setCancelled(true);
                 } else if(command.startsWith("=")) {
                     // "#={channel}" : Remove listening/speaking
-                    if(player.isOp()) {
+                    if(player.hasPermission("kubecitybot.admin")) {
                         String shortName = command.substring(1);
                         Channel channel = this.channels.get(shortName);
                         if(channel == null) {
@@ -143,7 +143,7 @@ public class ChannelForwarder extends Forwarder {
             } else {
                 if(command.startsWith("@")) {
                     // "#@ Message" : Send to all channels
-                    if(player.isOp()) {
+                    if(player.hasPermission("kubecitybot.admin")) {
                         String newMessage = message.substring(prefix.length() + command.length() + 1);
                         event.setFormat(String.format(format, "@"));
                         event.setMessage(newMessage);

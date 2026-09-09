@@ -1,3 +1,4 @@
+missing-permission: "§eYou don't have permission to use this command."
 registration:
   type-in-discord: 'Type "%1$s" in Discord chat to complete.'
   alt-command-info: 'or click to copy an alternative command'
@@ -30,8 +31,10 @@ channel-forwarder:
   channel-not-found: '§eChannel not found.'
   channel-list: '§fRegistered channels: '
 building-storage:
-  hologram-builder: 'Builder: %1$s'
-  hologram-votes-total: 'Total votes: %1$d'
+  hologram-builder: 'Builder: §a%1$s§f'
+  hologram-votes-total: 'Total votes: §a%1$d§f'
 building-votes:
-  building-list-header: 'Click on a building name to vote:'
-  building-list-empty: 'There are no buildings nearby.'
+  not-player: "§eYou must be a player to use this command."
+  not-enabled: "§eBuilding votes feature ins not enabled in config."
+  building-list-header: '§aClick on a building name to vote:§f'
+  building-list-empty: '§eThere are no buildings nearby.'

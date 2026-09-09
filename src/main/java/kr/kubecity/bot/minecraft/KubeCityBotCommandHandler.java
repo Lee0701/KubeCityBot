@@ -7,35 +7,39 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class KubeCityBotCommandHandler implements TabExecutor {
 
-    private final List<String> completes = new ArrayList<>(Arrays.asList("reload"));
+    private final List<String> completes = new ArrayList<>(Arrays.asList("reload", "save"));
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if(!sender.hasPermission("kubecitybot.admin")) {
+            sender.sendMessage(KubeCityBotPlugin.getInstance().getMessage(
+                    "missing-permission",
+                    "You don't have permission to use this command."
+            ));
+            return true;
+        }
         if(args.length < 1) {
-            if(sender.isOp()) {
-                sender.sendMessage("Usage:");
-                sender.sendMessage("/" + label + " reload");
-            }
+            String commands = completes.stream().collect(Collectors.joining("|"));
+            sender.sendMessage("Usage:");
+            sender.sendMessage("/" + label + " (" + commands + ")");
             return true;
         }
         if(args[0].equals("reload")) {
-            if(sender.isOp()) {
-                sender.sendMessage(ChatColor.GRAY + "Reloading KobayaBot...");
-                KubeCityBotPlugin.getInstance().saveData();
-                KubeCityBotPlugin.getInstance().reload();
-                sender.sendMessage(ChatColor.GREEN + "Reload complete!");
-            }
+            sender.sendMessage(ChatColor.GRAY + "Reloading KobayaBot...");
+            KubeCityBotPlugin.getInstance().saveData();
+            KubeCityBotPlugin.getInstance().reload();
+            sender.sendMessage(ChatColor.GREEN + "Reload complete!");
             return true;
         } else if(args[0].equals("save")) {
-            if(sender.isOp()) {
-                sender.sendMessage(ChatColor.GRAY + "Saving data...");
-                KubeCityBotPlugin.getInstance().saveConfig();
-                KubeCityBotPlugin.getInstance().saveData();
-                sender.sendMessage(ChatColor.GREEN + "Save complete!");
-            }
+            sender.sendMessage(ChatColor.GRAY + "Saving data...");
+            KubeCityBotPlugin.getInstance().saveConfig();
+            KubeCityBotPlugin.getInstance().saveData();
+            sender.sendMessage(ChatColor.GREEN + "Save complete!");
+            return true;
         }
         return false;
     }
@@ -43,7 +47,7 @@ public class KubeCityBotCommandHandler implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> copied;
-        if(sender.isOp()) {
+        if(sender.hasPermission("kubecitybot.admin")) {
             copied = new ArrayList<>(completes);
         } else {
             copied = new ArrayList<>();

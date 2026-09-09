@@ -29,15 +29,29 @@ public class BuildingCommandHandler implements TabExecutor {
         KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
         if(args[0].equals("vote")) {
             if(!(sender instanceof Player)) {
-                sender.sendMessage("You must be a player to use this command.");
+                sender.sendMessage(plugin.getMessage(
+                        "missing-permission",
+                        "You must be a player to use this command."
+                ));
                 return true;
             }
             var votes = plugin.getFeature(BuildingVotes.class).orElse(null);
             if(votes == null) {
-                sender.sendMessage("Building Votes feature ins not enabled in config.");
+                sender.sendMessage(plugin.getMessage(
+                        "building-votes.not-enabled",
+                        "Building votes feature ins not enabled in config."
+                ));
                 return true;
             }
             Player player = (Player) sender;
+
+            if(!player.hasPermission("kubecitybot.building.vote")) {
+                sender.sendMessage(plugin.getMessage(
+                        "missing-permission",
+                        "You don't have permission to use this command."
+                ));
+            }
+
             if(args.length == 2) {
                 int buildingId = -1;
                 try {
@@ -56,7 +70,6 @@ public class BuildingCommandHandler implements TabExecutor {
                 votes.getDatabase().putVote(new Vote(building.getWikiPageId(), uuid, new Date()));
                 player.sendMessage("Successfully voted to " + building.getName());
                 building.spawnHologram();
-                return true;
 
             } else {
                 var buildings = Building.BUILDINGS.values().stream().filter(building -> building.getHologram().isViewer(player));
@@ -70,9 +83,9 @@ public class BuildingCommandHandler implements TabExecutor {
                 }
                 lines.addFirst(new TextComponent(plugin.getMessage("building-votes.building-list-header", "Buildings nearby:") + "\n"));
                 player.spigot().sendMessage(lines.toArray(new TextComponent[0]));
-                return true;
 
             }
+            return true;
         }
         return false;
     }

@@ -99,7 +99,7 @@ public class DiscordCommandHandler implements TabExecutor {
         }
         if(args[0].equals("unregister")) {
             if(args.length >= 2) {
-                if(sender.isOp()) {
+                if(sender.hasPermission("kubecitybot.admin")) {
                     KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(KubeCityBotPlugin.getInstance().getServer().getPlayer(args[1])).orElse(null);
                     if(kubeCityPlayer != null) {
                         KubeCityPlayer.PLAYER_MAP.remove(kubeCityPlayer.getDiscordId());
@@ -137,11 +137,7 @@ public class DiscordCommandHandler implements TabExecutor {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> copied;
-        if(sender.isOp()) {
-            copied = new ArrayList<>(completes);
-        } else {
-            copied = new ArrayList<>(completes);
-        }
+        copied = new ArrayList<>(completes);
         if(args.length == 1) {
             copied.removeIf(it -> !it.startsWith(args[0]));
             return copied;

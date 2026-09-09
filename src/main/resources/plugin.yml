@@ -13,3 +13,10 @@ commands:
     description: "Discord link command."
   building:
     description: "Building command."
+permissions:
+  kubecitybot.admin:
+    description: Gives admin rights for KubeCityBot
+    default: op
+  kubecitybot.building.vote:
+    description: Allows building vote command
+    default: true
