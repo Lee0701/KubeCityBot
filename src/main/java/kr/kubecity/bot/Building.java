@@ -4,6 +4,7 @@ import de.oliver.fancyholograms.api.HologramManager;
 import de.oliver.fancyholograms.api.data.TextHologramData;
 import de.oliver.fancyholograms.api.hologram.Hologram;
 import kr.kubecity.bot.features.BuildingStorage;
+import kr.kubecity.bot.features.BuildingVotes;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -31,22 +32,31 @@ public class Building implements ConfigurationSerializable {
     }
 
     public void spawnHologram() {
-        HologramManager manager = KubeCityBotPlugin.getInstance().getFeature(BuildingStorage.class).get().getHologramManager();
+        KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
+        HologramManager manager = plugin.getFeature(BuildingStorage.class).get().getHologramManager();
 
         Location location = this.location.clone();
         location.add(0.5, 1, 0.5);
         TextHologramData hologramData = new TextHologramData("KubeCity_Building_" + wikiPageId, location);
         hologramData.setText(new ArrayList<>());
+
         hologramData.addLine(this.name);
+
         KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(UUID.fromString(builderUuid)).orElse(null);
         OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(builderUuid));
         String name = null;
         if(kubeCityPlayer != null) name = kubeCityPlayer.getNickname();
         else name = offlinePlayer.getName();
         if(name != null) {
-            String format = KubeCityBotPlugin.getInstance().getMessage("building-storage.hologram-builder", "Builder: %1$s");
+            String format = plugin.getMessage("building-storage.hologram-builder", "Builder: %1$s");
             hologramData.addLine(String.format(format, name));
         }
+
+        plugin.getFeature(BuildingVotes.class).ifPresent(votes -> {
+            String format = plugin.getMessage("building-storage.hologram-votes-total", "Total votes: %1$d");
+            int totalVotes = votes.getDatabase().getVotes(this).size();
+            hologramData.addLine(String.format(format, totalVotes));
+        });
 
         if(this.hologram != null) {
             manager.removeHologram(hologram);
@@ -81,6 +91,10 @@ public class Building implements ConfigurationSerializable {
 
     public void setBuilderUuid(String builderUuid) {
         this.builderUuid = builderUuid;
+    }
+
+    public Hologram getHologram() {
+        return hologram;
     }
 
     public static Building deserialize(Map<String, Object> map) {

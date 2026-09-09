@@ -2,6 +2,7 @@ package kr.kubecity.bot;
 
 import kr.kubecity.bot.discord.BotInstance;
 import kr.kubecity.bot.features.*;
+import kr.kubecity.bot.minecraft.BuildingCommandHandler;
 import kr.kubecity.bot.minecraft.DiscordCommandHandler;
 import kr.kubecity.bot.minecraft.KubeCityBotCommandHandler;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -18,9 +19,8 @@ import java.util.Optional;
 
 public final class KubeCityBotPlugin extends JavaPlugin {
 
-    private static KubeCityBotPlugin INSTANCE;
     public static KubeCityBotPlugin getInstance() {
-        return INSTANCE;
+        return getPlugin(KubeCityBotPlugin.class);
     }
 
     private BotInstance bot = new BotInstance();
@@ -36,7 +36,6 @@ public final class KubeCityBotPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        INSTANCE = this;
         getDataFolder().mkdirs();
         saveDefaultConfig();
         if(!messagesFile.exists()) saveResource(messagesFile.getName(), false);
@@ -47,6 +46,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
 
         getCommand("kubecitybot").setExecutor(new KubeCityBotCommandHandler());
         getCommand("discord").setExecutor(new DiscordCommandHandler());
+        getCommand("building").setExecutor(new BuildingCommandHandler());
 
     }
 
@@ -54,11 +54,9 @@ public final class KubeCityBotPlugin extends JavaPlugin {
     public void onDisable() {
         saveData();
         bot.shutdown();
-        INSTANCE = null;
     }
 
     public void reload() {
-        INSTANCE = this;
         HandlerList.unregisterAll(this);
 
         reloadConfig();
@@ -88,6 +86,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         if(config.getConfigurationSection("channel-forwarder").getBoolean("use")) features.add(new ChannelForwarder());
         if(config.getConfigurationSection("group-linker").getBoolean("use")) features.add(new GroupLinker());
         if(config.getConfigurationSection("building-storage").getBoolean("use")) features.add(new BuildingStorage());
+        if(config.getConfigurationSection("building-votes").getBoolean("use")) features.add(new BuildingVotes());
 
     }
 

@@ -11,3 +11,5 @@ commands:
     description: "KubeCityBot main command."
   discord:
     description: "Discord link command."
+  building:
+    description: "Building command."

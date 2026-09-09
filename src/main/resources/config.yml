@@ -38,3 +38,5 @@ building-storage:
   api-endpoint:
   category-name:
   show-hologram: true
+building-votes:
+  use: false

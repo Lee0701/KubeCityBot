@@ -31,3 +31,7 @@ channel-forwarder:
   channel-list: '§fRegistered channels: '
 building-storage:
   hologram-builder: 'Builder: %1$s'
+  hologram-votes-total: 'Total votes: %1$d'
+building-votes:
+  building-list-header: 'Click on a building name to vote:'
+  building-list-empty: 'There are no buildings nearby.'
