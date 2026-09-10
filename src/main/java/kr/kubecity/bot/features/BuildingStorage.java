@@ -43,9 +43,7 @@ public class BuildingStorage implements Feature {
 
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             cacheBuildings();
-            if(showHologram) {
-                Building.BUILDINGS.values().forEach(Building::spawnHologram);
-            }
+            Building.spawnHolograms();
         });
     }
 
@@ -124,5 +122,9 @@ public class BuildingStorage implements Feature {
 
     public HologramManager getHologramManager() {
         return hologramManager;
+    }
+
+    public boolean isShowHologram() {
+        return showHologram;
     }
 }

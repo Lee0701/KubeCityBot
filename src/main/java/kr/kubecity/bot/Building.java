@@ -33,7 +33,9 @@ public class Building implements ConfigurationSerializable {
 
     public void spawnHologram() {
         KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
-        HologramManager manager = plugin.getFeature(BuildingStorage.class).get().getHologramManager();
+        BuildingStorage feature = plugin.getFeature(BuildingStorage.class).orElse(null);
+        if(feature == null || !feature.isShowHologram()) return;
+        HologramManager manager = feature.getHologramManager();
 
         Location location = this.location.clone();
         location.add(0.5, 1, 0.5);
@@ -95,6 +97,12 @@ public class Building implements ConfigurationSerializable {
 
     public Hologram getHologram() {
         return hologram;
+    }
+
+    public static void spawnHolograms() {
+        BuildingStorage feature = KubeCityBotPlugin.getInstance().getFeature(BuildingStorage.class).orElse(null);
+        if(feature == null || !feature.isShowHologram()) return;
+        BUILDINGS.values().forEach(Building::spawnHologram);
     }
 
     public static Building deserialize(Map<String, Object> map) {

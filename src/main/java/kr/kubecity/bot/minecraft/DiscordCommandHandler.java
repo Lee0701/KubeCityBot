@@ -3,6 +3,7 @@ package kr.kubecity.bot.minecraft;
 import kr.kubecity.bot.KubeCityBotPlugin;
 import kr.kubecity.bot.KubeCityPlayer;
 import kr.kubecity.bot.Registration;
+import kr.kubecity.bot.Util;
 import kr.kubecity.bot.features.GroupLinker;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -49,7 +50,7 @@ public class DiscordCommandHandler implements TabExecutor {
         KubeCityPlayer kubeCityPlayer = null;
 
         if(args.length >= 1) {
-            OfflinePlayer offlinePlayer = findOfflinePlayer(args[0]);
+            OfflinePlayer offlinePlayer = Util.findOfflinePlayer(args[0]);
             if(offlinePlayer != null) kubeCityPlayer = KubeCityPlayer.of(offlinePlayer.getUniqueId()).orElse(null);
         } else if(sender instanceof Player) {
             kubeCityPlayer = KubeCityPlayer.of((Player) sender).orElse(null);
@@ -122,7 +123,7 @@ public class DiscordCommandHandler implements TabExecutor {
                 ));
                 return;
             }
-            OfflinePlayer offlinePlayer = findOfflinePlayer(args[0]);
+            OfflinePlayer offlinePlayer = Util.findOfflinePlayer(args[0]);
             if(offlinePlayer == null) {
                 sender.sendMessage(String.format(plugin.getMessage(
                         "registration.player-is-not-registered", ChatColor.YELLOW + "Player %1$s is not registered!"
@@ -163,20 +164,6 @@ public class DiscordCommandHandler implements TabExecutor {
             sender.sendMessage(plugin.getMessage(
                     "registration.already-unregistered", ChatColor.YELLOW + "You are already unregistered!"));
         }
-    }
-
-    private  OfflinePlayer findOfflinePlayer(String arg) {
-        OfflinePlayer offlinePlayer;
-        try {
-            UUID uuid = UUID.fromString(arg);
-            offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-        } catch(IllegalArgumentException ex) {
-            offlinePlayer = Arrays.stream(Bukkit.getOfflinePlayers())
-                    .filter(p -> Objects.equals(p.getName(), arg))
-                    .findAny()
-                    .orElse(null);
-        }
-        return offlinePlayer;
     }
 
     @Override

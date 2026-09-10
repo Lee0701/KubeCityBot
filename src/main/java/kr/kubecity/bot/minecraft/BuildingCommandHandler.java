@@ -2,6 +2,7 @@ package kr.kubecity.bot.minecraft;
 
 import kr.kubecity.bot.Building;
 import kr.kubecity.bot.KubeCityBotPlugin;
+import kr.kubecity.bot.Util;
 import kr.kubecity.bot.Vote;
 import kr.kubecity.bot.features.BuildingVotes;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -36,6 +37,7 @@ public class BuildingCommandHandler implements TabExecutor {
         var subArgs = Arrays.copyOfRange(args, 1, args.length);
         switch(args[0]) {
             case "vote" -> voteCommand(sender, subLabel, subArgs);
+            case "votes" -> votesCommand(sender, subLabel, subArgs);
             case "register" -> registerCommand(sender, subLabel, subArgs);
             default -> usage(sender, label);
         }
@@ -94,7 +96,7 @@ public class BuildingCommandHandler implements TabExecutor {
                 ));
                 return;
             }
-            votes.getDatabase().putVote(new Vote(building.getWikiPageId(), uuid, new Date()));
+            votes.getDatabase().putVote(new Vote(-1, building.getWikiPageId(), uuid, new Date()));
             player.sendMessage("Successfully voted to " + building.getName());
             building.spawnHologram();
 
@@ -114,6 +116,94 @@ public class BuildingCommandHandler implements TabExecutor {
                     plugin.getMessage("building-votes.building-list-header", "Buildings nearby:") + "\n"));
             player.spigot().sendMessage(lines.toArray(new TextComponent[0]));
 
+        }
+    }
+
+    private void votesCommand(CommandSender sender, String label, String[] args) {
+        KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
+
+        var votes = plugin.getFeature(BuildingVotes.class).orElse(null);
+        if(votes == null) {
+            sender.sendMessage(plugin.getMessage(
+                    "building-votes.not-enabled",
+                    "Building votes feature ins not enabled in config."
+            ));
+            return;
+        }
+
+        if(!sender.hasPermission("kubecitybot.admin")) {
+            sender.sendMessage(plugin.getMessage(
+                    "missing-permission",
+                    "You don't have permission to use this command."
+            ));
+        }
+
+        if(args.length < 1) {
+            sender.sendMessage("Usage:");
+            sender.sendMessage("/" + label + " [lookup|delete|clear]");
+            return;
+        }
+
+        switch(args[0]) {
+            case "lookup" -> {
+                if(args.length < 3) {
+                    sender.sendMessage("Usage:");
+                    sender.sendMessage("/" + label + " lookup [player] [count]");
+                    return;
+                }
+
+                var player = Util.findOfflinePlayer(args[1]);
+                var uuid = (player == null) ? null : player.getUniqueId().toString();
+
+                int count = 0;
+                try {
+                    count = Integer.parseInt(args[2]);
+                }  catch (NumberFormatException _) {}
+                if(count <= 0) return;
+
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                var list = votes.getDatabase().getVotes(uuid);
+                list.subList(Math.max(list.size() - count, 0), list.size()).forEach(vote -> {
+                    int id = vote.id();
+                    var building = Building.BUILDINGS.get(vote.buildingId());
+                    var buildingName = (building == null) ? null : building.getName();
+                    var date = format.format(vote.date());
+                    sender.sendMessage(String.format("- %06d: %s <%s>", id, date, buildingName));
+                });
+            }
+            case "clear" -> {
+                if(args.length < 2) {
+                    sender.sendMessage("Usage:");
+                    sender.sendMessage("/" + label + " clear [player]");
+                    return;
+                }
+
+                var player = Util.findOfflinePlayer(args[1]);
+                var uuid = (player == null) ? null : player.getUniqueId().toString();
+
+                int deleted = votes.getDatabase().clearVotes(uuid);
+                sender.sendMessage(String.format("Deleted %d votes", deleted));
+
+                Building.spawnHolograms();
+            }
+            case "delete" -> {
+                if(args.length < 2) {
+                    sender.sendMessage("Usage:");
+                    sender.sendMessage("/" + label + " delete [id]");
+                    return;
+                }
+
+                int id = -1;
+                try {
+                    id = Integer.parseInt(args[1]);
+                }  catch (NumberFormatException _) {}
+                if(id == -1) return;
+
+                int deleted = votes.getDatabase().deleteVote(id);
+                sender.sendMessage(String.format("Deleted %d votes", deleted));
+
+                Building.spawnHolograms();
+            }
         }
     }
 
