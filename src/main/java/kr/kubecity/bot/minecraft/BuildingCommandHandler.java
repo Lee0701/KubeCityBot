@@ -67,7 +67,7 @@ public class BuildingCommandHandler implements TabExecutor {
                 var building = Building.BUILDINGS.get(buildingId);
                 if(building == null) {
                     player.sendMessage(String.format(plugin.getMessage(
-                            "no-such-building",
+                            "building-votes.no-such-building",
                             "No such building with id %1$d"
                     ), buildingId));
                     return true;
@@ -75,7 +75,7 @@ public class BuildingCommandHandler implements TabExecutor {
                 String uuid = player.getUniqueId().toString();
                 if(building.getBuilderUuid().equals(uuid)) {
                     player.sendMessage(plugin.getMessage(
-                            "no-self-voting",
+                            "building-votes.no-self-voting",
                             "You cannot vote to your building."
                     ));
                     return true;
