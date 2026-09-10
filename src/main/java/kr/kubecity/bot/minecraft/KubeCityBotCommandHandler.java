@@ -29,7 +29,7 @@ public class KubeCityBotCommandHandler implements TabExecutor {
             return true;
         }
         if(args[0].equals("reload")) {
-            sender.sendMessage(ChatColor.GRAY + "Reloading KobayaBot...");
+            sender.sendMessage(ChatColor.GRAY + "Reloading KubeCityBot...");
             KubeCityBotPlugin.getInstance().saveData();
             KubeCityBotPlugin.getInstance().reload();
             sender.sendMessage(ChatColor.GREEN + "Reload complete!");

@@ -18,5 +18,8 @@ permissions:
     description: Gives admin rights for KubeCityBot
     default: op
   kubecitybot.building.vote:
-    description: Allows building vote command
+    description: Allows /building vote command
+    default: true
+  kubecitybot.building.register:
+    description: Allows /building register command
     default: true

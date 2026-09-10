@@ -112,6 +112,13 @@ public class BuildingCommandHandler implements TabExecutor {
                 return true;
             }
 
+            if(!player.hasPermission("kubecitybot.building.register")) {
+                sender.sendMessage(plugin.getMessage(
+                        "missing-permission",
+                        "You don't have permission to use this command."
+                ));
+            }
+
             if(args.length < 2) {
                 sender.sendMessage(plugin.getMessage(
                         "missing-building-name",
