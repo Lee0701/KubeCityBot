@@ -10,6 +10,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,7 +21,11 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Date;
+import java.util.Optional;
 
 public class BuildingStorage implements Feature {
     private String apiEndpoint;
@@ -29,6 +35,8 @@ public class BuildingStorage implements Feature {
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5))
             .build();
+    private Date lastUpdate = new Date();
+    private BukkitTask updateCacheTask;
     private HologramManager hologramManager;
 
     @Override
@@ -45,6 +53,12 @@ public class BuildingStorage implements Feature {
             cacheBuildings();
             Building.spawnHolograms();
         });
+
+        if(updateCacheTask != null) updateCacheTask.cancel();
+        updateCacheTask = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+            updateCache(null);
+            lastUpdate = new Date();
+        }, 0L, 15 * 20);
     }
 
     @Override
@@ -53,12 +67,20 @@ public class BuildingStorage implements Feature {
     }
 
     public void cacheBuildings() {
-        this.cacheBuildings(0);
+        this.cacheBuildings(-1);
     }
 
-    public void cacheBuildings(int offset) {
+    public void cacheBuildings(int pageId) {
+        this.cacheBuildings(pageId, 0);
+    }
+
+    public void cacheBuildings(int pageId, int offset) {
         try {
-            String query = String.format("[[%s]]|offset=%d|?Name|?Builder|?X|?Y|?Z|?World|?Page ID", categoryName, offset);
+            StringBuilder conditions = new StringBuilder();
+            conditions.append(String.format("[[%s]]", categoryName));
+            if(pageId >= 0) conditions.append(String.format("[[Page ID::%d]]", pageId));
+            String query = String.format("%s|offset=%d|?Name|?Builder|?X|?Y|?Z|?World|?Page ID", conditions, offset);
+
             URI uri = new URIBuilder(apiEndpoint)
                     .setParameter("action", "ask")
                     .setParameter("query", query)
@@ -78,15 +100,17 @@ public class BuildingStorage implements Feature {
             }
 
             JSONObject object = new JSONObject(response.body());
-            JSONObject results = object.getJSONObject("query").getJSONObject("results");
-            for(String key : results.keySet()) {
-                JSONObject result = results.getJSONObject(key);
-                parseBuildingResult(result);
+
+            if(object.getJSONObject("query").get("results") instanceof JSONObject results) {
+                for(String key : results.keySet()) {
+                    JSONObject result = results.getJSONObject(key);
+                    parseBuildingResult(result);
+                }
             }
 
             if(object.has("query-continue-offset")) {
                 int continueOffset = object.getInt("query-continue-offset");
-                cacheBuildings(continueOffset);
+                cacheBuildings(pageId, continueOffset);
             }
 
         } catch (URISyntaxException | IOException | InterruptedException e) {
@@ -94,7 +118,50 @@ public class BuildingStorage implements Feature {
         }
     }
 
-    public void parseBuildingResult(JSONObject object) {
+    public void updateCache(String rccontinue) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        try {
+            URIBuilder uriBuilder = new URIBuilder(apiEndpoint)
+                    .setParameter("action", "query")
+                    .setParameter("list", "recentchanges")
+                    .setParameter("rcend", dateFormat.format(lastUpdate))
+                    .setParameter("rcprop", "ids")
+                    .setParameter("format", "json")
+                    .setParameter("origin", "*");
+            if(rccontinue != null) uriBuilder.setParameter("rccontinue", rccontinue);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(uriBuilder.build())
+                    .header("Content-Type", "application/json")
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if(response.statusCode() != 200) {
+                throw new IOException("HTTP GET request failed with response code " + response.statusCode());
+            }
+
+            JSONObject object = new JSONObject(response.body());
+
+            JSONArray recentChanges = object.getJSONObject("query").getJSONArray("recentchanges");
+            for(int i = 0; i < recentChanges.length(); i++) {
+                JSONObject change =  recentChanges.getJSONObject(i);
+                int pageId = change.getInt("pageid");
+                cacheBuildings(pageId);
+                Optional.ofNullable(Building.BUILDINGS.get(pageId)).ifPresent(Building::spawnHologram);
+            }
+
+            if(object.has("continue")) {
+                updateCache(object.getJSONObject("continue").getString("rccontinue"));
+            }
+
+        } catch (URISyntaxException | IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void parseBuildingResult(JSONObject object) {
         try {
             JSONObject printouts = object.getJSONObject("printouts");
             String name = printouts.getJSONArray("Name").getString(0);
