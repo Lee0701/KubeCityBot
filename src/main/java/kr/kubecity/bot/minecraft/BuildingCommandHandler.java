@@ -184,7 +184,7 @@ public class BuildingCommandHandler implements TabExecutor {
                 int deleted = votes.getDatabase().clearVotes(uuid);
                 sender.sendMessage(String.format("Deleted %d votes", deleted));
 
-                Building.spawnHolograms();
+                Building.BUILDINGS.values().forEach(Building::spawnHologram);
             }
             case "delete" -> {
                 if(args.length < 2) {
@@ -202,7 +202,7 @@ public class BuildingCommandHandler implements TabExecutor {
                 int deleted = votes.getDatabase().deleteVote(id);
                 sender.sendMessage(String.format("Deleted %d votes", deleted));
 
-                Building.spawnHolograms();
+                Building.BUILDINGS.values().forEach(Building::spawnHologram);
             }
         }
     }

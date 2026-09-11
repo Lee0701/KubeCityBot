@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,10 +23,15 @@ public abstract class Forwarder implements Feature, Listener {
     protected String messageType;
 
     @Override
-    public void reload(JavaPlugin plugin) {
+    public void load(JavaPlugin plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
         channels = getConfigurationSection().getStringList("channels");
         messageType = getConfigurationSection().getString("message-type");
+    }
+
+    @Override
+    public void unload(JavaPlugin plugin) {
+        HandlerList.unregisterAll(this);
     }
 
     @Override

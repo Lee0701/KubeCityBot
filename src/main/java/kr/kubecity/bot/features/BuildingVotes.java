@@ -12,7 +12,7 @@ public class BuildingVotes implements Feature {
     private VotesDatabase database;
 
     @Override
-    public void reload(JavaPlugin plugin) {
+    public void load(JavaPlugin plugin) {
         String databasePath = new File(
                 plugin.getDataFolder(),
                 getConfigurationSection().getString("database-path", "votes.db")
@@ -27,8 +27,19 @@ public class BuildingVotes implements Feature {
     }
 
     @Override
-    public void save() {
+    public void unload(JavaPlugin plugin) {
+        if(this.database != null) {
+            try {
+                this.database.close();
+                this.database = null;
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
+    @Override
+    public void save() {
     }
 
     @Override

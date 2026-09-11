@@ -67,6 +67,12 @@ public class Building implements ConfigurationSerializable {
         manager.addHologram(this.hologram);
     }
 
+    public void removeHologram() {
+        if(this.hologram != null) {
+            this.hologram.deleteHologram();
+        }
+    }
+
     public int getWikiPageId() {
         return wikiPageId;
     }
@@ -97,12 +103,6 @@ public class Building implements ConfigurationSerializable {
 
     public Hologram getHologram() {
         return hologram;
-    }
-
-    public static void spawnHolograms() {
-        BuildingStorage feature = KubeCityBotPlugin.getInstance().getFeature(BuildingStorage.class).orElse(null);
-        if(feature == null || !feature.isShowHologram()) return;
-        BUILDINGS.values().forEach(Building::spawnHologram);
     }
 
     public static Building deserialize(Map<String, Object> map) {

@@ -320,8 +320,8 @@ public class ChannelForwarder extends Forwarder {
     }
 
     @Override
-    public void reload(JavaPlugin plugin) {
-        super.reload(plugin);
+    public void load(JavaPlugin plugin) {
+        super.load(plugin);
 
         prefix = getConfigurationSection().getString("prefix");
         format = getConfigurationSection().getString("format");

@@ -5,7 +5,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public interface Feature {
 
-    void reload(JavaPlugin plugin);
+    void load(JavaPlugin plugin);
+
+    void unload(JavaPlugin plugin);
 
     void save();
 

@@ -23,10 +23,15 @@ public class GroupLinker implements Feature, ContextCalculator<Player> {
     private final LuckPerms permsApi = provider.getProvider();
 
     @Override
-    public void reload(JavaPlugin plugin) {
+    public void load(JavaPlugin plugin) {
         contextKey = getConfigurationSection().getString("context-key");
 
         permsApi.getContextManager().registerCalculator(this);
+    }
+
+    @Override
+    public void unload(JavaPlugin plugin) {
+        permsApi.getContextManager().unregisterCalculator(this);
     }
 
     @Override

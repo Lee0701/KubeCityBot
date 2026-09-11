@@ -40,19 +40,19 @@ public class BuildingStorage implements Feature {
     private HologramManager hologramManager;
 
     @Override
-    public void reload(JavaPlugin plugin) {
+    public void load(JavaPlugin plugin) {
         apiEndpoint = getConfigurationSection().getString("api-endpoint");
         categoryName = getConfigurationSection().getString("category-name");
         showHologram =  getConfigurationSection().getBoolean("show-hologram");
 
-        if(showHologram) {
-            hologramManager = FancyHologramsPlugin.get().getHologramManager();
-        }
-
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             cacheBuildings();
-            Building.spawnHolograms();
         });
+
+        if(showHologram) {
+            hologramManager = FancyHologramsPlugin.get().getHologramManager();
+            Building.BUILDINGS.values().forEach(Building::spawnHologram);
+        }
 
         if(updateCacheTask != null) updateCacheTask.cancel();
         updateCacheTask = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> {
@@ -62,8 +62,14 @@ public class BuildingStorage implements Feature {
     }
 
     @Override
-    public void save() {
+    public void unload(JavaPlugin plugin) {
+        Building.BUILDINGS.values().forEach(Building::removeHologram);
 
+        if(updateCacheTask != null) updateCacheTask.cancel();
+    }
+
+    @Override
+    public void save() {
     }
 
     public void cacheBuildings() {

@@ -8,6 +8,6 @@ import org.jetbrains.annotations.NotNull;
 public class ReadyListener extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        KubeCityBotPlugin.getInstance().reloadFeatures();
+        KubeCityBotPlugin.getInstance().loadFeatures();
     }
 }
