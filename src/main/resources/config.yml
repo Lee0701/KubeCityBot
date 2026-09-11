@@ -40,3 +40,8 @@ building-storage:
   show-hologram: true
 building-votes:
   use: false
+builder-level:
+  use: false
+  require-role: discordRoleName
+  broadcast-channels:
+    - discordChannelId

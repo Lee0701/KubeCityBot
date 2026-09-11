@@ -151,7 +151,7 @@ public class DiscordChatListener extends ListenerAdapter {
                     }
                 }
                 message.getChannel().sendMessage(plugin.getMessage(
-                        "registration.player-not-found-discord",
+                        "player-not-found-discord",
                         "Player not found.")).queue();
             }
             return true;
@@ -192,7 +192,7 @@ public class DiscordChatListener extends ListenerAdapter {
                     }
                 }
                 message.getChannel().sendMessage(plugin.getMessage(
-                        "registration.player-not-found-discord",
+                        "player-not-found-discord",
                         "Player not found.")).queue();
             }
             return true;

@@ -3,8 +3,6 @@ package kr.kubecity.bot.features;
 import kr.kubecity.bot.KubeCityBotPlugin;
 import kr.kubecity.bot.discord.BotInstance;
 import kr.kubecity.bot.discord.message.SimpleMessage;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
-import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;

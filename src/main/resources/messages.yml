@@ -1,5 +1,8 @@
 missing-permission: "§eYou don't have permission to use this command."
 not-player: "§eYou must be a player to use this command."
+player-not-linked: "§eYour account must be linked with Discord."
+player-not-found: '§ePlayer not found.'
+player-not-found-discord: 'Player not found.'
 registration:
   type-in-discord: 'Type "%1$s" in Discord chat to complete.'
   alt-command-info: 'or click to copy an alternative command'
@@ -10,17 +13,15 @@ registration:
   already-registered: '§eYou are already registered! use /discord unregister to unregister first.'
   already-unregistered: '§eYou are already unregistered!'
   player-info: >
-    §aPlayer info:§f
+    §aPlayer Info:§f
      - UUID: %1$s
      - Minecraft Name: %2$s
      - Discord Name: %3$s
   player-info-discord: >
-    Player info:
+    Player Info:
      - UUID: %1$s
      - Minecraft Name: %2$s
      - Discord Name: %3$s
-  player-not-found: '§ePlayer not found.'
-  player-not-found-discord: 'Player not found.'
 discord-command:
   player-list: 'List of online players (%1$d/%2$d)'
 broadcaster:
@@ -46,3 +47,23 @@ building-votes:
   click-to-register: '§a§nClick on this text to register a building on this location.'
   wiki-url: 'https://wiki.kubecity.kr/'
   register-preload: '틀:리턴즈 건축물/템플릿'
+builder-level:
+  not-enabled: '§eBuilder level feature is not enabled in config.'
+  level-up-broadcast-title: 'Level Up!'
+  level-up-broadcast-content: 'Player %1$s has reached Builder Level %2$d!'
+  level-up-broadcast-message: '§aPlayer %1$s has reached Builder Level %2$d!'
+  level-up-message: '§aYou have reached Builder Level %1$d!'
+  experience-point-given: '§eGave player %1$s experience point of amount %2$d.'
+  experience-point-not-given: '§eCould not give experience point to player %1$s.'
+  level-set: '§eSet builder level of player %1$s to %2$d'
+  level-not-set: '§eCould not set builder level of player %1$s'
+  status: >
+    §aBuilder Status:§f
+     - Name: %1$s
+     - Builder Level: §b%2$d§f
+     - Experience Point: §a%3$d§f / §7%4$d§f
+  status-discord: >
+    Builder Status:
+     - Name: %1$s
+     - Builder Level: %2$d
+     - Experience Point: %3$d / %4$d

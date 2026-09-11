@@ -13,6 +13,8 @@ commands:
     description: "Discord link command."
   building:
     description: "Building command."
+  level:
+    description: "Builder level command."
 permissions:
   kubecitybot.admin:
     description: Gives admin rights for KubeCityBot

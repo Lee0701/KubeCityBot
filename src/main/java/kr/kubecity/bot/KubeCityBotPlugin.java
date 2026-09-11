@@ -5,6 +5,7 @@ import kr.kubecity.bot.features.*;
 import kr.kubecity.bot.minecraft.BuildingCommandHandler;
 import kr.kubecity.bot.minecraft.DiscordCommandHandler;
 import kr.kubecity.bot.minecraft.KubeCityBotCommandHandler;
+import kr.kubecity.bot.minecraft.LevelCommandHandler;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -13,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +33,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
 
     private final File messagesFile = new File(getDataFolder(), "messages.yml");
     private YamlConfiguration messagesConfiguration;
+    private YamlConfiguration defaultMessagesConfiguration;
 
     private final List<Feature> features = new ArrayList<>();
 
@@ -41,12 +44,14 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         if(!messagesFile.exists()) saveResource(messagesFile.getName(), false);
 
         ConfigurationSerialization.registerClass(KubeCityPlayer.class);
+        ConfigurationSerialization.registerClass(Building.class);
 
         reload();
 
         getCommand("kubecitybot").setExecutor(new KubeCityBotCommandHandler());
         getCommand("discord").setExecutor(new DiscordCommandHandler());
         getCommand("building").setExecutor(new BuildingCommandHandler());
+        getCommand("level").setExecutor(new LevelCommandHandler());
 
     }
 
@@ -76,6 +81,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         if(dataConfiguration.isList("players")) dataConfiguration.getList("players");
 
         messagesConfiguration = YamlConfiguration.loadConfiguration(messagesFile);
+        defaultMessagesConfiguration = YamlConfiguration.loadConfiguration(new InputStreamReader(getResource(messagesFile.getName())));
 
         features.clear();
         if(config.getConfigurationSection("icon-storage").getBoolean("use")) features.add(new IconStorage());
@@ -87,6 +93,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         if(config.getConfigurationSection("group-linker").getBoolean("use")) features.add(new GroupLinker());
         if(config.getConfigurationSection("building-storage").getBoolean("use")) features.add(new BuildingStorage());
         if(config.getConfigurationSection("building-votes").getBoolean("use")) features.add(new BuildingVotes());
+        if(config.getConfigurationSection("builder-level").getBoolean("use")) features.add(new BuilderLevel());
 
     }
 
@@ -114,8 +121,13 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         return (Optional<T>) features.stream().filter(feature -> feature.getClass().equals(type)).findAny();
     }
 
+    public String getMessage(String key) {
+        return getMessage(key, null);
+    }
+
     public String getMessage(String key, String def) {
-        return messagesConfiguration.getString(key, def);
+        return Optional.ofNullable(messagesConfiguration.getString(key))
+                .orElse(defaultMessagesConfiguration.getString(key, def));
     }
 
     public BotInstance getBot() {

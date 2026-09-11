@@ -16,6 +16,9 @@ public class KubeCityPlayer implements ConfigurationSerializable {
     private List<String> listeningChannels;
     private List<String> speakingChannels;
 
+    private int experiencePoint;
+    private int builderLevel;
+
     public KubeCityPlayer(String discordId) {
         this.discordId = discordId;
     }
@@ -65,6 +68,14 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         if(speakingChannels instanceof List) {
             result.speakingChannels = (List<String>) speakingChannels;
         }
+        Object experiencePoint = args.get("experience-point");
+        if (experiencePoint instanceof Integer) {
+            result.experiencePoint = (Integer) experiencePoint;
+        }
+        Object builderLevel = args.get("builder-level");
+        if (builderLevel instanceof Integer) {
+            result.builderLevel = (Integer) builderLevel;
+        }
         return result;
     }
 
@@ -87,6 +98,8 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         if(speakingChannels != null) {
             result.put("speaking-channels", speakingChannels);
         }
+        result.put("experience-point", experiencePoint);
+        result.put("builder-level", builderLevel);
         return result;
     }
 
@@ -140,5 +153,21 @@ public class KubeCityPlayer implements ConfigurationSerializable {
 
     public void setSpeakingChannels(List<String> speakingChannels) {
         this.speakingChannels = speakingChannels;
+    }
+
+    public int getExperiencePoint() {
+        return experiencePoint;
+    }
+
+    public void setExperiencePoint(int experiencePoint) {
+        this.experiencePoint = experiencePoint;
+    }
+
+    public int getBuilderLevel() {
+        return builderLevel;
+    }
+
+    public void setBuilderLevel(int builderLevel) {
+        this.builderLevel = builderLevel;
     }
 }

@@ -70,7 +70,7 @@ public class DiscordCommandHandler implements TabExecutor {
             ), uuid, minecraftName, discordName));
         } else {
             sender.sendMessage(KubeCityBotPlugin.getInstance().getMessage(
-                    "registration.player-not-found",
+                    "player-not-found",
                     ChatColor.YELLOW + "Player not found."));
         }
     }
