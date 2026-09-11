@@ -24,8 +24,8 @@ import java.util.*;
 
 public class BuildingCommandHandler implements TabExecutor {
 
-    private final List<String> completes = new ArrayList<>(List.of("vote"));
-    private final List<String> adminCompletes = new ArrayList<>(List.of("vote"));
+    private final List<String> completes = new ArrayList<>(List.of("vote", "register"));
+    private final List<String> adminCompletes = new ArrayList<>(List.of("vote", "register", "votes"));
 
     @Override
     public boolean onCommand(@NonNull CommandSender sender, @NonNull Command command, @NonNull String label, @NonNull String[] args) {
