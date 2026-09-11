@@ -35,8 +35,10 @@ group-linker:
   context-key: discord:role
 building-storage:
   use: false
+  show-hologram: true
   api-endpoint:
   category-name:
-  show-hologram: true
+  wiki-url:
+  register-preload:
 building-votes:
   use: false

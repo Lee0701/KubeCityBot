@@ -227,16 +227,16 @@ public class BuildingCommandHandler implements TabExecutor {
 
         if(args.length < 1) {
             sender.sendMessage(plugin.getMessage(
-                    "missing-building-name",
+                    "building-storage.missing-building-name",
                     "Usage: /" + label + " <name>"
             ));
             return;
         }
 
         TextComponent message = new TextComponent(
-                plugin.getMessage("building-votes.click-to-register", "Click on this text to register a building on this location."));
-        String url = plugin.getMessage("building-votes.wiki-url", "https://example.com/");
-        String preload = plugin.getMessage("building-votes.register-preload", "");
+                plugin.getMessage("building-storage.click-to-register", "Click on this text to register a building on this location."));
+        String url = plugin.getConfig().getString("building-storage.wiki-url");
+        String preload = plugin.getConfig().getString("building-storage.register-preload");
         String name = String.join(" ", args);
         Location location = player.getLocation();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
