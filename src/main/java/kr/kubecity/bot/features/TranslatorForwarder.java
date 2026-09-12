@@ -28,14 +28,13 @@ public class TranslatorForwarder extends Forwarder {
     private List<String> languages = new ArrayList<>();
 
     @Override
-    public void reload(JavaPlugin plugin) {
-        super.reload(plugin);
+    public void load(JavaPlugin plugin) {
+        super.load(plugin);
         languages = getConfigurationSection().getStringList("languages");
     }
 
     @Override
     public void save() {
-
     }
 
     @Override

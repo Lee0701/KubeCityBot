@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -22,14 +23,18 @@ public class Broadcaster implements Feature, Listener {
     private List<String> channels = new ArrayList<>();
 
     @Override
-    public void reload(JavaPlugin plugin) {
+    public void load(JavaPlugin plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
         channels = getConfigurationSection().getStringList("channels");
     }
 
     @Override
-    public void save() {
+    public void unload(JavaPlugin plugin) {
+        HandlerList.unregisterAll(this);
+    }
 
+    @Override
+    public void save() {
     }
 
     @Override
