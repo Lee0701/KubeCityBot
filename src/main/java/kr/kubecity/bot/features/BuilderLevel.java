@@ -28,7 +28,7 @@ public class BuilderLevel implements Feature {
     private List<Integer> curve;
 
     @Override
-    public void reload(JavaPlugin plugin) {
+    public void load(JavaPlugin plugin) {
         requireRoleName = getConfigurationSection().getString("require-role");
         broadcastChannels = getConfigurationSection().getStringList("broadcast-channels");
 
@@ -46,8 +46,11 @@ public class BuilderLevel implements Feature {
     }
 
     @Override
-    public void save() {
+    public void unload(JavaPlugin plugin) {
+    }
 
+    @Override
+    public void save() {
     }
 
     public boolean isBuilderLevelEligible(KubeCityPlayer player) {
