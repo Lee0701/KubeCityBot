@@ -80,6 +80,10 @@ public class BuilderLevel implements Feature, ContextCalculator<Player> {
             int title = titlesForLevels.getOrDefault(level, 0);
             consumer.accept(titleContextKey, String.valueOf(title));
         });
+        KubeCityPlayer.of(target).ifPresent(player -> {
+            player.setNickname(target.getName());
+            player.setDisplayName(target.getDisplayName());
+        });
     }
 
     public boolean isBuilderLevelEligible(KubeCityPlayer player) {

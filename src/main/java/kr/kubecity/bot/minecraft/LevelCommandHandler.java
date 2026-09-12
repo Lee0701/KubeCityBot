@@ -65,7 +65,7 @@ public class LevelCommandHandler implements TabExecutor {
 
         String format = plugin.getMessage("builder-level.status");
         sender.sendMessage(String.format(format,
-                player.getNickname(),
+                player.getDisplayName(),
                 player.getBuilderLevel(),
                 player.getExperiencePoint(),
                 feature.getExperienceToNextLevel(player.getBuilderLevel())

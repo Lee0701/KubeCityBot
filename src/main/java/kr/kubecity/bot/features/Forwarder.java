@@ -42,7 +42,8 @@ public abstract class Forwarder implements Feature, Listener {
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         KubeCityPlayer.of(event.getPlayer()).ifPresent(kubeCityPlayer -> {
             kubeCityPlayer.setChatFormat(event.getFormat());
-            kubeCityPlayer.setNickname(event.getPlayer().getDisplayName());
+            kubeCityPlayer.setNickname(event.getPlayer().getName());
+            kubeCityPlayer.setDisplayName(event.getPlayer().getName());
         });
 
         String message = ChatColor.stripColor(event.getMessage());

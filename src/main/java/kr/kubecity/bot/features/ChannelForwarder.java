@@ -34,7 +34,8 @@ public class ChannelForwarder extends Forwarder {
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         KubeCityPlayer.of(event.getPlayer()).ifPresent(kubeCityPlayer -> {
             kubeCityPlayer.setChatFormat(event.getFormat());
-            kubeCityPlayer.setNickname(event.getPlayer().getDisplayName());
+            kubeCityPlayer.setNickname(event.getPlayer().getName());
+            kubeCityPlayer.setDisplayName(event.getPlayer().getName());
         });
 
         KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();

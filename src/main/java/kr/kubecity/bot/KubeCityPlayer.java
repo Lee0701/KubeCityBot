@@ -10,6 +10,7 @@ public class KubeCityPlayer implements ConfigurationSerializable {
     public static final Set<Registration> REGISTRATIONS = new HashSet<>();
 
     private String nickname;
+    private String displayName;
     private String discordId;
     private String uuid;
     private String chatFormat;
@@ -60,6 +61,10 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         if (nickname instanceof String) {
             result.nickname = (String) nickname;
         }
+        Object displayName = args.get("display-name");
+        if (displayName instanceof String) {
+            result.displayName = (String) displayName;
+        }
         Object listeningChannels = args.get("listening-channels");
         if(listeningChannels instanceof List) {
             result.listeningChannels = (List<String>) listeningChannels;
@@ -89,6 +94,9 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         if (nickname != null) {
             result.put("nickname", nickname);
         }
+        if (displayName != null) {
+            result.put("display-name", displayName);
+        }
         if (chatFormat != null) {
             result.put("chat-format", chatFormat);
         }
@@ -109,6 +117,14 @@ public class KubeCityPlayer implements ConfigurationSerializable {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getDiscordId() {
