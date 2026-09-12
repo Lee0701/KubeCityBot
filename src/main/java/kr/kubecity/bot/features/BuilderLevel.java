@@ -56,10 +56,7 @@ public class BuilderLevel implements Feature, ContextCalculator<Player> {
             titlesForLevels.put(level, title);
         }
 
-        KubeCityPlayer.PLAYER_MAP.values().forEach(player -> {
-            if(player.getBuilderLevel() < minLevel) player.setBuilderLevel(minLevel);
-            if(player.getBuilderLevel() > maxLevel) player.setBuilderLevel(maxLevel);
-        });
+        KubeCityPlayer.PLAYER_MAP.values().forEach(this::checkLevelRange);
 
         permsApi.getContextManager().registerCalculator(this);
     }
@@ -147,6 +144,11 @@ public class BuilderLevel implements Feature, ContextCalculator<Player> {
                 plugin.getMessage("builder-level.level-up-message"),
                 player.getBuilderLevel()
         ));
+    }
+
+    public void checkLevelRange(KubeCityPlayer player) {
+        if(player.getBuilderLevel() < minLevel) player.setBuilderLevel(minLevel);
+        if(player.getBuilderLevel() > maxLevel) player.setBuilderLevel(maxLevel);
     }
 
     public int getExperienceToNextLevel(int level) {

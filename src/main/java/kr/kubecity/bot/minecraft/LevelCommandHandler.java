@@ -68,6 +68,8 @@ public class LevelCommandHandler implements TabExecutor {
         var feature = plugin.getFeature(BuilderLevel.class).orElse(null);
         if(feature == null) return;
 
+        feature.checkLevelRange(player);
+
         String format = plugin.getMessage("builder-level.status");
         sender.sendMessage(String.format(format,
                 player.getDisplayName(),
