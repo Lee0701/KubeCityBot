@@ -22,8 +22,12 @@ public class IconStorage implements Feature {
     private String url;
 
     @Override
-    public void reload(JavaPlugin plugin) {
+    public void load(JavaPlugin plugin) {
         url = getConfigurationSection().getString("url");
+    }
+
+    @Override
+    public void unload(JavaPlugin plugin) {
     }
 
     @Override

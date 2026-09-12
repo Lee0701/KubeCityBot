@@ -62,6 +62,10 @@ public final class KubeCityBotPlugin extends JavaPlugin {
     }
 
     public void reload() {
+        for(Feature feature : features) {
+            feature.unload(this);
+        }
+
         HandlerList.unregisterAll(this);
 
         reloadConfig();
@@ -84,16 +88,16 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         defaultMessagesConfiguration = YamlConfiguration.loadConfiguration(new InputStreamReader(getResource(messagesFile.getName())));
 
         features.clear();
-        if(config.getConfigurationSection("icon-storage").getBoolean("use")) features.add(new IconStorage());
-        if(config.getConfigurationSection("broadcaster").getBoolean("use")) features.add(new Broadcaster());
-        if(config.getConfigurationSection("status-updater").getBoolean("use")) features.add(new StatusUpdater());
-        if(config.getConfigurationSection("simple-forwarder").getBoolean("use")) features.add(new SimpleForwarder());
-        if(config.getConfigurationSection("translator-forwarder").getBoolean("use")) features.add(new TranslatorForwarder());
-        if(config.getConfigurationSection("channel-forwarder").getBoolean("use")) features.add(new ChannelForwarder());
-        if(config.getConfigurationSection("group-linker").getBoolean("use")) features.add(new GroupLinker());
-        if(config.getConfigurationSection("building-storage").getBoolean("use")) features.add(new BuildingStorage());
-        if(config.getConfigurationSection("building-votes").getBoolean("use")) features.add(new BuildingVotes());
-        if(config.getConfigurationSection("builder-level").getBoolean("use")) features.add(new BuilderLevel());
+        if(config.getBoolean("icon-storage.use")) features.add(new IconStorage());
+        if(config.getBoolean("broadcaster.use")) features.add(new Broadcaster());
+        if(config.getBoolean("status-updater.use")) features.add(new StatusUpdater());
+        if(config.getBoolean("simple-forwarder.use")) features.add(new SimpleForwarder());
+        if(config.getBoolean("translator-forwarder.use")) features.add(new TranslatorForwarder());
+        if(config.getBoolean("channel-forwarder.use")) features.add(new ChannelForwarder());
+        if(config.getBoolean("group-linker.use")) features.add(new GroupLinker());
+        if(config.getBoolean("building-storage.use")) features.add(new BuildingStorage());
+        if(config.getBoolean("building-votes.use")) features.add(new BuildingVotes());
+        if(config.getBoolean("builder-level.use")) features.add(new BuilderLevel());
 
     }
 
@@ -110,10 +114,10 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         }
     }
 
-    public void reloadFeatures() {
+    public void loadFeatures() {
         // This is done later when discord bot is logged in.
         for(Feature feature : features) {
-            feature.reload(this);
+            feature.load(this);
         }
     }
 

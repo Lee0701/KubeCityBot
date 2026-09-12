@@ -33,6 +33,8 @@ channel-forwarder:
   channel-not-found: '§eChannel not found.'
   channel-list: '§fRegistered channels: '
 building-storage:
+  missing-building-name: 'Usage: /building register <name>'
+  click-to-register: '§a§nClick on this text to register a building on this location.'
   hologram-name: '<§l%1$s§r>'
   hologram-builder: 'Builder: §a%1$s§f'
   hologram-votes-total: 'Total votes: §a%1$d§f'
