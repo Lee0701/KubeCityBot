@@ -64,8 +64,10 @@ public class BuildingStorage implements Feature {
     @Override
     public void unload(JavaPlugin plugin) {
         Building.BUILDINGS.values().forEach(Building::removeHologram);
+        this.hologramManager = null;
 
         if(updateCacheTask != null) updateCacheTask.cancel();
+        updateCacheTask = null;
     }
 
     @Override
