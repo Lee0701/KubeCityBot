@@ -23,6 +23,9 @@ public class KubeCityPlayer implements ConfigurationSerializable {
     private Date lastAttendance;
     private int attendanceDays;
 
+    private int chatMessagesToday;
+    private int chatExperienceToday;
+
     public KubeCityPlayer(String discordId) {
         this.discordId = discordId;
     }
@@ -92,6 +95,14 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         if (attendanceDays instanceof Integer) {
             result.attendanceDays = (Integer) attendanceDays;
         }
+        Object chatMessagesToday = args.get("chat-messages-today");
+        if (chatMessagesToday instanceof Integer) {
+            result.chatMessagesToday = (Integer) chatMessagesToday;
+        }
+        Object chatExperienceToday = args.get("chat-experience-today");
+        if (chatExperienceToday instanceof Integer) {
+            result.chatExperienceToday = (Integer) chatExperienceToday;
+        }
         return result;
     }
 
@@ -121,6 +132,8 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         result.put("builder-level", builderLevel);
         result.put("last-attendance", lastAttendance);
         result.put("attendance-days", attendanceDays);
+        result.put("chat-messages-today", chatMessagesToday);
+        result.put("chat-experience-today", chatExperienceToday);
         return result;
     }
 
@@ -214,5 +227,21 @@ public class KubeCityPlayer implements ConfigurationSerializable {
 
     public void setAttendanceDays(int attendanceDays) {
         this.attendanceDays = attendanceDays;
+    }
+
+    public int getChatMessagesToday() {
+        return chatMessagesToday;
+    }
+
+    public void setChatMessagesToday(int chatMessagesToday) {
+        this.chatMessagesToday = chatMessagesToday;
+    }
+
+    public int getChatExperienceToday() {
+        return chatExperienceToday;
+    }
+
+    public void setChatExperienceToday(int chatExperienceToday) {
+        this.chatExperienceToday = chatExperienceToday;
     }
 }

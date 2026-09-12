@@ -54,3 +54,8 @@ builder-level-rewards:
   attendance:
     use: false
     rewards: [10, 12, 14, 16, 18, 20, 30]
+  chat:
+    use: false
+    messages: 20
+    reward: 10
+    max-reward: 30
