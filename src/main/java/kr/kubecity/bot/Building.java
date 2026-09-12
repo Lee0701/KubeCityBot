@@ -14,6 +14,8 @@ import org.jspecify.annotations.NonNull;
 import java.util.*;
 
 public class Building implements ConfigurationSerializable {
+    public static final String HOLOGRAM_PREFIX = "KubeCity_Building_";
+
     public static final Map<Integer, Building> BUILDINGS = new HashMap<>();
 
     private final int wikiPageId;
@@ -39,7 +41,7 @@ public class Building implements ConfigurationSerializable {
 
         Location location = this.location.clone();
         location.add(0.5, 1, 0.5);
-        TextHologramData hologramData = new TextHologramData("KubeCity_Building_" + wikiPageId, location);
+        TextHologramData hologramData = new TextHologramData(HOLOGRAM_PREFIX + wikiPageId, location);
         hologramData.setText(new ArrayList<>());
 
         hologramData.addLine(String.format(plugin.getMessage("building-storage.hologram-name", "%1$s"), this.name));
@@ -69,7 +71,11 @@ public class Building implements ConfigurationSerializable {
 
     public void removeHologram() {
         if(this.hologram != null) {
-            this.hologram.deleteHologram();
+            KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
+            BuildingStorage feature = plugin.getFeature(BuildingStorage.class).orElse(null);
+            if(feature == null || !feature.isShowHologram()) return;
+            HologramManager manager = feature.getHologramManager();
+            manager.removeHologram(this.hologram);
         }
     }
 

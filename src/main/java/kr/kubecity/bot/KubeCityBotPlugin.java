@@ -57,6 +57,10 @@ public final class KubeCityBotPlugin extends JavaPlugin {
     }
 
     public void reload() {
+        for(Feature feature : features) {
+            feature.unload(this);
+        }
+
         HandlerList.unregisterAll(this);
 
         reloadConfig();
@@ -76,10 +80,6 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         if(dataConfiguration.isList("players")) dataConfiguration.getList("players");
 
         messagesConfiguration = YamlConfiguration.loadConfiguration(messagesFile);
-
-        for(Feature feature : features) {
-            feature.unload(this);
-        }
 
         features.clear();
         if(config.getBoolean("icon-storage.use")) features.add(new IconStorage());

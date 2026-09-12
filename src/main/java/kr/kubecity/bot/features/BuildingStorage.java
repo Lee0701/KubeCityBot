@@ -43,16 +43,16 @@ public class BuildingStorage implements Feature {
     public void load(JavaPlugin plugin) {
         apiEndpoint = getConfigurationSection().getString("api-endpoint");
         categoryName = getConfigurationSection().getString("category-name");
-        showHologram =  getConfigurationSection().getBoolean("show-hologram");
-
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            cacheBuildings();
-        });
+        showHologram = getConfigurationSection().getBoolean("show-hologram");
 
         if(showHologram) {
             hologramManager = FancyHologramsPlugin.get().getHologramManager();
-            Building.BUILDINGS.values().forEach(Building::spawnHologram);
         }
+
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            cacheBuildings();
+            Building.BUILDINGS.values().forEach(Building::spawnHologram);
+        });
 
         if(updateCacheTask != null) updateCacheTask.cancel();
         updateCacheTask = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> {
