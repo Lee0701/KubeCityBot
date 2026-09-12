@@ -12,10 +12,15 @@ import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class LevelCommandHandler implements TabExecutor {
+    private final List<String> completes = new ArrayList<>(List.of("status"));
+    private final List<String> adminCompletes = new ArrayList<>(List.of("status", "giveexp", "setlevel"));
+
     @Override
     public boolean onCommand(@NonNull CommandSender sender, @NonNull Command command, @NonNull String label, @NonNull String[] args) {
         if(args.length < 1) {
@@ -168,6 +173,17 @@ public class LevelCommandHandler implements TabExecutor {
 
     @Override
     public @Nullable List<String> onTabComplete(@NonNull CommandSender sender, @NonNull Command command, @NonNull String label, @NonNull String[] args) {
-        return List.of();
+        List<String> copied;
+        if(sender.hasPermission("kubecitybot.admin")) {
+            copied = new ArrayList<>(adminCompletes);
+        } else {
+            copied = new ArrayList<>(completes);
+        }
+        if(args.length == 1) {
+            copied.removeIf(it -> !it.startsWith(args[0]));
+            return copied;
+        } else {
+            return Collections.emptyList();
+        }
     }
 }
