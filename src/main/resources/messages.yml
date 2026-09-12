@@ -72,3 +72,4 @@ builder-level:
 builder-level-rewards:
   attendance-reward-received: '§aYou received %1$d experience points for attendance!'
   attendance-reward-received-continuous: '§aYou received %1$d experience points for continuous attendance of %2$d days!'
+  vote-reward-received: '§aYou received %1$d experience points for voting!'

@@ -25,6 +25,9 @@ public class BuilderLevelRewards implements Feature, Listener {
     private int chatReward;
     private int chatMaxReward;
 
+    private boolean useVote;
+    private int voteReward;
+
     @Override
     public void load(JavaPlugin plugin) {
         Bukkit.getServer().getPluginManager().registerEvents(this, KubeCityBotPlugin.getInstance());
@@ -36,6 +39,9 @@ public class BuilderLevelRewards implements Feature, Listener {
         chatMessages = getConfigurationSection().getInt("chat.messages");
         chatReward = getConfigurationSection().getInt("chat.reward");
         chatMaxReward = getConfigurationSection().getInt("chat.max-reward");
+
+        useVote = getConfigurationSection().getBoolean("vote.use");
+        voteReward = getConfigurationSection().getInt("vote.reward");
     }
 
     @Override
@@ -133,5 +139,37 @@ public class BuilderLevelRewards implements Feature, Listener {
         // reset days on complete
         if(attendanceDays >= attendanceRewards.size()) attendanceDays = 0;
         return attendanceDays;
+    }
+
+    public boolean isUseAttendance() {
+        return useAttendance;
+    }
+
+    public List<Integer> getAttendanceRewards() {
+        return attendanceRewards;
+    }
+
+    public boolean isUseChat() {
+        return useChat;
+    }
+
+    public int getChatMessages() {
+        return chatMessages;
+    }
+
+    public int getChatReward() {
+        return chatReward;
+    }
+
+    public int getChatMaxReward() {
+        return chatMaxReward;
+    }
+
+    public boolean isUseVote() {
+        return useVote;
+    }
+
+    public int getVoteReward() {
+        return voteReward;
     }
 }

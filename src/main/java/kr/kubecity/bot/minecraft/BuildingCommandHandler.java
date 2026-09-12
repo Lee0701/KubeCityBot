@@ -1,9 +1,8 @@
 package kr.kubecity.bot.minecraft;
 
-import kr.kubecity.bot.Building;
-import kr.kubecity.bot.KubeCityBotPlugin;
-import kr.kubecity.bot.Util;
-import kr.kubecity.bot.Vote;
+import kr.kubecity.bot.*;
+import kr.kubecity.bot.features.BuilderLevel;
+import kr.kubecity.bot.features.BuilderLevelRewards;
 import kr.kubecity.bot.features.BuildingVotes;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -99,6 +98,23 @@ public class BuildingCommandHandler implements TabExecutor {
             votes.getDatabase().putVote(new Vote(-1, building.getWikiPageId(), uuid, new Date()));
             player.sendMessage("Successfully voted to " + building.getName());
             building.spawnHologram();
+
+            // Give vote reward if enabled
+            plugin.getFeature(BuilderLevelRewards.class).ifPresent(builderLevelRewards -> {
+                if(!builderLevelRewards.isUseVote()) return;
+                BuilderLevel builderLevel = plugin.getFeature(BuilderLevel.class).orElse(null);
+                if(builderLevel == null) return;
+                KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(player).orElse(null);
+                if(kubeCityPlayer == null) return;
+                if(!builderLevel.isBuilderLevelEligible(kubeCityPlayer)) return;
+
+                int rewardExp = builderLevelRewards.getVoteReward();
+
+                String format = plugin.getMessage("builder-level-rewards.vote-reward-received");
+                player.sendMessage(String.format(format, rewardExp));
+
+                builderLevel.giveExperiencePoint(kubeCityPlayer, rewardExp);
+            });
 
         } else {
             var buildings = Building.BUILDINGS.values().stream().filter(building -> building.getHologram().isViewer(player));
