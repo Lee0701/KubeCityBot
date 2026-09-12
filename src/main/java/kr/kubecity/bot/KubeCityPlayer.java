@@ -20,6 +20,9 @@ public class KubeCityPlayer implements ConfigurationSerializable {
     private int experiencePoint;
     private int builderLevel;
 
+    private Date lastAttendance;
+    private int attendanceDays;
+
     public KubeCityPlayer(String discordId) {
         this.discordId = discordId;
     }
@@ -81,6 +84,14 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         if (builderLevel instanceof Integer) {
             result.builderLevel = (Integer) builderLevel;
         }
+        Object lastAttendance = args.get("last-attendance");
+        if (lastAttendance instanceof Date) {
+            result.lastAttendance = (Date) lastAttendance;
+        }
+        Object attendanceDays = args.get("attendance-days");
+        if (attendanceDays instanceof Integer) {
+            result.attendanceDays = (Integer) attendanceDays;
+        }
         return result;
     }
 
@@ -108,6 +119,8 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         }
         result.put("experience-point", experiencePoint);
         result.put("builder-level", builderLevel);
+        result.put("last-attendance", lastAttendance);
+        result.put("attendance-days", attendanceDays);
         return result;
     }
 
@@ -185,5 +198,21 @@ public class KubeCityPlayer implements ConfigurationSerializable {
 
     public void setBuilderLevel(int builderLevel) {
         this.builderLevel = builderLevel;
+    }
+
+    public Date getLastAttendance() {
+        return lastAttendance;
+    }
+
+    public void setLastAttendance(Date lastAttendance) {
+        this.lastAttendance = lastAttendance;
+    }
+
+    public int getAttendanceDays() {
+        return attendanceDays;
+    }
+
+    public void setAttendanceDays(int attendanceDays) {
+        this.attendanceDays = attendanceDays;
     }
 }

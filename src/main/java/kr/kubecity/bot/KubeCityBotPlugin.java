@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
 
     private BotInstance bot = new BotInstance();
     private String serverId;
+    private ZoneId timezone;
 
     private final File dataFile = new File(getDataFolder(), "data.yml");
     private YamlConfiguration dataConfiguration;
@@ -73,6 +75,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         FileConfiguration config = getConfig();
         String botToken = config.getString("bot-token");
         serverId = config.getString("server-id");
+        timezone = ZoneId.of(config.getString("timezone"));
 
         if(botToken != null) {
             bot.launch(botToken);
@@ -98,6 +101,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         if(config.getBoolean("building-storage.use")) features.add(new BuildingStorage());
         if(config.getBoolean("building-votes.use")) features.add(new BuildingVotes());
         if(config.getBoolean("builder-level.use")) features.add(new BuilderLevel());
+        if(config.getBoolean("builder-level-rewards.use")) features.add(new BuilderLevelRewards());
 
     }
 
@@ -142,4 +146,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         return serverId;
     }
 
+    public ZoneId getTimezone() {
+        return timezone;
+    }
 }

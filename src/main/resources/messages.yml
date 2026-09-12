@@ -69,3 +69,6 @@ builder-level:
      - Name: %1$s
      - Builder Level: %2$d
      - Experience Point: %3$d / %4$d
+builder-level-rewards:
+  attendance-reward-received: '§aYou received %1$d experience points for attendance!'
+  attendance-reward-received-continuous: '§aYou received %1$d experience points for continuous attendance of %2$d days!'

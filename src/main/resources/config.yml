@@ -1,5 +1,6 @@
 bot-token:
 server-id:
+timezone: Asia/Seoul
 icon-storage:
   use: true
   url: https://api.mineatar.io/face/%s
@@ -48,3 +49,8 @@ builder-level:
   broadcast-channels:
     - discordChannelId
   title-context-key: builder:title
+builder-level-rewards:
+  use: false
+  attendance:
+    use: false
+    rewards: [10, 12, 14, 16, 18, 20, 30]
