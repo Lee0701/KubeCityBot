@@ -57,8 +57,8 @@ builder-level:
   level-up-message: '§aYou have reached Builder Level %1$d!'
   experience-point-given: '§eGave player %1$s experience point of amount %2$d.'
   experience-point-not-given: '§eCould not give experience point to player %1$s.'
-  level-set: '§eSet builder level of player %1$s to %2$d'
-  level-not-set: '§eCould not set builder level of player %1$s'
+  level-set: '§eSet builder level of player %1$s to %2$d.'
+  level-not-set: '§eCould not set builder level of player %1$s.'
   status: >
     §aBuilder Status:§f
      - Name: %1$s

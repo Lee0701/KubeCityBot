@@ -11,10 +11,13 @@ def main():
         curve.append(int(round(xp_to_next_level(current_level), -2)))
         current_level += 1
 
+    titles = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+
     result = {
         'min-level': min_level,
         'max-level': max_level,
         'curve': curve,
+        'titles': titles,
     }
 
     print(yaml.dump(result, allow_unicode=True))

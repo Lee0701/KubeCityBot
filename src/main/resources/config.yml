@@ -47,3 +47,4 @@ builder-level:
   require-role: discordRoleName
   broadcast-channels:
     - discordChannelId
+  title-context-key: builder:title

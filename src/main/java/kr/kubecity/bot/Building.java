@@ -48,7 +48,7 @@ public class Building implements ConfigurationSerializable {
 
         KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(UUID.fromString(builderUuid)).orElse(null);
         OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(builderUuid));
-        String name = null;
+        String name;
         if(kubeCityPlayer != null) name = kubeCityPlayer.getNickname();
         else name = offlinePlayer.getName();
         if(name != null) {
