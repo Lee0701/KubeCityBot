@@ -17,7 +17,7 @@ public class Util {
             offlinePlayer = Bukkit.getOfflinePlayer(uuid);
         } catch(IllegalArgumentException ex) {
             offlinePlayer = Arrays.stream(Bukkit.getOfflinePlayers())
-                    .filter(p -> Objects.equals(p.getName(), arg))
+                    .filter(p -> p.getName() != null && p.getName().equalsIgnoreCase(arg))
                     .findAny()
                     .orElse(null);
         }
@@ -36,7 +36,7 @@ public class Util {
     }
 
     public static boolean checkPlayer(CommandSender sender) {
-        if(!(sender instanceof Player player)) {
+        if(!(sender instanceof Player)) {
             sender.sendMessage(KubeCityBotPlugin.getInstance().getMessage(
                     "not-player",
                     "You must be a player to use this command."
