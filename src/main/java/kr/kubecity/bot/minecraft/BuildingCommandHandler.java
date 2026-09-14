@@ -64,18 +64,12 @@ public class BuildingCommandHandler implements TabExecutor {
 
         var votes = plugin.getFeature(BuildingVotes.class).orElse(null);
         if(votes == null) {
-            sender.sendMessage(plugin.getMessage(
-                    "building-votes.not-enabled",
-                    "Building votes feature ins not enabled in config."
-            ));
+            sender.sendMessage(plugin.getMessage("building-votes.not-enabled"));
             return;
         }
 
         if(!player.hasPermission("kubecitybot.building.vote")) {
-            sender.sendMessage(plugin.getMessage(
-                    "missing-permission",
-                    "You don't have permission to use this command."
-            ));
+            sender.sendMessage(plugin.getMessage("missing-permission"));
             return;
         }
 
@@ -100,10 +94,7 @@ public class BuildingCommandHandler implements TabExecutor {
 
             String uuid = player.getUniqueId().toString();
             if(building.getBuilderUuid().equals(uuid)) {
-                player.sendMessage(plugin.getMessage(
-                        "building-votes.no-self-voting",
-                        "You cannot vote to your building."
-                ));
+                player.sendMessage(plugin.getMessage("building-votes.no-self-voting"));
                 return;
             }
             votes.getDatabase().putVote(new Vote(-1, building.getWikiPageId(), uuid, new Date()));
@@ -136,11 +127,9 @@ public class BuildingCommandHandler implements TabExecutor {
                 return message;
             }).toList());
             if(lines.isEmpty()) {
-                lines.add(new TextComponent(
-                        plugin.getMessage("building-votes.building-list-empty", "There are no buildings nearby.") + "\n"));
+                lines.add(new TextComponent(plugin.getMessage("building-votes.building-list-empty") + "\n"));
             }
-            lines.addFirst(new TextComponent(
-                    plugin.getMessage("building-votes.building-list-header", "Buildings nearby:") + "\n"));
+            lines.addFirst(new TextComponent(plugin.getMessage("building-votes.building-list-header") + "\n"));
             player.spigot().sendMessage(lines.toArray(new TextComponent[0]));
 
         }
@@ -151,18 +140,12 @@ public class BuildingCommandHandler implements TabExecutor {
 
         var votes = plugin.getFeature(BuildingVotes.class).orElse(null);
         if(votes == null) {
-            sender.sendMessage(plugin.getMessage(
-                    "building-votes.not-enabled",
-                    "Building votes feature ins not enabled in config."
-            ));
+            sender.sendMessage(plugin.getMessage("building-votes.not-enabled"));
             return;
         }
 
         if(!sender.hasPermission("kubecitybot.admin")) {
-            sender.sendMessage(plugin.getMessage(
-                    "missing-permission",
-                    "You don't have permission to use this command."
-            ));
+            sender.sendMessage(plugin.getMessage("missing-permission"));
             return;
         }
 
@@ -242,23 +225,18 @@ public class BuildingCommandHandler implements TabExecutor {
         Player player = (Player) sender;
 
         if(!player.hasPermission("kubecitybot.building.register")) {
-            sender.sendMessage(plugin.getMessage(
-                    "missing-permission",
-                    "You don't have permission to use this command."
-            ));
+            sender.sendMessage(plugin.getMessage("missing-permission"));
             return;
         }
 
         if(args.length < 1) {
-            sender.sendMessage(plugin.getMessage(
-                    "building-storage.missing-building-name",
-                    "Usage: /" + label + " <name>"
-            ));
+            sender.sendMessage("Usage:");
+            sender.sendMessage("/" + label + " [name]");
             return;
         }
 
         TextComponent message = new TextComponent(
-                plugin.getMessage("building-storage.click-to-register", "Click on this text to register a building on this location."));
+                plugin.getMessage("building-storage.click-to-register"));
         String url = plugin.getConfig().getString("building-storage.wiki-url");
         String preload = plugin.getConfig().getString("building-storage.register-preload");
         String name = String.join(" ", args);

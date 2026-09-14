@@ -33,7 +33,6 @@ channel-forwarder:
   channel-not-found: '§eChannel not found.'
   channel-list: '§fRegistered channels: '
 building-storage:
-  missing-building-name: 'Usage: /building register <name>'
   click-to-register: '§a§nClick on this text to register a building on this location.'
   hologram-name: '<§l%1$s§r>'
   hologram-builder: 'Builder: §a%1$s§f'
@@ -46,7 +45,6 @@ building-votes:
   no-such-building: '§eNo such building with id %1$d'
   no-self-voting: '§eYou cannot vote to your building.'
   building-not-approved: '§eThe building is not approved yet.'
-  missing-building-name: 'Usage: /building register <name>'
   click-to-register: '§a§nClick on this text to register a building on this location.'
   wiki-url: 'https://wiki.kubecity.kr/'
   register-preload: '틀:리턴즈 건축물/템플릿'
