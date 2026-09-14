@@ -47,6 +47,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
 
         ConfigurationSerialization.registerClass(KubeCityPlayer.class);
         ConfigurationSerialization.registerClass(Building.class);
+        ConfigurationSerialization.registerClass(BuildingApproval.class);
 
         reload();
 

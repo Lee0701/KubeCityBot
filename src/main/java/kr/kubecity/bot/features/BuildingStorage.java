@@ -87,7 +87,7 @@ public class BuildingStorage implements Feature {
             StringBuilder conditions = new StringBuilder();
             conditions.append(String.format("[[%s]]", categoryName));
             if(pageId >= 0) conditions.append(String.format("[[Page ID::%d]]", pageId));
-            String query = String.format("%s|offset=%d|?Name|?Builder|?X|?Y|?Z|?World|?Page ID", conditions, offset);
+            String query = String.format("%s|offset=%d|?Name|?Builder|?CompletionDate|?X|?Y|?Z|?World|?Page ID", conditions, offset);
 
             URI uri = new URIBuilder(apiEndpoint)
                     .setParameter("action", "ask")
@@ -174,6 +174,7 @@ public class BuildingStorage implements Feature {
             JSONObject printouts = object.getJSONObject("printouts");
             String name = printouts.getJSONArray("Name").getString(0);
             String builderUuid = printouts.getJSONArray("Builder").getString(0);
+            String completionDate = printouts.getJSONArray("CompletionDate").getJSONObject(0).getString("timestamp");
             int x = printouts.getJSONArray("X").getInt(0);
             int y = printouts.getJSONArray("Y").getInt(0);
             int z = printouts.getJSONArray("Z").getInt(0);
@@ -185,6 +186,9 @@ public class BuildingStorage implements Feature {
             building.setLocation(new Location(world, x, y, z));
             building.setName(name);
             building.setBuilderUuid(builderUuid);
+            try {
+                building.setCompletionDate(new Date(Long.parseLong(completionDate) * 1000L));
+            } catch (NumberFormatException _) {}
         } catch (JSONException e) {
             e.printStackTrace();
         }

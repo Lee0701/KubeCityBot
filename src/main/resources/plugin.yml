@@ -25,3 +25,6 @@ permissions:
   kubecitybot.building.register:
     description: Allows /building register command
     default: true
+  kubecitybot.building.approve:
+    description: Allows /building approve command
+    default: op

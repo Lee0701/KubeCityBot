@@ -22,6 +22,7 @@ public class Building implements ConfigurationSerializable {
     private String name;
     private Location location;
     private String builderUuid;
+    private Date completionDate;
 
     private Hologram hologram;
 
@@ -79,6 +80,10 @@ public class Building implements ConfigurationSerializable {
         }
     }
 
+    public boolean isApproved() {
+        return BuildingApproval.BUILDING_APPROVALS.containsKey(wikiPageId);
+    }
+
     public int getWikiPageId() {
         return wikiPageId;
     }
@@ -107,6 +112,14 @@ public class Building implements ConfigurationSerializable {
         this.builderUuid = builderUuid;
     }
 
+    public Date getCompletionDate() {
+        return completionDate;
+    }
+
+    public void setCompletionDate(Date completionDate) {
+        this.completionDate = completionDate;
+    }
+
     public Hologram getHologram() {
         return hologram;
     }
@@ -125,6 +138,10 @@ public class Building implements ConfigurationSerializable {
         if(builderUuid instanceof String) {
             result.builderUuid = (String) builderUuid;
         }
+        Object completionDate = map.get("completion-date");
+        if(completionDate instanceof Date) {
+            result.completionDate = (Date) completionDate;
+        }
         return result;
     }
 
@@ -135,6 +152,7 @@ public class Building implements ConfigurationSerializable {
         result.put("name", name);
         result.put("location", location);
         result.put("builder-uuid", builderUuid);
+        result.put("completion-date", completionDate);
         return result;
     }
 }

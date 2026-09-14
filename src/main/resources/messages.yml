@@ -45,10 +45,19 @@ building-votes:
   building-list-item: '- §n%1$s§r'
   no-such-building: '§eNo such building with id %1$d'
   no-self-voting: '§eYou cannot vote to your building.'
+  building-not-approved: '§eThe building is not approved yet.'
   missing-building-name: 'Usage: /building register <name>'
   click-to-register: '§a§nClick on this text to register a building on this location.'
   wiki-url: 'https://wiki.kubecity.kr/'
   register-preload: '틀:리턴즈 건축물/템플릿'
+  teleporting-to-building: 'Teleporting to %1$s...'
+  already-approved: '§eThe building is already approved.'
+  building-approved: '§aThe building has been approved.'
+  building-info: >
+    §aBuilding info:§f
+     - Name: %1$s
+     - Builder: %2$s
+     - Completion Date: %3$s
 builder-level:
   not-enabled: '§eBuilder level feature is not enabled in config.'
   level-up-broadcast-title: 'Level Up!'

@@ -43,6 +43,8 @@ building-storage:
   register-preload:
 building-votes:
   use: false
+  require-approval: true
+  approval-rewards: [50, 75, 100, 130, 170]
 builder-level:
   use: false
   require-role: discordRoleName
