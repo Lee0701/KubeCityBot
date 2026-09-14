@@ -60,6 +60,11 @@ public class BuildingStorage implements Feature {
         buildingsDataConfiguration = YamlConfiguration.loadConfiguration(buildingsDateFile);
         if(buildingsDataConfiguration.isList("buildings")) buildingsDataConfiguration.getList("buildings");
 
+        Object lastUpdateObj =  buildingsDataConfiguration.get("last-update");
+        if(lastUpdateObj instanceof Date) {
+            lastUpdate = (Date) lastUpdateObj;
+        }
+
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             if(Building.BUILDINGS.isEmpty()) cacheBuildings();
             Building.BUILDINGS.values().forEach(Building::spawnHologram);
@@ -84,6 +89,7 @@ public class BuildingStorage implements Feature {
     @Override
     public void save() {
         buildingsDataConfiguration.set("buildings", new ArrayList<>(Building.BUILDINGS.values()));
+        buildingsDataConfiguration.set("last-update", lastUpdate);
         try {
             buildingsDataConfiguration.save(buildingsDateFile);
         } catch (IOException e) {
