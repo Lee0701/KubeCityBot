@@ -9,12 +9,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,6 +26,7 @@ import java.net.http.HttpResponse;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 
@@ -31,6 +34,9 @@ public class BuildingStorage implements Feature {
     private String apiEndpoint;
     private String categoryName;
     private boolean showHologram;
+
+    private File buildingsDateFile;
+    private YamlConfiguration buildingsDataConfiguration;
 
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5))
@@ -49,8 +55,13 @@ public class BuildingStorage implements Feature {
             hologramManager = FancyHologramsPlugin.get().getHologramManager();
         }
 
+        Building.BUILDINGS.clear();
+        buildingsDateFile = new File(plugin.getDataFolder(), "buildings.yml");
+        buildingsDataConfiguration = YamlConfiguration.loadConfiguration(buildingsDateFile);
+        if(buildingsDataConfiguration.isList("buildings")) buildingsDataConfiguration.getList("buildings");
+
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            cacheBuildings();
+            if(Building.BUILDINGS.isEmpty()) cacheBuildings();
             Building.BUILDINGS.values().forEach(Building::spawnHologram);
         });
 
@@ -72,6 +83,21 @@ public class BuildingStorage implements Feature {
 
     @Override
     public void save() {
+        buildingsDataConfiguration.set("buildings", new ArrayList<>(Building.BUILDINGS.values()));
+        try {
+            buildingsDataConfiguration.save(buildingsDateFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void purgeCache() {
+        KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            Building.BUILDINGS.clear();
+            cacheBuildings();
+            Building.BUILDINGS.values().forEach(Building::spawnHologram);
+        });
     }
 
     public void cacheBuildings() {

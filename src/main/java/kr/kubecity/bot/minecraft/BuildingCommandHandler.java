@@ -3,6 +3,7 @@ package kr.kubecity.bot.minecraft;
 import kr.kubecity.bot.*;
 import kr.kubecity.bot.features.BuilderLevel;
 import kr.kubecity.bot.features.BuilderLevelRewards;
+import kr.kubecity.bot.features.BuildingStorage;
 import kr.kubecity.bot.features.BuildingVotes;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -29,7 +30,7 @@ import java.util.function.Predicate;
 public class BuildingCommandHandler implements TabExecutor {
 
     private final List<String> completes = new ArrayList<>(List.of("vote", "register"));
-    private final List<String> adminCompletes = new ArrayList<>(List.of("vote", "register", "votes"));
+    private final List<String> adminCompletes = new ArrayList<>(List.of("vote", "register", "votes", "purge"));
 
     @Override
     public boolean onCommand(@NonNull CommandSender sender, @NonNull Command command, @NonNull String label, @NonNull String[] args) {
@@ -44,6 +45,7 @@ public class BuildingCommandHandler implements TabExecutor {
             case "votes" -> votesCommand(sender, subLabel, subArgs);
             case "register" -> registerCommand(sender, subLabel, subArgs);
             case "approval" -> approvalCommand(sender, subLabel, subArgs);
+            case "purge" -> purgeCommand(sender, subLabel, subArgs);
             default -> usage(sender, label);
         }
         return true;
@@ -435,6 +437,14 @@ public class BuildingCommandHandler implements TabExecutor {
                 });
             }
         }
+    }
+
+    private void purgeCommand(CommandSender sender, String label, String[] args) {
+        KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
+
+        if(!Util.checkAdmin(sender)) return;
+
+        plugin.getFeature(BuildingStorage.class).ifPresent(BuildingStorage::purgeCache);
     }
 
     @Override
