@@ -5,7 +5,9 @@ import kr.kubecity.bot.features.BuilderLevel;
 import kr.kubecity.bot.features.BuilderLevelRewards;
 import kr.kubecity.bot.features.BuildingVotes;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.apache.http.client.utils.URIBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,7 +18,6 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.w3c.dom.Text;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,7 +25,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public class BuildingCommandHandler implements TabExecutor {
 
@@ -295,7 +295,7 @@ public class BuildingCommandHandler implements TabExecutor {
 
         if(args.length == 0) {
             sender.sendMessage("Usage:");
-            sender.sendMessage("/" + label + " [list|info|tp|approve|lookup]");
+            sender.sendMessage("/" + label + " [list|info|approve|lookup]");
             return;
         }
 
@@ -322,48 +322,13 @@ public class BuildingCommandHandler implements TabExecutor {
                     notApproved = notApproved.subList(0, 10);
                 }
 
-                var components = new ArrayList<>(notApproved.stream().flatMap(building -> {
-                    String format = plugin.getMessage("building-votes.building-list-item");
-                    TextComponent name = new TextComponent(String.format(format, building.getName()));
-                    TextComponent teleport = new TextComponent("[tp]");
-                    teleport.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/building approval tp %d", building.getWikiPageId())));
-                    TextComponent approve = new TextComponent("[V]");
-                    approve.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/building approval info %d", building.getWikiPageId())));
-                    TextComponent space = new TextComponent(" ");
-                    TextComponent breakLine = new TextComponent("\n");
-                    return Stream.of(
-                            name, space,
-                            teleport, space,
-                            approve, space,
-                            breakLine
-                    );
+                var components = new ArrayList<>(notApproved.stream().map(building -> {
+                    String format = plugin.getMessage("building-votes.building-list-item") + "\n";
+                    TextComponent component = new TextComponent(String.format(format, building.getName()));
+                    component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/building approval info %d", building.getWikiPageId())));
+                    return component;
                 }).toList());
                 player.spigot().sendMessage(components.toArray(new TextComponent[0]));
-            }
-            case "tp" -> {
-                if(args.length < 2) {
-                    sender.sendMessage("Usage:");
-                    sender.sendMessage("/" + label + " tp [buildingId]");
-                    return;
-                }
-
-                int buildingId;
-                try {
-                    buildingId = Integer.parseInt(args[1]);
-                } catch (NumberFormatException _) {
-                    buildingId = -1;
-                }
-
-                Building building = Building.BUILDINGS.get(buildingId);
-                if(building == null) {
-                    String format = plugin.getMessage("building-votes.no-such-building");
-                    player.sendMessage(String.format(format, buildingId));
-                    return;
-                }
-
-                String format = plugin.getMessage("building-votes.teleporting-to-building");
-                player.sendMessage(String.format(format, building.getName()));
-                player.teleport(building.getLocation());
             }
             case "info" -> {
                 if(args.length < 2) {
@@ -398,17 +363,21 @@ public class BuildingCommandHandler implements TabExecutor {
                 String completionDate = new SimpleDateFormat("yyyy-MM-dd").format(building.getCompletionDate());
 
                 var components = new ArrayList<TextComponent>();
-                String format =  plugin.getMessage("building-votes.building-info") + "\n";
+                String format = plugin.getMessage("building-votes.building-info") + "\n";
                 components.add(new TextComponent(String.format(format, building.getName(), builderName, completionDate)));
 
                 for(int rating = buildingVotes.getMinRating(); rating <= buildingVotes.getMaxRating(); rating++) {
-                    String stars = ChatColor.YELLOW + "★".repeat(rating) + ChatColor.WHITE + "\n";
+                    String stars = ChatColor.YELLOW + " ☆ " + ChatColor.WHITE;
                     TextComponent component = new TextComponent(stars);
                     String command = String.format("/building approval approve %d %d", buildingId, rating);
                     component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+                    component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, List.of(new Text(ChatColor.YELLOW + "★".repeat(rating)))));
                     components.add(component);
                 }
 
+                format = plugin.getMessage("building-votes.teleporting-to-building");
+                player.sendMessage(String.format(format, building.getName()));
+                player.teleport(building.getLocation());
                 sender.spigot().sendMessage(components.toArray(new TextComponent[0]));
             }
             case "approve" -> {
