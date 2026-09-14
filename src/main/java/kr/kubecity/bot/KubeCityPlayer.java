@@ -10,11 +10,21 @@ public class KubeCityPlayer implements ConfigurationSerializable {
     public static final Set<Registration> REGISTRATIONS = new HashSet<>();
 
     private String nickname;
+    private String displayName;
     private String discordId;
     private String uuid;
     private String chatFormat;
     private List<String> listeningChannels;
     private List<String> speakingChannels;
+
+    private int experiencePoint;
+    private int builderLevel;
+
+    private Date lastAttendance;
+    private int attendanceDays;
+
+    private int chatMessagesToday;
+    private int chatExperienceToday;
 
     public KubeCityPlayer(String discordId) {
         this.discordId = discordId;
@@ -57,6 +67,10 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         if (nickname instanceof String) {
             result.nickname = (String) nickname;
         }
+        Object displayName = args.get("display-name");
+        if (displayName instanceof String) {
+            result.displayName = (String) displayName;
+        }
         Object listeningChannels = args.get("listening-channels");
         if(listeningChannels instanceof List) {
             result.listeningChannels = (List<String>) listeningChannels;
@@ -64,6 +78,30 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         Object speakingChannels = args.get("speaking-channels");
         if(speakingChannels instanceof List) {
             result.speakingChannels = (List<String>) speakingChannels;
+        }
+        Object experiencePoint = args.get("experience-point");
+        if (experiencePoint instanceof Integer) {
+            result.experiencePoint = (Integer) experiencePoint;
+        }
+        Object builderLevel = args.get("builder-level");
+        if (builderLevel instanceof Integer) {
+            result.builderLevel = (Integer) builderLevel;
+        }
+        Object lastAttendance = args.get("last-attendance");
+        if (lastAttendance instanceof Date) {
+            result.lastAttendance = (Date) lastAttendance;
+        }
+        Object attendanceDays = args.get("attendance-days");
+        if (attendanceDays instanceof Integer) {
+            result.attendanceDays = (Integer) attendanceDays;
+        }
+        Object chatMessagesToday = args.get("chat-messages-today");
+        if (chatMessagesToday instanceof Integer) {
+            result.chatMessagesToday = (Integer) chatMessagesToday;
+        }
+        Object chatExperienceToday = args.get("chat-experience-today");
+        if (chatExperienceToday instanceof Integer) {
+            result.chatExperienceToday = (Integer) chatExperienceToday;
         }
         return result;
     }
@@ -78,6 +116,9 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         if (nickname != null) {
             result.put("nickname", nickname);
         }
+        if (displayName != null) {
+            result.put("display-name", displayName);
+        }
         if (chatFormat != null) {
             result.put("chat-format", chatFormat);
         }
@@ -87,6 +128,12 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         if(speakingChannels != null) {
             result.put("speaking-channels", speakingChannels);
         }
+        result.put("experience-point", experiencePoint);
+        result.put("builder-level", builderLevel);
+        result.put("last-attendance", lastAttendance);
+        result.put("attendance-days", attendanceDays);
+        result.put("chat-messages-today", chatMessagesToday);
+        result.put("chat-experience-today", chatExperienceToday);
         return result;
     }
 
@@ -96,6 +143,14 @@ public class KubeCityPlayer implements ConfigurationSerializable {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getDiscordId() {
@@ -140,5 +195,53 @@ public class KubeCityPlayer implements ConfigurationSerializable {
 
     public void setSpeakingChannels(List<String> speakingChannels) {
         this.speakingChannels = speakingChannels;
+    }
+
+    public int getExperiencePoint() {
+        return experiencePoint;
+    }
+
+    public void setExperiencePoint(int experiencePoint) {
+        this.experiencePoint = experiencePoint;
+    }
+
+    public int getBuilderLevel() {
+        return builderLevel;
+    }
+
+    public void setBuilderLevel(int builderLevel) {
+        this.builderLevel = builderLevel;
+    }
+
+    public Date getLastAttendance() {
+        return lastAttendance;
+    }
+
+    public void setLastAttendance(Date lastAttendance) {
+        this.lastAttendance = lastAttendance;
+    }
+
+    public int getAttendanceDays() {
+        return attendanceDays;
+    }
+
+    public void setAttendanceDays(int attendanceDays) {
+        this.attendanceDays = attendanceDays;
+    }
+
+    public int getChatMessagesToday() {
+        return chatMessagesToday;
+    }
+
+    public void setChatMessagesToday(int chatMessagesToday) {
+        this.chatMessagesToday = chatMessagesToday;
+    }
+
+    public int getChatExperienceToday() {
+        return chatExperienceToday;
+    }
+
+    public void setChatExperienceToday(int chatExperienceToday) {
+        this.chatExperienceToday = chatExperienceToday;
     }
 }

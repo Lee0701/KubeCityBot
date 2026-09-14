@@ -13,6 +13,8 @@ commands:
     description: "Discord link command."
   building:
     description: "Building command."
+  level:
+    description: "Builder level command."
 permissions:
   kubecitybot.admin:
     description: Gives admin rights for KubeCityBot
@@ -23,3 +25,6 @@ permissions:
   kubecitybot.building.register:
     description: Allows /building register command
     default: true
+  kubecitybot.building.approve:
+    description: Allows /building approve command
+    default: op

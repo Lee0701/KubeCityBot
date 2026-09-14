@@ -55,6 +55,10 @@ public class GroupLinker implements Feature, ContextCalculator<Player> {
         member.getRoles().stream()
                 .map(Role::getName)
                 .forEach(role -> consumer.accept(contextKey, role));
+        KubeCityPlayer.of(target).ifPresent(player -> {
+            player.setNickname(target.getName());
+            player.setDisplayName(target.getDisplayName());
+        });
     }
 
     public void reloadPlayer(Player player) {

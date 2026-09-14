@@ -5,6 +5,7 @@ import kr.kubecity.bot.features.*;
 import kr.kubecity.bot.minecraft.BuildingCommandHandler;
 import kr.kubecity.bot.minecraft.DiscordCommandHandler;
 import kr.kubecity.bot.minecraft.KubeCityBotCommandHandler;
+import kr.kubecity.bot.minecraft.LevelCommandHandler;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -13,6 +14,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,12 +28,14 @@ public final class KubeCityBotPlugin extends JavaPlugin {
 
     private BotInstance bot = new BotInstance();
     private String serverId;
+    private ZoneId timezone;
 
     private final File dataFile = new File(getDataFolder(), "data.yml");
     private YamlConfiguration dataConfiguration;
 
     private final File messagesFile = new File(getDataFolder(), "messages.yml");
     private YamlConfiguration messagesConfiguration;
+    private YamlConfiguration defaultMessagesConfiguration;
 
     private final List<Feature> features = new ArrayList<>();
 
@@ -41,12 +46,15 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         if(!messagesFile.exists()) saveResource(messagesFile.getName(), false);
 
         ConfigurationSerialization.registerClass(KubeCityPlayer.class);
+        ConfigurationSerialization.registerClass(Building.class);
+        ConfigurationSerialization.registerClass(BuildingApproval.class);
 
         reload();
 
         getCommand("kubecitybot").setExecutor(new KubeCityBotCommandHandler());
         getCommand("discord").setExecutor(new DiscordCommandHandler());
         getCommand("building").setExecutor(new BuildingCommandHandler());
+        getCommand("level").setExecutor(new LevelCommandHandler());
 
     }
 
@@ -68,6 +76,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         FileConfiguration config = getConfig();
         String botToken = config.getString("bot-token");
         serverId = config.getString("server-id");
+        timezone = ZoneId.of(config.getString("timezone"));
 
         if(botToken != null) {
             bot.launch(botToken);
@@ -80,6 +89,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         if(dataConfiguration.isList("players")) dataConfiguration.getList("players");
 
         messagesConfiguration = YamlConfiguration.loadConfiguration(messagesFile);
+        defaultMessagesConfiguration = YamlConfiguration.loadConfiguration(new InputStreamReader(getResource(messagesFile.getName())));
 
         features.clear();
         if(config.getBoolean("icon-storage.use")) features.add(new IconStorage());
@@ -91,6 +101,8 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         if(config.getBoolean("group-linker.use")) features.add(new GroupLinker());
         if(config.getBoolean("building-storage.use")) features.add(new BuildingStorage());
         if(config.getBoolean("building-votes.use")) features.add(new BuildingVotes());
+        if(config.getBoolean("builder-level.use")) features.add(new BuilderLevel());
+        if(config.getBoolean("builder-level-rewards.use")) features.add(new BuilderLevelRewards());
 
     }
 
@@ -118,8 +130,13 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         return (Optional<T>) features.stream().filter(feature -> feature.getClass().equals(type)).findAny();
     }
 
+    public String getMessage(String key) {
+        return getMessage(key, null);
+    }
+
     public String getMessage(String key, String def) {
-        return messagesConfiguration.getString(key, def);
+        return Optional.ofNullable(messagesConfiguration.getString(key))
+                .orElse(defaultMessagesConfiguration.getString(key, def));
     }
 
     public BotInstance getBot() {
@@ -130,4 +147,7 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         return serverId;
     }
 
+    public ZoneId getTimezone() {
+        return timezone;
+    }
 }

@@ -1,5 +1,6 @@
 bot-token:
 server-id:
+timezone: Asia/Seoul
 icon-storage:
   use: true
   url: https://api.mineatar.io/face/%s
@@ -42,3 +43,24 @@ building-storage:
   register-preload:
 building-votes:
   use: false
+  require-approval: true
+  approval-rewards: [50, 75, 100, 130, 170]
+builder-level:
+  use: false
+  require-role: discordRoleName
+  broadcast-channels:
+    - discordChannelId
+  title-context-key: builder:title
+builder-level-rewards:
+  use: false
+  attendance:
+    use: false
+    rewards: [10, 12, 14, 16, 18, 20, 30]
+  chat:
+    use: false
+    messages: 20
+    reward: 10
+    max-reward: 30
+  vote:
+    use: false
+    reward: 5

@@ -50,7 +50,8 @@ public class DiscordChatListener extends ListenerAdapter {
             Player player = registration.getPlayer();
 
             KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(event.getAuthor().getId());
-            kubeCityPlayer.setNickname(player.getDisplayName());
+            kubeCityPlayer.setNickname(player.getName());
+            kubeCityPlayer.setDisplayName(player.getName());
             kubeCityPlayer.setUuid(player.getUniqueId().toString());
 
             player.sendMessage(plugin.getMessage("registration.register-complete", ChatColor.GREEN + "You are now registered."));
@@ -151,7 +152,7 @@ public class DiscordChatListener extends ListenerAdapter {
                     }
                 }
                 message.getChannel().sendMessage(plugin.getMessage(
-                        "registration.player-not-found-discord",
+                        "player-not-found-discord",
                         "Player not found.")).queue();
             }
             return true;
@@ -192,7 +193,7 @@ public class DiscordChatListener extends ListenerAdapter {
                     }
                 }
                 message.getChannel().sendMessage(plugin.getMessage(
-                        "registration.player-not-found-discord",
+                        "player-not-found-discord",
                         "Player not found.")).queue();
             }
             return true;

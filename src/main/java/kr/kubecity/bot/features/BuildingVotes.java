@@ -1,15 +1,26 @@
 package kr.kubecity.bot.features;
 
+import kr.kubecity.bot.BuildingApproval;
 import kr.kubecity.bot.KubeCityBotPlugin;
 import kr.kubecity.bot.VotesDatabase;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BuildingVotes implements Feature {
     private VotesDatabase database;
+
+    private File approvalDataFile;
+    private YamlConfiguration approvalDataConfiguration;
+
+    private boolean requireApproval;
+    private List<Integer> approvalRewards;
 
     @Override
     public void load(JavaPlugin plugin) {
@@ -24,6 +35,14 @@ public class BuildingVotes implements Feature {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+        requireApproval = getConfigurationSection().getBoolean("require-approval");
+        approvalRewards = getConfigurationSection().getIntegerList("approval-rewards");
+
+        BuildingApproval.BUILDING_APPROVALS.clear();
+        approvalDataFile = new File(plugin.getDataFolder(), "building_approvals.yml");
+        approvalDataConfiguration = YamlConfiguration.loadConfiguration(approvalDataFile);
+        if(approvalDataConfiguration.isList("approvals")) approvalDataConfiguration.getList("approvals");
     }
 
     @Override
@@ -40,6 +59,12 @@ public class BuildingVotes implements Feature {
 
     @Override
     public void save() {
+        approvalDataConfiguration.set("approvals", new ArrayList<>(BuildingApproval.BUILDING_APPROVALS.values()));
+        try {
+            approvalDataConfiguration.save(approvalDataFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -47,7 +72,27 @@ public class BuildingVotes implements Feature {
         return KubeCityBotPlugin.getInstance().getConfig().getConfigurationSection("building-votes");
     }
 
+    public int getApprovalReward(int rating) {
+        return approvalRewards.get(rating - 1);
+    }
+
+    public int getMinRating() {
+        return 1;
+    }
+
+    public int getMaxRating() {
+        return approvalRewards.size();
+    }
+
+    public boolean isValidRating(int rating) {
+        return rating >= 1 && rating <= approvalRewards.size();
+    }
+
     public VotesDatabase getDatabase() {
         return database;
+    }
+
+    public boolean isRequireApproval() {
+        return requireApproval;
     }
 }
