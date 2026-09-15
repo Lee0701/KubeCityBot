@@ -80,10 +80,7 @@ public class BuildingCommandHandler implements TabExecutor {
             } catch (NumberFormatException _) {}
             var building = Building.BUILDINGS.get(buildingId);
             if(building == null) {
-                player.sendMessage(String.format(plugin.getMessage(
-                        "building-votes.no-such-building",
-                        "No such building with id %1$d"
-                ), buildingId));
+                player.sendMessage(String.format(plugin.getMessage("building-votes.no-such-building"), buildingId));
                 return;
             }
 
@@ -97,8 +94,16 @@ public class BuildingCommandHandler implements TabExecutor {
                 player.sendMessage(plugin.getMessage("building-votes.no-self-voting"));
                 return;
             }
+
+            KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(player).orElse(null);
+            if(kubeCityPlayer == null || kubeCityPlayer.getVoteTickets() < 1) {
+                player.sendMessage(plugin.getMessage("building-votes.not-enough-tickets"));
+                return;
+            }
+
             votes.getDatabase().putVote(new Vote(-1, building.getWikiPageId(), uuid, new Date()));
-            player.sendMessage("Successfully voted to " + building.getName());
+            player.sendMessage(String.format(plugin.getMessage("building-votes.vote-successful"), building.getName()));
+            kubeCityPlayer.setVoteTickets(kubeCityPlayer.getVoteTickets() - 1);
             building.spawnHologram();
 
             // Give vote reward if enabled
@@ -106,8 +111,6 @@ public class BuildingCommandHandler implements TabExecutor {
                 if(!builderLevelRewards.isUseVote()) return;
                 BuilderLevel builderLevel = plugin.getFeature(BuilderLevel.class).orElse(null);
                 if(builderLevel == null) return;
-                KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(player).orElse(null);
-                if(kubeCityPlayer == null) return;
                 if(!builderLevel.isBuilderLevelEligible(kubeCityPlayer)) return;
 
                 int rewardExp = builderLevelRewards.getVoteReward();
@@ -130,6 +133,11 @@ public class BuildingCommandHandler implements TabExecutor {
                 lines.add(new TextComponent(plugin.getMessage("building-votes.building-list-empty") + "\n"));
             }
             lines.addFirst(new TextComponent(plugin.getMessage("building-votes.building-list-header") + "\n"));
+            KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(player).orElse(null);
+            int voteTickets;
+            if(kubeCityPlayer == null) voteTickets = 0;
+            else voteTickets = kubeCityPlayer.getVoteTickets();
+            lines.add(new TextComponent(String.format(plugin.getMessage("building-votes.building-list-footer"), voteTickets)));
             player.spigot().sendMessage(lines.toArray(new TextComponent[0]));
 
         }

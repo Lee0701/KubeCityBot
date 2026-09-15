@@ -2,9 +2,11 @@ package kr.kubecity.bot.features;
 
 import kr.kubecity.bot.BuildingApproval;
 import kr.kubecity.bot.KubeCityBotPlugin;
+import kr.kubecity.bot.KubeCityPlayer;
 import kr.kubecity.bot.VotesDatabase;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -18,6 +20,8 @@ public class BuildingVotes implements Feature {
 
     private File approvalDataFile;
     private YamlConfiguration approvalDataConfiguration;
+
+    private int maxTickets;
 
     private boolean requireApproval;
     private List<Integer> approvalRewards;
@@ -35,6 +39,8 @@ public class BuildingVotes implements Feature {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+        maxTickets = getConfigurationSection().getInt("max-tickets");
 
         requireApproval = getConfigurationSection().getBoolean("require-approval");
         approvalRewards = getConfigurationSection().getIntegerList("approval-rewards");
@@ -70,6 +76,14 @@ public class BuildingVotes implements Feature {
     @Override
     public ConfigurationSection getConfigurationSection() {
         return KubeCityBotPlugin.getInstance().getConfig().getConfigurationSection("building-votes");
+    }
+
+    public void giveVoteTickets(KubeCityPlayer player, int amount) {
+        int tickets = player.getVoteTickets();
+        tickets += amount;
+        if(tickets < 0) tickets = 0;
+        if(tickets > maxTickets) tickets = maxTickets;
+        player.setVoteTickets(tickets);
     }
 
     public int getApprovalReward(int rating) {

@@ -26,6 +26,8 @@ public class KubeCityPlayer implements ConfigurationSerializable {
     private int chatMessagesToday;
     private int chatExperienceToday;
 
+    private int voteTickets;
+
     public KubeCityPlayer(String discordId) {
         this.discordId = discordId;
     }
@@ -103,6 +105,10 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         if (chatExperienceToday instanceof Integer) {
             result.chatExperienceToday = (Integer) chatExperienceToday;
         }
+        Object voteTickets = args.get("vote-tickets");
+        if (voteTickets instanceof Integer) {
+            result.voteTickets = (Integer) voteTickets;
+        }
         return result;
     }
 
@@ -134,6 +140,7 @@ public class KubeCityPlayer implements ConfigurationSerializable {
         result.put("attendance-days", attendanceDays);
         result.put("chat-messages-today", chatMessagesToday);
         result.put("chat-experience-today", chatExperienceToday);
+        result.put("vote-tickets", voteTickets);
         return result;
     }
 
@@ -243,5 +250,13 @@ public class KubeCityPlayer implements ConfigurationSerializable {
 
     public void setChatExperienceToday(int chatExperienceToday) {
         this.chatExperienceToday = chatExperienceToday;
+    }
+
+    public int getVoteTickets() {
+        return voteTickets;
+    }
+
+    public void setVoteTickets(int voteTickets) {
+        this.voteTickets = voteTickets;
     }
 }
