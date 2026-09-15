@@ -40,6 +40,7 @@ building-storage:
 building-votes:
   not-enabled: '§eBuilding votes feature is not enabled in config.'
   attendance-reward-given: '§aYou received %1$d vote ticket(s) for attendance!'
+  building-approval-reward-given: '§aYou received %1$d vote ticket(s) for building approval!'
   vote-tickets-full: '§eYou have maximum amount of vote tickets!'
   building-list-header: '§aClick on a building name to vote:§f'
   building-list-footer: '§aYour vote tickets:§f §b%1$d§f / §7%2$d§f'

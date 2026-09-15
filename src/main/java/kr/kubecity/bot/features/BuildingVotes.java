@@ -1,9 +1,7 @@
 package kr.kubecity.bot.features;
 
-import kr.kubecity.bot.BuildingApproval;
-import kr.kubecity.bot.KubeCityBotPlugin;
-import kr.kubecity.bot.KubeCityPlayer;
-import kr.kubecity.bot.VotesDatabase;
+import kr.kubecity.bot.*;
+import kr.kubecity.bot.minecraft.BuildingApproveEvent;
 import kr.kubecity.bot.minecraft.PlayerAttendEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -19,6 +17,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class BuildingVotes implements Feature, Listener {
     private VotesDatabase database;
@@ -29,6 +28,7 @@ public class BuildingVotes implements Feature, Listener {
     private boolean useTickets;
     private int maxTickets;
     private int attendanceRewardTickets;
+    private int buildingApprovalRewardTickets;
 
     private boolean requireApproval;
     private List<Integer> approvalRewards;
@@ -52,6 +52,7 @@ public class BuildingVotes implements Feature, Listener {
         useTickets = getConfigurationSection().getBoolean("vote-tickets.use");
         maxTickets = getConfigurationSection().getInt("vote-tickets.max");
         attendanceRewardTickets = getConfigurationSection().getInt("vote-tickets.attendance-reward");
+        buildingApprovalRewardTickets =  getConfigurationSection().getInt("vote-tickets.building-approval-reward");
 
         requireApproval = getConfigurationSection().getBoolean("require-approval");
         approvalRewards = getConfigurationSection().getIntegerList("approval-rewards");
@@ -101,6 +102,21 @@ public class BuildingVotes implements Feature, Listener {
         }
         player.setVoteTickets(Math.min(player.getVoteTickets() + attendanceRewardTickets, maxTickets));
         event.getPlayer().sendMessage(String.format(plugin.getMessage("building-votes.attendance-reward-given"), attendanceRewardTickets));
+    }
+
+    @EventHandler
+    public void onBuildingApprove(BuildingApproveEvent event) {
+        if(!useTickets) return;
+        KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
+        Building building = Building.BUILDINGS.get(event.getApproval().getBuildingId());
+        if(building == null) return;
+        UUID uuid = UUID.fromString(building.getBuilderUuid());
+        KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(uuid).orElse(null);
+        if(kubeCityPlayer == null) return;
+        kubeCityPlayer.setVoteTickets(Math.min(kubeCityPlayer.getVoteTickets() + buildingApprovalRewardTickets, maxTickets));
+        Player player = Bukkit.getPlayer(uuid);
+        if(player == null) return;
+        player.sendMessage(String.format(plugin.getMessage("building-votes.building-approval-reward-given"), buildingApprovalRewardTickets));
     }
 
     public int getApprovalReward(int rating) {

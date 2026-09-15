@@ -428,6 +428,7 @@ public class BuildingCommandHandler implements TabExecutor {
                         builderLevel.giveExperiencePoint(builder, rewardExp);
                     });
                 });
+                Bukkit.getPluginManager().callEvent(new BuildingApproveEvent(approval));
             }
         }
     }

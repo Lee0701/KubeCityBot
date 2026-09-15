@@ -47,6 +47,7 @@ building-votes:
     use: true
     max: 5
     attendance-reward: 1
+    building-approval-reward: 1
   require-approval: true
   approval-rewards: [50, 75, 100, 130, 170]
 builder-level:
