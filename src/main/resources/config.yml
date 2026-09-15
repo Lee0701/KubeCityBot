@@ -43,7 +43,10 @@ building-storage:
   register-preload:
 building-votes:
   use: false
-  max-tickets: 5
+  vote-tickets:
+    use: true
+    max: 5
+    attendance-reward: 1
   require-approval: true
   approval-rewards: [50, 75, 100, 130, 170]
 builder-level:

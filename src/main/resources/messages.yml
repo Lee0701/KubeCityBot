@@ -39,8 +39,10 @@ building-storage:
   hologram-votes-total: 'Total votes: §a%1$d§f'
 building-votes:
   not-enabled: '§eBuilding votes feature is not enabled in config.'
+  attendance-reward-given: '§aYou received %1$d vote ticket(s) for attendance!'
+  vote-tickets-full: '§eYou have maximum amount of vote tickets!'
   building-list-header: '§aClick on a building name to vote:§f'
-  building-list-footer: '§aYour vote tickets:§f %1$d'
+  building-list-footer: '§aYour vote tickets:§f §b%1$d§f / §7%2$d§f'
   building-list-empty: '§eThere are no buildings nearby.'
   building-list-item: '- §n%1$s§r'
   no-such-building: '§eNo such building with id %1$d'

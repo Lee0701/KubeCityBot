@@ -4,9 +4,14 @@ import kr.kubecity.bot.BuildingApproval;
 import kr.kubecity.bot.KubeCityBotPlugin;
 import kr.kubecity.bot.KubeCityPlayer;
 import kr.kubecity.bot.VotesDatabase;
+import kr.kubecity.bot.minecraft.PlayerAttendEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -15,19 +20,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BuildingVotes implements Feature {
+public class BuildingVotes implements Feature, Listener {
     private VotesDatabase database;
 
     private File approvalDataFile;
     private YamlConfiguration approvalDataConfiguration;
 
+    private boolean useTickets;
     private int maxTickets;
+    private int attendanceRewardTickets;
 
     private boolean requireApproval;
     private List<Integer> approvalRewards;
 
     @Override
     public void load(JavaPlugin plugin) {
+        Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
+
         String databasePath = new File(
                 plugin.getDataFolder(),
                 getConfigurationSection().getString("database-path", "votes.db")
@@ -40,7 +49,9 @@ public class BuildingVotes implements Feature {
             throw new RuntimeException(e);
         }
 
-        maxTickets = getConfigurationSection().getInt("max-tickets");
+        useTickets = getConfigurationSection().getBoolean("vote-tickets.use");
+        maxTickets = getConfigurationSection().getInt("vote-tickets.max");
+        attendanceRewardTickets = getConfigurationSection().getInt("vote-tickets.attendance-reward");
 
         requireApproval = getConfigurationSection().getBoolean("require-approval");
         approvalRewards = getConfigurationSection().getIntegerList("approval-rewards");
@@ -53,6 +64,7 @@ public class BuildingVotes implements Feature {
 
     @Override
     public void unload(JavaPlugin plugin) {
+        HandlerList.unregisterAll(this);
         if(this.database != null) {
             try {
                 this.database.close();
@@ -78,12 +90,17 @@ public class BuildingVotes implements Feature {
         return KubeCityBotPlugin.getInstance().getConfig().getConfigurationSection("building-votes");
     }
 
-    public void giveVoteTickets(KubeCityPlayer player, int amount) {
-        int tickets = player.getVoteTickets();
-        tickets += amount;
-        if(tickets < 0) tickets = 0;
-        if(tickets > maxTickets) tickets = maxTickets;
-        player.setVoteTickets(tickets);
+    @EventHandler
+    public void onPlayerAttend(PlayerAttendEvent event) {
+        if(!useTickets) return;
+        KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
+        KubeCityPlayer player = event.getKubeCityPlayer();
+        if(player.getVoteTickets() >= maxTickets) {
+            event.getPlayer().sendMessage(plugin.getMessage("building-votes.vote-tickets-full"));
+            return;
+        }
+        player.setVoteTickets(Math.min(player.getVoteTickets() + attendanceRewardTickets, maxTickets));
+        event.getPlayer().sendMessage(String.format(plugin.getMessage("building-votes.attendance-reward-given"), attendanceRewardTickets));
     }
 
     public int getApprovalReward(int rating) {
@@ -108,5 +125,13 @@ public class BuildingVotes implements Feature {
 
     public boolean isRequireApproval() {
         return requireApproval;
+    }
+
+    public boolean isUseTickets() {
+        return useTickets;
+    }
+
+    public int getMaxTickets() {
+        return maxTickets;
     }
 }

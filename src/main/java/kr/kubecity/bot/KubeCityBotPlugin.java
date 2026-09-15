@@ -2,10 +2,7 @@ package kr.kubecity.bot;
 
 import kr.kubecity.bot.discord.BotInstance;
 import kr.kubecity.bot.features.*;
-import kr.kubecity.bot.minecraft.BuildingCommandHandler;
-import kr.kubecity.bot.minecraft.DiscordCommandHandler;
-import kr.kubecity.bot.minecraft.KubeCityBotCommandHandler;
-import kr.kubecity.bot.minecraft.LevelCommandHandler;
+import kr.kubecity.bot.minecraft.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -56,6 +53,8 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         getCommand("building").setExecutor(new BuildingCommandHandler());
         getCommand("level").setExecutor(new LevelCommandHandler());
 
+        getServer().getPluginManager().registerEvents(new PlayerJoinEventListener(), this);
+
     }
 
     @Override
@@ -68,8 +67,6 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         for(Feature feature : features) {
             feature.unload(this);
         }
-
-        HandlerList.unregisterAll(this);
 
         reloadConfig();
 
