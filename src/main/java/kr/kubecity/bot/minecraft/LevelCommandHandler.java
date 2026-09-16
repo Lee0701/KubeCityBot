@@ -90,7 +90,7 @@ public class LevelCommandHandler implements TabExecutor {
         }
 
         OfflinePlayer offlinePlayer = Util.findOfflinePlayer(args[0]);
-        if(offlinePlayer != null) {
+        if(offlinePlayer == null) {
             sender.sendMessage(plugin.getMessage("player-not-found"));
             return;
         }
@@ -141,7 +141,7 @@ public class LevelCommandHandler implements TabExecutor {
         }
 
         OfflinePlayer offlinePlayer = Util.findOfflinePlayer(args[0]);
-        if(offlinePlayer != null) {
+        if(offlinePlayer == null) {
             sender.sendMessage(plugin.getMessage("player-not-found"));
             return;
         }
