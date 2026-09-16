@@ -62,6 +62,8 @@ building-votes:
      - Name: %1$s
      - Builder: %2$s
      - Completion Date: %3$s
+  builder-unknown: (Unknown)
+  completion-date-unknown: (Uncertain)
 builder-level:
   not-enabled: '§eBuilder level feature is not enabled in config.'
   level-up-broadcast-title: 'Level Up!'

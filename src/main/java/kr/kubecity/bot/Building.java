@@ -47,14 +47,15 @@ public class Building implements ConfigurationSerializable {
 
         hologramData.addLine(String.format(plugin.getMessage("building-storage.hologram-name", "%1$s"), this.name));
 
-        KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(UUID.fromString(builderUuid)).orElse(null);
-        OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(builderUuid));
-        String name;
-        if(kubeCityPlayer != null) name = kubeCityPlayer.getNickname();
-        else name = offlinePlayer.getName();
-        if(name != null) {
-            String format = plugin.getMessage("building-storage.hologram-builder", "Builder: %1$s");
-            hologramData.addLine(String.format(format, name));
+        if(builderUuid != null) {
+            UUID builderUuid = UUID.fromString(this.builderUuid);
+            KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(builderUuid).orElse(null);
+            OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(builderUuid);
+            String name = (kubeCityPlayer != null) ? kubeCityPlayer.getNickname() : offlinePlayer.getName();
+            if(name != null) {
+                String format = plugin.getMessage("building-storage.hologram-builder", "Builder: %1$s");
+                hologramData.addLine(String.format(format, name));
+            }
         }
 
         plugin.getFeature(BuildingVotes.class).ifPresent(votes -> {

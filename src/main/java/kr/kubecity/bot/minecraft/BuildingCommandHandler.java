@@ -13,6 +13,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -31,6 +32,8 @@ public class BuildingCommandHandler implements TabExecutor {
 
     private final List<String> completes = new ArrayList<>(List.of("vote", "register"));
     private final List<String> adminCompletes = new ArrayList<>(List.of("vote", "register", "votes", "purge"));
+
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     public boolean onCommand(@NonNull CommandSender sender, @NonNull Command command, @NonNull String label, @NonNull String[] args) {
@@ -256,7 +259,6 @@ public class BuildingCommandHandler implements TabExecutor {
         String preload = plugin.getConfig().getString("building-storage.register-preload");
         String name = String.join(" ", args);
         Location location = player.getLocation();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
             URI uri = new URIBuilder(url)
                     .setPath("/wiki/" + name)
@@ -349,13 +351,18 @@ public class BuildingCommandHandler implements TabExecutor {
                 BuildingVotes buildingVotes = plugin.getFeature(BuildingVotes.class).orElse(null);
                 if(buildingVotes == null) return;
 
-                UUID uuid = UUID.fromString(building.getBuilderUuid());
-                KubeCityPlayer builder = KubeCityPlayer.of(uuid).orElse(null);
-                String builderName;
-                if(builder != null) builderName = builder.getNickname();
-                else builderName = Bukkit.getServer().getOfflinePlayer(uuid).getName();
+                String builderName = plugin.getMessage("building-votes.builder-unknown");
+                String uuid = building.getBuilderUuid();
+                if(uuid != null) {
+                    UUID builderUuid = UUID.fromString(uuid);
+                    KubeCityPlayer builder = KubeCityPlayer.of(builderUuid).orElse(null);
+                    OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(builderUuid);
+                    builderName = (builder != null) ? builder.getNickname() : offlinePlayer.getName();
+                }
 
-                String completionDate = new SimpleDateFormat("yyyy-MM-dd").format(building.getCompletionDate());
+                Date date = building.getCompletionDate();
+                String completionDate = plugin.getMessage("building-votes.completion-date-unknown");
+                if(date != null) completionDate = dateFormat.format(date);
 
                 var components = new ArrayList<TextComponent>();
                 String format = plugin.getMessage("building-votes.building-info") + "\n";
