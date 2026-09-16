@@ -27,6 +27,18 @@ discord-command:
 broadcaster:
   player-join: '%1$s joined.'
   player-quit: '%1$s left.'
+  level-up-title: 'Level Up!'
+  level-up-content: 'Player %1$s has reached Builder Level %2$d!'
+  level-up-personal: '§aYou have reached Builder Level %1$d!'
+  building-approved-title: 'Building approved'
+  building-approved-content: >
+    ## Building approved
+
+    [%1$s](%2$s)
+     - Builder: %3$s
+     - Rating: %4$s
+
+     Building is now ready for voting.
 status-updater:
   online-players: 'Online players: (%1$d/%2$d)'
 channel-forwarder:
@@ -37,6 +49,8 @@ building-storage:
   hologram-name: '<§l%1$s§r>'
   hologram-builder: 'Builder: §a%1$s§f'
   hologram-votes-total: 'Total votes: §a%1$d§f'
+  builder-unknown: '(Unknown)'
+  completion-date-unknown: '(Uncertain)'
 building-votes:
   not-enabled: '§eBuilding votes feature is not enabled in config.'
   attendance-reward-given: '§aYou received %1$d vote ticket(s) for attendance!'
@@ -62,14 +76,8 @@ building-votes:
      - Name: %1$s
      - Builder: %2$s
      - Completion Date: %3$s
-  builder-unknown: (Unknown)
-  completion-date-unknown: (Uncertain)
 builder-level:
   not-enabled: '§eBuilder level feature is not enabled in config.'
-  level-up-broadcast-title: 'Level Up!'
-  level-up-broadcast-content: 'Player %1$s has reached Builder Level %2$d!'
-  level-up-broadcast-message: '§aPlayer %1$s has reached Builder Level %2$d!'
-  level-up-message: '§aYou have reached Builder Level %1$d!'
   experience-point-given: '§eGave player %1$s experience point of amount %2$d.'
   experience-point-not-given: '§eCould not give experience point to player %1$s.'
   level-set: '§eSet builder level of player %1$s to %2$d.'

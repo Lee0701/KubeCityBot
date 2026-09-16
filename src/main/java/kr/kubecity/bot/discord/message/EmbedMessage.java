@@ -4,11 +4,16 @@ import kr.kubecity.bot.PlayerIcon;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class EmbedMessage extends DiscordMessage {
     private String nickname;
     private PlayerIcon avatar;
     private final String title;
     private final String content;
+    private String image;
+    private Map<String, String> fields = new HashMap<>();
 
     public EmbedMessage(TextChannel channel, String title, String content) {
         super(channel);
@@ -25,6 +30,8 @@ public class EmbedMessage extends DiscordMessage {
         }
         builder.setTitle(title);
         builder.setDescription(content);
+        if(image != null) builder.setImage(image);
+        fields.forEach((key, value) -> builder.addField(key, value, false));
         getChannel().sendMessageEmbeds(builder.build()).complete();
     }
 
@@ -50,5 +57,25 @@ public class EmbedMessage extends DiscordMessage {
 
     public String getContent() {
         return content;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public Map<String, String> getFields() {
+        return fields;
+    }
+
+    public void setFields(Map<String, String> fields) {
+        this.fields = fields;
+    }
+
+    public void addField(String key, String value) {
+        this.fields.put(key, value);
     }
 }

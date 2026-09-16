@@ -351,17 +351,9 @@ public class BuildingCommandHandler implements TabExecutor {
                 BuildingVotes buildingVotes = plugin.getFeature(BuildingVotes.class).orElse(null);
                 if(buildingVotes == null) return;
 
-                String builderName = plugin.getMessage("building-votes.builder-unknown");
-                String uuid = building.getBuilderUuid();
-                if(uuid != null) {
-                    UUID builderUuid = UUID.fromString(uuid);
-                    KubeCityPlayer builder = KubeCityPlayer.of(builderUuid).orElse(null);
-                    OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(builderUuid);
-                    builderName = (builder != null) ? builder.getNickname() : offlinePlayer.getName();
-                }
-
+                String builderName = building.getBuilderName();
                 Date date = building.getCompletionDate();
-                String completionDate = plugin.getMessage("building-votes.completion-date-unknown");
+                String completionDate = plugin.getMessage("building-storage.completion-date-unknown");
                 if(date != null) completionDate = dateFormat.format(date);
 
                 var components = new ArrayList<TextComponent>();

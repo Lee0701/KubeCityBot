@@ -4,6 +4,7 @@ import kr.kubecity.bot.KubeCityBotPlugin;
 import kr.kubecity.bot.KubeCityPlayer;
 import kr.kubecity.bot.discord.BotInstance;
 import kr.kubecity.bot.discord.message.EmbedMessage;
+import kr.kubecity.bot.minecraft.LevelUpEvent;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.luckperms.api.LuckPerms;
@@ -127,23 +128,7 @@ public class BuilderLevel implements Feature, ContextCalculator<Player> {
         player.setBuilderLevel(player.getBuilderLevel() + 1);
         player.setExperiencePoint(player.getExperiencePoint() - subtractExp);
 
-        bot.sendDiscordMessages(broadcastChannels, channel -> {
-            String title = plugin.getMessage("builder-level.level-up-broadcast-title");
-            String content = String.format(
-                    plugin.getMessage("builder-level.level-up-broadcast-content"),
-                    player.getNickname(), player.getBuilderLevel()
-            );
-            EmbedMessage message = new EmbedMessage(channel, title, content);
-            message.setNickname(player.getNickname());
-            message.setAvatar(IconStorage.getIconFor(UUID.fromString(player.getUuid())));
-            return message;
-        });
-
-        Player bukkitPlayer = Bukkit.getPlayer(UUID.fromString(player.getUuid()));
-        if(bukkitPlayer != null) bukkitPlayer.sendMessage(String.format(
-                plugin.getMessage("builder-level.level-up-message"),
-                player.getBuilderLevel()
-        ));
+        Bukkit.getPluginManager().callEvent(new LevelUpEvent(player, player.getBuilderLevel()));
     }
 
     public void checkLevelRange(KubeCityPlayer player) {

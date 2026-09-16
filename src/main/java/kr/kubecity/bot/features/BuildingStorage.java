@@ -214,6 +214,7 @@ public class BuildingStorage implements Feature {
             int pageId = printouts.getJSONArray("Page ID").getInt(0);
 
             Building building = Building.of(pageId);
+            building.setFullUrl(object.getString("fullurl"));
             if(x instanceof Integer && y instanceof Integer && z instanceof Integer && worldName instanceof String) {
                 World world = Bukkit.getWorld((String) worldName);
                 building.setLocation(new Location(world, (int) x, (int) y, (int) z));

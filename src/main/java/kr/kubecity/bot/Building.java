@@ -19,6 +19,7 @@ public class Building implements ConfigurationSerializable {
     public static final Map<Integer, Building> BUILDINGS = new HashMap<>();
 
     private final int wikiPageId;
+    private String fullUrl;
     private String name;
     private Location location;
     private String builderUuid;
@@ -81,12 +82,32 @@ public class Building implements ConfigurationSerializable {
         }
     }
 
+    public String getBuilderName() {
+        String builderName = KubeCityBotPlugin.getInstance().getMessage("building-storage.builder-unknown");
+        String uuid = getBuilderUuid();
+        if(uuid != null) {
+            UUID builderUuid = UUID.fromString(uuid);
+            KubeCityPlayer builder = KubeCityPlayer.of(builderUuid).orElse(null);
+            OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(builderUuid);
+            builderName = (builder != null) ? builder.getNickname() : offlinePlayer.getName();
+        }
+        return builderName;
+    }
+
     public boolean isApproved() {
         return BuildingApproval.BUILDING_APPROVALS.containsKey(wikiPageId);
     }
 
     public int getWikiPageId() {
         return wikiPageId;
+    }
+
+    public String getFullUrl() {
+        return fullUrl;
+    }
+
+    public void setFullUrl(String fullUrl) {
+        this.fullUrl = fullUrl;
     }
 
     public String getName() {
@@ -127,6 +148,10 @@ public class Building implements ConfigurationSerializable {
 
     public static Building deserialize(Map<String, Object> map) {
         Building result = Building.of((int) map.get("wiki-page-id"));
+        Object fullUrl =  map.get("full-url");
+        if(fullUrl instanceof String) {
+            result.fullUrl = (String) fullUrl;
+        }
         Object name =  map.get("name");
         if(name instanceof String) {
             result.name = (String) name;
@@ -150,6 +175,7 @@ public class Building implements ConfigurationSerializable {
     public @NonNull Map<String, Object> serialize() {
         Map<String, Object> result = new HashMap<>();
         result.put("wiki-page-id", wikiPageId);
+        result.put("full-url", fullUrl);
         result.put("name", name);
         result.put("location", location);
         result.put("builder-uuid", builderUuid);

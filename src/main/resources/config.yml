@@ -8,7 +8,9 @@ status-updater:
   use: false
 broadcaster:
   use: false
-  channels: []
+  join-quit: []
+  level-up: []
+  building-approval: []
 simple-forwarder:
   use: false
   message-type: webhook
@@ -53,8 +55,6 @@ building-votes:
 builder-level:
   use: false
   require-role: discordRoleName
-  broadcast-channels:
-    - discordChannelId
   title-context-key: builder:title
 builder-level-rewards:
   use: false
