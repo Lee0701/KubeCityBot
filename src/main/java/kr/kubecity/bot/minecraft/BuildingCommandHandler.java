@@ -423,9 +423,11 @@ public class BuildingCommandHandler implements TabExecutor {
                 sender.sendMessage(plugin.getMessage("building-votes.building-approved"));
 
                 plugin.getFeature(BuilderLevel.class).ifPresent(builderLevel -> {
-                    KubeCityPlayer.of(UUID.fromString(building.getBuilderUuid())).ifPresent(builder -> {
-                        builderLevel.giveExperiencePoint(builder, rewardExp);
-                    });
+                    String uuid = building.getBuilderUuid();
+                    if(uuid == null) return;
+                    KubeCityPlayer builder = KubeCityPlayer.of(UUID.fromString(uuid)).orElse(null);
+                    if(builder == null) return;
+                    builderLevel.giveExperiencePoint(builder, rewardExp);
                 });
                 Bukkit.getPluginManager().callEvent(new BuildingApproveEvent(approval));
             }

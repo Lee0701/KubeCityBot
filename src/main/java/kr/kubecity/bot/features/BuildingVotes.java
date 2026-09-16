@@ -110,6 +110,7 @@ public class BuildingVotes implements Feature, Listener {
         KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
         Building building = Building.BUILDINGS.get(event.getApproval().getBuildingId());
         if(building == null) return;
+        if(building.getBuilderUuid() == null) return;
         UUID uuid = UUID.fromString(building.getBuilderUuid());
         KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(uuid).orElse(null);
         if(kubeCityPlayer == null) return;
