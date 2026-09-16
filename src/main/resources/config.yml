@@ -8,7 +8,9 @@ status-updater:
   use: false
 broadcaster:
   use: false
-  channels: []
+  join-quit: []
+  level-up: []
+  building-approval: []
 simple-forwarder:
   use: false
   message-type: webhook
@@ -43,13 +45,16 @@ building-storage:
   register-preload:
 building-votes:
   use: false
+  vote-tickets:
+    use: true
+    max: 5
+    attendance-reward: 1
+    building-approval-reward: 1
   require-approval: true
   approval-rewards: [50, 75, 100, 130, 170]
 builder-level:
   use: false
   require-role: discordRoleName
-  broadcast-channels:
-    - discordChannelId
   title-context-key: builder:title
 builder-level-rewards:
   use: false

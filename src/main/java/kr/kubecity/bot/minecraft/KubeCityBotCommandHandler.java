@@ -15,34 +15,32 @@ public class KubeCityBotCommandHandler implements TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
         if(!sender.hasPermission("kubecitybot.admin")) {
-            sender.sendMessage(KubeCityBotPlugin.getInstance().getMessage(
-                    "missing-permission",
-                    "You don't have permission to use this command."
-            ));
+            sender.sendMessage(plugin.getMessage("missing-permission"));
             return true;
         }
         if(args.length < 1) {
-            String commands = completes.stream().collect(Collectors.joining("|"));
+            String commands = String.join("|", completes);
             sender.sendMessage("Usage:");
             sender.sendMessage("/" + label + " (" + commands + ")");
             return true;
         }
         if(args[0].equals("reload")) {
             sender.sendMessage(ChatColor.GRAY + "Reloading KubeCityBot...");
-            KubeCityBotPlugin.getInstance().saveData();
-            KubeCityBotPlugin.getInstance().reload();
+            plugin.saveData();
+            plugin.reload();
             sender.sendMessage(ChatColor.GREEN + "Reload complete!");
             return true;
         } else if(args[0].equals("forcereload")) {
             sender.sendMessage(ChatColor.GRAY + "Reloading KubeCityBot without saving...");
-            KubeCityBotPlugin.getInstance().reload();
+            plugin.reload();
             sender.sendMessage(ChatColor.GREEN + "Force reload complete!");
             return true;
         } else if(args[0].equals("save")) {
             sender.sendMessage(ChatColor.GRAY + "Saving data...");
-            KubeCityBotPlugin.getInstance().saveConfig();
-            KubeCityBotPlugin.getInstance().saveData();
+            plugin.saveConfig();
+            plugin.saveData();
             sender.sendMessage(ChatColor.GREEN + "Save complete!");
             return true;
         }

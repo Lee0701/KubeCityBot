@@ -1,10 +1,15 @@
 package kr.kubecity.bot.features;
 
-import kr.kubecity.bot.BuildingApproval;
-import kr.kubecity.bot.KubeCityBotPlugin;
-import kr.kubecity.bot.VotesDatabase;
+import kr.kubecity.bot.*;
+import kr.kubecity.bot.minecraft.BuildingApproveEvent;
+import kr.kubecity.bot.minecraft.PlayerAttendEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -12,18 +17,26 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-public class BuildingVotes implements Feature {
+public class BuildingVotes implements Feature, Listener {
     private VotesDatabase database;
 
     private File approvalDataFile;
     private YamlConfiguration approvalDataConfiguration;
+
+    private boolean useTickets;
+    private int maxTickets;
+    private int attendanceRewardTickets;
+    private int buildingApprovalRewardTickets;
 
     private boolean requireApproval;
     private List<Integer> approvalRewards;
 
     @Override
     public void load(JavaPlugin plugin) {
+        Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
+
         String databasePath = new File(
                 plugin.getDataFolder(),
                 getConfigurationSection().getString("database-path", "votes.db")
@@ -36,6 +49,11 @@ public class BuildingVotes implements Feature {
             throw new RuntimeException(e);
         }
 
+        useTickets = getConfigurationSection().getBoolean("vote-tickets.use");
+        maxTickets = getConfigurationSection().getInt("vote-tickets.max");
+        attendanceRewardTickets = getConfigurationSection().getInt("vote-tickets.attendance-reward");
+        buildingApprovalRewardTickets =  getConfigurationSection().getInt("vote-tickets.building-approval-reward");
+
         requireApproval = getConfigurationSection().getBoolean("require-approval");
         approvalRewards = getConfigurationSection().getIntegerList("approval-rewards");
 
@@ -47,6 +65,7 @@ public class BuildingVotes implements Feature {
 
     @Override
     public void unload(JavaPlugin plugin) {
+        HandlerList.unregisterAll(this);
         if(this.database != null) {
             try {
                 this.database.close();
@@ -72,6 +91,35 @@ public class BuildingVotes implements Feature {
         return KubeCityBotPlugin.getInstance().getConfig().getConfigurationSection("building-votes");
     }
 
+    @EventHandler
+    public void onPlayerAttend(PlayerAttendEvent event) {
+        if(!useTickets) return;
+        KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
+        KubeCityPlayer player = event.getKubeCityPlayer();
+        if(player.getVoteTickets() >= maxTickets) {
+            event.getPlayer().sendMessage(plugin.getMessage("building-votes.vote-tickets-full"));
+            return;
+        }
+        player.setVoteTickets(Math.min(player.getVoteTickets() + attendanceRewardTickets, maxTickets));
+        event.getPlayer().sendMessage(String.format(plugin.getMessage("building-votes.attendance-reward-given"), attendanceRewardTickets));
+    }
+
+    @EventHandler
+    public void onBuildingApprove(BuildingApproveEvent event) {
+        if(!useTickets) return;
+        KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
+        Building building = Building.BUILDINGS.get(event.getApproval().getBuildingId());
+        if(building == null) return;
+        if(building.getBuilderUuid() == null) return;
+        UUID uuid = UUID.fromString(building.getBuilderUuid());
+        KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(uuid).orElse(null);
+        if(kubeCityPlayer == null) return;
+        kubeCityPlayer.setVoteTickets(Math.min(kubeCityPlayer.getVoteTickets() + buildingApprovalRewardTickets, maxTickets));
+        Player player = Bukkit.getPlayer(uuid);
+        if(player == null) return;
+        player.sendMessage(String.format(plugin.getMessage("building-votes.building-approval-reward-given"), buildingApprovalRewardTickets));
+    }
+
     public int getApprovalReward(int rating) {
         return approvalRewards.get(rating - 1);
     }
@@ -94,5 +142,13 @@ public class BuildingVotes implements Feature {
 
     public boolean isRequireApproval() {
         return requireApproval;
+    }
+
+    public boolean isUseTickets() {
+        return useTickets;
+    }
+
+    public int getMaxTickets() {
+        return maxTickets;
     }
 }

@@ -204,26 +204,42 @@ public class BuildingStorage implements Feature {
     private void parseBuildingResult(JSONObject object) {
         try {
             JSONObject printouts = object.getJSONObject("printouts");
-            String name = printouts.getJSONArray("Name").getString(0);
-            String builderUuid = printouts.getJSONArray("Builder").getString(0);
-            String completionDate = printouts.getJSONArray("CompletionDate").getJSONObject(0).getString("timestamp");
-            int x = printouts.getJSONArray("X").getInt(0);
-            int y = printouts.getJSONArray("Y").getInt(0);
-            int z = printouts.getJSONArray("Z").getInt(0);
-            String worldName = printouts.getJSONArray("World").getString(0);
-            World world = Bukkit.getWorld(worldName);
-            int pageId =  printouts.getJSONArray("Page ID").getInt(0);
+            Object name = getProperty(printouts, "Name");
+            Object builderUuid = getProperty(printouts, "Builder");
+            Object completionDate = getProperty(printouts, "CompletionDate");
+            Object x = getProperty(printouts, "X");
+            Object y = getProperty(printouts, "Y");
+            Object z = getProperty(printouts, "Z");
+            Object worldName = getProperty(printouts, "World");
+            int pageId = printouts.getJSONArray("Page ID").getInt(0);
 
             Building building = Building.of(pageId);
-            building.setLocation(new Location(world, x, y, z));
-            building.setName(name);
-            building.setBuilderUuid(builderUuid);
-            try {
-                building.setCompletionDate(new Date(Long.parseLong(completionDate) * 1000L));
-            } catch (NumberFormatException _) {}
+            building.setFullUrl(object.getString("fullurl"));
+            if(x instanceof Integer && y instanceof Integer && z instanceof Integer && worldName instanceof String) {
+                World world = Bukkit.getWorld((String) worldName);
+                building.setLocation(new Location(world, (int) x, (int) y, (int) z));
+            }
+            if(name instanceof String) {
+                building.setName((String) name);
+            }
+            if(builderUuid instanceof String) {
+                building.setBuilderUuid((String) builderUuid);
+            }
+            if(completionDate instanceof JSONObject obj) {
+                try {
+                    int date = Integer.parseInt(obj.getString("timestamp"));
+                    building.setCompletionDate(new Date(date * 1000L));
+                } catch (NumberFormatException _) {}
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private Object getProperty(JSONObject object, String key) throws JSONException {
+        JSONArray arr = object.getJSONArray(key);
+        if(arr.isEmpty()) return null;
+        return arr.get(0);
     }
 
     @Override

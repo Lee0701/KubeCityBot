@@ -13,6 +13,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -31,6 +32,8 @@ public class BuildingCommandHandler implements TabExecutor {
 
     private final List<String> completes = new ArrayList<>(List.of("vote", "register"));
     private final List<String> adminCompletes = new ArrayList<>(List.of("vote", "register", "votes", "purge"));
+
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @Override
     public boolean onCommand(@NonNull CommandSender sender, @NonNull Command command, @NonNull String label, @NonNull String[] args) {
@@ -64,18 +67,12 @@ public class BuildingCommandHandler implements TabExecutor {
 
         var votes = plugin.getFeature(BuildingVotes.class).orElse(null);
         if(votes == null) {
-            sender.sendMessage(plugin.getMessage(
-                    "building-votes.not-enabled",
-                    "Building votes feature ins not enabled in config."
-            ));
+            sender.sendMessage(plugin.getMessage("building-votes.not-enabled"));
             return;
         }
 
         if(!player.hasPermission("kubecitybot.building.vote")) {
-            sender.sendMessage(plugin.getMessage(
-                    "missing-permission",
-                    "You don't have permission to use this command."
-            ));
+            sender.sendMessage(plugin.getMessage("missing-permission"));
             return;
         }
 
@@ -86,10 +83,7 @@ public class BuildingCommandHandler implements TabExecutor {
             } catch (NumberFormatException _) {}
             var building = Building.BUILDINGS.get(buildingId);
             if(building == null) {
-                player.sendMessage(String.format(plugin.getMessage(
-                        "building-votes.no-such-building",
-                        "No such building with id %1$d"
-                ), buildingId));
+                player.sendMessage(String.format(plugin.getMessage("building-votes.no-such-building"), buildingId));
                 return;
             }
 
@@ -100,14 +94,21 @@ public class BuildingCommandHandler implements TabExecutor {
 
             String uuid = player.getUniqueId().toString();
             if(building.getBuilderUuid().equals(uuid)) {
-                player.sendMessage(plugin.getMessage(
-                        "building-votes.no-self-voting",
-                        "You cannot vote to your building."
-                ));
+                player.sendMessage(plugin.getMessage("building-votes.no-self-voting"));
                 return;
             }
+
+            if(votes.isUseTickets()) {
+                KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(player).orElse(null);
+                if(kubeCityPlayer == null || kubeCityPlayer.getVoteTickets() < 1) {
+                    player.sendMessage(plugin.getMessage("building-votes.not-enough-tickets"));
+                    return;
+                }
+                kubeCityPlayer.setVoteTickets(kubeCityPlayer.getVoteTickets() - 1);
+            }
+
             votes.getDatabase().putVote(new Vote(-1, building.getWikiPageId(), uuid, new Date()));
-            player.sendMessage("Successfully voted to " + building.getName());
+            player.sendMessage(String.format(plugin.getMessage("building-votes.vote-successful"), building.getName()));
             building.spawnHologram();
 
             // Give vote reward if enabled
@@ -136,11 +137,17 @@ public class BuildingCommandHandler implements TabExecutor {
                 return message;
             }).toList());
             if(lines.isEmpty()) {
-                lines.add(new TextComponent(
-                        plugin.getMessage("building-votes.building-list-empty", "There are no buildings nearby.") + "\n"));
+                lines.add(new TextComponent(plugin.getMessage("building-votes.building-list-empty") + "\n"));
             }
-            lines.addFirst(new TextComponent(
-                    plugin.getMessage("building-votes.building-list-header", "Buildings nearby:") + "\n"));
+            lines.addFirst(new TextComponent(plugin.getMessage("building-votes.building-list-header") + "\n"));
+            if(votes.isUseTickets()) {
+                KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(player).orElse(null);
+                int voteTickets;
+                if(kubeCityPlayer == null) voteTickets = 0;
+                else voteTickets = kubeCityPlayer.getVoteTickets();
+                String format = plugin.getMessage("building-votes.building-list-footer");
+                lines.add(new TextComponent(String.format(format, voteTickets, votes.getMaxTickets())));
+            }
             player.spigot().sendMessage(lines.toArray(new TextComponent[0]));
 
         }
@@ -151,18 +158,12 @@ public class BuildingCommandHandler implements TabExecutor {
 
         var votes = plugin.getFeature(BuildingVotes.class).orElse(null);
         if(votes == null) {
-            sender.sendMessage(plugin.getMessage(
-                    "building-votes.not-enabled",
-                    "Building votes feature ins not enabled in config."
-            ));
+            sender.sendMessage(plugin.getMessage("building-votes.not-enabled"));
             return;
         }
 
         if(!sender.hasPermission("kubecitybot.admin")) {
-            sender.sendMessage(plugin.getMessage(
-                    "missing-permission",
-                    "You don't have permission to use this command."
-            ));
+            sender.sendMessage(plugin.getMessage("missing-permission"));
             return;
         }
 
@@ -242,28 +243,22 @@ public class BuildingCommandHandler implements TabExecutor {
         Player player = (Player) sender;
 
         if(!player.hasPermission("kubecitybot.building.register")) {
-            sender.sendMessage(plugin.getMessage(
-                    "missing-permission",
-                    "You don't have permission to use this command."
-            ));
+            sender.sendMessage(plugin.getMessage("missing-permission"));
             return;
         }
 
         if(args.length < 1) {
-            sender.sendMessage(plugin.getMessage(
-                    "building-storage.missing-building-name",
-                    "Usage: /" + label + " <name>"
-            ));
+            sender.sendMessage("Usage:");
+            sender.sendMessage("/" + label + " [name]");
             return;
         }
 
         TextComponent message = new TextComponent(
-                plugin.getMessage("building-storage.click-to-register", "Click on this text to register a building on this location."));
+                plugin.getMessage("building-storage.click-to-register"));
         String url = plugin.getConfig().getString("building-storage.wiki-url");
         String preload = plugin.getConfig().getString("building-storage.register-preload");
         String name = String.join(" ", args);
         Location location = player.getLocation();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
             URI uri = new URIBuilder(url)
                     .setPath("/wiki/" + name)
@@ -356,13 +351,10 @@ public class BuildingCommandHandler implements TabExecutor {
                 BuildingVotes buildingVotes = plugin.getFeature(BuildingVotes.class).orElse(null);
                 if(buildingVotes == null) return;
 
-                UUID uuid = UUID.fromString(building.getBuilderUuid());
-                KubeCityPlayer builder = KubeCityPlayer.of(uuid).orElse(null);
-                String builderName;
-                if(builder != null) builderName = builder.getNickname();
-                else builderName = Bukkit.getServer().getOfflinePlayer(uuid).getName();
-
-                String completionDate = new SimpleDateFormat("yyyy-MM-dd").format(building.getCompletionDate());
+                String builderName = building.getBuilderName();
+                Date date = building.getCompletionDate();
+                String completionDate = plugin.getMessage("building-storage.completion-date-unknown");
+                if(date != null) completionDate = dateFormat.format(date);
 
                 var components = new ArrayList<TextComponent>();
                 String format = plugin.getMessage("building-votes.building-info") + "\n";
@@ -431,10 +423,13 @@ public class BuildingCommandHandler implements TabExecutor {
                 sender.sendMessage(plugin.getMessage("building-votes.building-approved"));
 
                 plugin.getFeature(BuilderLevel.class).ifPresent(builderLevel -> {
-                    KubeCityPlayer.of(UUID.fromString(building.getBuilderUuid())).ifPresent(builder -> {
-                        builderLevel.giveExperiencePoint(builder, rewardExp);
-                    });
+                    String uuid = building.getBuilderUuid();
+                    if(uuid == null) return;
+                    KubeCityPlayer builder = KubeCityPlayer.of(UUID.fromString(uuid)).orElse(null);
+                    if(builder == null) return;
+                    builderLevel.giveExperiencePoint(builder, rewardExp);
                 });
+                Bukkit.getPluginManager().callEvent(new BuildingApproveEvent(approval));
             }
         }
     }

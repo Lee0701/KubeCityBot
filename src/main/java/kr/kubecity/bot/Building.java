@@ -19,6 +19,7 @@ public class Building implements ConfigurationSerializable {
     public static final Map<Integer, Building> BUILDINGS = new HashMap<>();
 
     private final int wikiPageId;
+    private String fullUrl;
     private String name;
     private Location location;
     private String builderUuid;
@@ -47,14 +48,15 @@ public class Building implements ConfigurationSerializable {
 
         hologramData.addLine(String.format(plugin.getMessage("building-storage.hologram-name", "%1$s"), this.name));
 
-        KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(UUID.fromString(builderUuid)).orElse(null);
-        OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(UUID.fromString(builderUuid));
-        String name;
-        if(kubeCityPlayer != null) name = kubeCityPlayer.getNickname();
-        else name = offlinePlayer.getName();
-        if(name != null) {
-            String format = plugin.getMessage("building-storage.hologram-builder", "Builder: %1$s");
-            hologramData.addLine(String.format(format, name));
+        if(builderUuid != null) {
+            UUID builderUuid = UUID.fromString(this.builderUuid);
+            KubeCityPlayer kubeCityPlayer = KubeCityPlayer.of(builderUuid).orElse(null);
+            OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(builderUuid);
+            String name = (kubeCityPlayer != null) ? kubeCityPlayer.getNickname() : offlinePlayer.getName();
+            if(name != null) {
+                String format = plugin.getMessage("building-storage.hologram-builder", "Builder: %1$s");
+                hologramData.addLine(String.format(format, name));
+            }
         }
 
         plugin.getFeature(BuildingVotes.class).ifPresent(votes -> {
@@ -80,12 +82,32 @@ public class Building implements ConfigurationSerializable {
         }
     }
 
+    public String getBuilderName() {
+        String builderName = KubeCityBotPlugin.getInstance().getMessage("building-storage.builder-unknown");
+        String uuid = getBuilderUuid();
+        if(uuid != null) {
+            UUID builderUuid = UUID.fromString(uuid);
+            KubeCityPlayer builder = KubeCityPlayer.of(builderUuid).orElse(null);
+            OfflinePlayer offlinePlayer = Bukkit.getServer().getOfflinePlayer(builderUuid);
+            builderName = (builder != null) ? builder.getNickname() : offlinePlayer.getName();
+        }
+        return builderName;
+    }
+
     public boolean isApproved() {
         return BuildingApproval.BUILDING_APPROVALS.containsKey(wikiPageId);
     }
 
     public int getWikiPageId() {
         return wikiPageId;
+    }
+
+    public String getFullUrl() {
+        return fullUrl;
+    }
+
+    public void setFullUrl(String fullUrl) {
+        this.fullUrl = fullUrl;
     }
 
     public String getName() {
@@ -126,6 +148,10 @@ public class Building implements ConfigurationSerializable {
 
     public static Building deserialize(Map<String, Object> map) {
         Building result = Building.of((int) map.get("wiki-page-id"));
+        Object fullUrl =  map.get("full-url");
+        if(fullUrl instanceof String) {
+            result.fullUrl = (String) fullUrl;
+        }
         Object name =  map.get("name");
         if(name instanceof String) {
             result.name = (String) name;
@@ -149,6 +175,7 @@ public class Building implements ConfigurationSerializable {
     public @NonNull Map<String, Object> serialize() {
         Map<String, Object> result = new HashMap<>();
         result.put("wiki-page-id", wikiPageId);
+        result.put("full-url", fullUrl);
         result.put("name", name);
         result.put("location", location);
         result.put("builder-uuid", builderUuid);

@@ -2,6 +2,7 @@ package kr.kubecity.bot.features;
 
 import kr.kubecity.bot.KubeCityBotPlugin;
 import kr.kubecity.bot.KubeCityPlayer;
+import kr.kubecity.bot.minecraft.PlayerAttendEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
@@ -83,23 +84,14 @@ public class BuilderLevelRewards implements Feature, Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    @EventHandler
+    public void onPlayerAttend(PlayerAttendEvent event) {
         KubeCityBotPlugin plugin = KubeCityBotPlugin.getInstance();
+        KubeCityPlayer player = event.getKubeCityPlayer();
+
         BuilderLevel builderLevel = plugin.getFeature(BuilderLevel.class).orElse(null);
         if (builderLevel == null) return;
-
-        KubeCityPlayer player = KubeCityPlayer.of(event.getPlayer()).orElse(null);
-        if(player == null) return;
         if(!builderLevel.isBuilderLevelEligible(player)) return;
-
-        Date lastAttendance = player.getLastAttendance();
-        if(lastAttendance == null) lastAttendance = new Date(0L);
-        long today = LocalDate.now(plugin.getTimezone()).toEpochDay();
-        long lastAttendanceDay = LocalDate.ofInstant(lastAttendance.toInstant(), plugin.getTimezone()).toEpochDay();
-
-        player.setLastAttendance(new Date());
-        if(today <= lastAttendanceDay) return;
 
         if(useChat) {
             player.setChatMessagesToday(0);
@@ -107,7 +99,7 @@ public class BuilderLevelRewards implements Feature, Listener {
         }
 
         if(useAttendance) {
-            int attendanceDays = getNextAttendanceDays(player, today, lastAttendanceDay);
+            int attendanceDays = getNextAttendanceDays(player, event.getToday(), event.getLastAttendanceDay());
 
             player.setAttendanceDays(attendanceDays);
 
