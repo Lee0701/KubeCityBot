@@ -11,6 +11,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.jspecify.annotations.NonNull;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.*;
 
 public class Building implements ConfigurationSerializable {
@@ -60,9 +63,13 @@ public class Building implements ConfigurationSerializable {
         }
 
         plugin.getFeature(BuildingVotes.class).ifPresent(votes -> {
-            String format = plugin.getMessage("building-storage.hologram-votes-total", "Total votes: %1$d");
+            if(votes.isRequireApproval() && !isApproved()) return;
             int totalVotes = votes.getDatabase().getVotes(this).size();
-            hologramData.addLine(String.format(format, totalVotes));
+            hologramData.addLine(String.format(plugin.getMessage("building-storage.hologram-votes-total"), totalVotes));
+            Date monthStart = Date.from(YearMonth.now(plugin.getTimezone()).atDay(1).atStartOfDay().atZone(plugin.getTimezone()).toInstant());
+            Date now = new Date();
+            int votesThisMonth = votes.getDatabase().getVotes(this, monthStart, now).size();
+            hologramData.addLine(String.format(plugin.getMessage("building-storage.hologram-votes-month"), votesThisMonth));
         });
 
         if(this.hologram != null) {

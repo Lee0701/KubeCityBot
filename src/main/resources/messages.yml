@@ -49,6 +49,7 @@ building-storage:
   hologram-name: '<§l%1$s§r>'
   hologram-builder: 'Builder: §a%1$s§f'
   hologram-votes-total: 'Total votes: §a%1$d§f'
+  hologram-votes-month: 'Votes this month: §a%1$d§f'
   builder-unknown: '(Unknown)'
   completion-date-unknown: '(Uncertain)'
 building-votes:
