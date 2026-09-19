@@ -29,6 +29,10 @@ repositories {
         name 'fancyinnovations'
         url 'https://repo.fancyinnovations.com/releases'
     }
+    maven {
+        name 'placeholderapi'
+        url 'https://repo.helpch.at/releases/'
+    }
     mavenCentral()
 }
 
@@ -42,6 +46,7 @@ dependencies {
     compileOnly "com.github.RanolP:RatTranslate:v1.1.0"
     compileOnly "net.luckperms:api:5.5"
     compileOnly "de.oliver:FancyHolograms:2.9.1"
+    compileOnly "me.clip:placeholderapi:2.12.3"
 
     testImplementation 'junit:junit:4.13.1'
 }
