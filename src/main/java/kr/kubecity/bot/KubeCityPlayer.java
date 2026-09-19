@@ -1,5 +1,6 @@
 package kr.kubecity.bot;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
@@ -40,6 +41,11 @@ public class KubeCityPlayer implements ConfigurationSerializable {
     public static Optional<KubeCityPlayer> of(Player player) {
         Objects.requireNonNull(player, "player");
         return PLAYER_MAP.values().stream().filter(e -> player.getUniqueId().toString().equals(e.uuid)).findFirst();
+    }
+
+    public static Optional<KubeCityPlayer> of(OfflinePlayer offlinePlayer) {
+        Objects.requireNonNull(offlinePlayer, "offlinePlayer");
+        return PLAYER_MAP.values().stream().filter(e -> offlinePlayer.getUniqueId().toString().equals(e.uuid)).findFirst();
     }
 
     public static KubeCityPlayer of(String discordId) {

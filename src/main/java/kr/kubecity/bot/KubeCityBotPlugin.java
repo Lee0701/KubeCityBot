@@ -3,6 +3,7 @@ package kr.kubecity.bot;
 import kr.kubecity.bot.discord.BotInstance;
 import kr.kubecity.bot.features.*;
 import kr.kubecity.bot.minecraft.*;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -53,6 +54,10 @@ public final class KubeCityBotPlugin extends JavaPlugin {
         getCommand("level").setExecutor(new LevelCommandHandler());
 
         getServer().getPluginManager().registerEvents(new PlayerJoinEventListener(), this);
+
+        if(Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new KubeCityPlaceholderExpansion().register();
+        }
 
     }
 
